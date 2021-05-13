@@ -37,7 +37,7 @@ services:
       # Asociation with resolver (see static.yml file)
       - "traefik.http.routers.django.tls.certresolver=letsencrypt"
       # add security middleware
-      - "traefik.http.routers.django.middlewares=custom-redirect,security-headers"
+      - "traefik.http.routers.django.middlewares=custom-redirect@file,security-headers"
       # Set default options (see dynamic.yaml for this)
       - "traefik.http.routers.django.tls.options=default"
       # loadbalancer
