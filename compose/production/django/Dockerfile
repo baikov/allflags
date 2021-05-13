@@ -8,10 +8,10 @@ RUN npm install && npm cache clean --force
 COPY . ${APP_HOME}
 RUN npm run build
 
-ARG PYTHON_VERSION=3.9-slim-buster
+# ARG PYTHON_VERSION=3.9-slim-buster
 
 # define an alias for the specfic python version used in this file.
-FROM python:${PYTHON_VERSION} as python
+FROM python:3.9-slim-buster as python
 
 # Python build stage
 FROM python as python-build-stage
@@ -46,7 +46,7 @@ ENV BUILD_ENV ${BUILD_ENVIRONMENT}
 WORKDIR ${APP_HOME}
 
 RUN addgroup --system django \
-    && adduser --system --ingroup django django
+  && adduser --system --ingroup django django
 
 
 # Install required system dependencies
