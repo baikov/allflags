@@ -1,0 +1,138 @@
+version: '3.9'
+
+volumes:
+  production_postgres_data: {}
+  production_postgres_data_backups: {}
+  prod_media: 
+    external: true
+    name: prod_media
+
+services:
+  django: &django
+    build:
+      context: .
+      dockerfile: ./compose/production/django/Dockerfile
+    image: app_production_django
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - ./.envs/.production/.django
+      - ./.envs/.production/.postgres
+    command: /start
+    networks:
+      - front
+      - back
+    restart: unless-stopped
+    expose:
+      - 5000
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.django.priority=10"
+      # Asociates router with your specific domain or subdomain and websecure (https)
+      - "traefik.http.routers.django.rule=Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)"
+      - "traefik.http.routers.django.entrypoints=websecure"
+      # Enables tls
+      - "traefik.http.routers.django.tls=true"
+      # Asociation with resolver (see static.yml file)
+      - "traefik.http.routers.django.tls.certresolver=letsencrypt"
+      # add security middleware
+      - "traefik.http.routers.django.middlewares=custom-redirect,security-headers"
+      # Set default options (see dynamic.yaml for this)
+      - "traefik.http.routers.django.tls.options=default"
+      # loadbalancer
+      - "traefik.http.services.django.loadbalancer.server.port=5000"
+      - "traefik.docker.network=front"
+
+    volumes:
+      - prod_media:/app/name/media
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: app_production_postgres
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - production_postgres_data:/var/lib/postgresql/data:Z
+      - production_postgres_data_backups:/backups:z
+    env_file:
+      - ./.envs/.production/.postgres
+    networks:
+      - back
+    restart: unless-stopped
+    labels:
+      - traefik.enable=false
+
+  redis:
+    image: redis:5.0
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - back
+    labels:
+      - traefik.enable=false
+
+  celeryworker:
+    <<: *django
+    image: app_production_celeryworker
+    security_opt:
+      - no-new-privileges:true
+    command: /start-celeryworker
+    networks:
+      - back   
+    labels:
+      - traefik.enable=false
+
+  celerybeat:
+    <<: *django
+    image: app_production_celerybeat
+    security_opt:
+      - no-new-privileges:true
+    command: /start-celerybeat
+    networks:
+      - back
+    labels:
+      - traefik.enable=false
+
+  flower:
+    <<: *django
+    image: app_production_flower
+    security_opt:
+      - no-new-privileges:true
+    command: /start-flower
+    networks:
+      - front
+      - back
+    labels:
+      - "traefik.enable=true"
+      # - "traefik.http.routers.flower.priority=20"
+      # Asociates router with your specific domain or subdomain and websecure (https)
+      # - "traefik.http.routers.flower.rule=Host(`flower.${DOMAIN}`)"
+      # - "traefik.http.routers.flower.entrypoints=websecure"
+      # Asociates flower router with your specific port (https)
+      - "traefik.http.routers.flower.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.flower.entrypoints=flower"
+      # Enables tls
+      - "traefik.http.routers.flower.tls=true"
+      # Asociation with resolver (see static.yml file)
+      - "traefik.http.routers.flower.tls.certresolver=letsencrypt"
+      # add security middleware
+      - "traefik.http.routers.flower.middlewares=security-headers"
+      # Set default options (see dynamic.yaml for this)
+      - "traefik.http.routers.flower.tls.options=default"
+      # loadbalancer
+      - "traefik.http.services.flower.loadbalancer.server.port=5555"
+      - "traefik.docker.network=front"
+    expose:
+      - 5555
+
+networks:
+  front:
+    external:
+      name: front
+  back:
+    name: back
