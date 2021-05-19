@@ -23,3 +23,10 @@ class Seo(models.Model):
 
     class Meta:
         abstract = True
+
+
+class PublishedQuerySet(models.QuerySet):
+    """Return only published elements"""
+
+    def published(self):
+        return self.filter(is_published=True)
