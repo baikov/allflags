@@ -6,16 +6,10 @@ class Seo(models.Model):
     """Abstract class for SEO fields"""
 
     slug = models.SlugField(max_length=100, unique=True)
-    meta_title = models.CharField(
-        verbose_name=_("SEO Title"), max_length=250, blank=True
-    )
-    meta_description = models.TextField(
-        max_length=400, verbose_name=_("SEO Description"), blank=True
-    )
+    meta_title = models.CharField(verbose_name=_("SEO Title"), max_length=250, blank=True)
+    meta_description = models.TextField(max_length=400, verbose_name=_("SEO Description"), blank=True)
     meta_h1 = models.CharField(verbose_name=_("SEO H1"), max_length=250, blank=True)
-    is_published = models.BooleanField(
-        verbose_name=_("Published"), default=False, null=False
-    )
+    is_published = models.BooleanField(verbose_name=_("Published"), default=False, null=False)
     is_index = models.BooleanField(verbose_name=_("index"), default=True, null=False)
     is_follow = models.BooleanField(verbose_name=_("follow"), default=True, null=False)
     created_date = models.DateField(auto_now_add=True)
@@ -30,3 +24,18 @@ class PublishedQuerySet(models.QuerySet):
 
     def published(self):
         return self.filter(is_published=True)
+
+
+class Currency(models.Model):
+    """Model for countries currency with m2m rel"""
+
+    ru_name = models.CharField(verbose_name=_("Currency name (ru)"), max_length=250, blank=True)
+    en_name = models.CharField(verbose_name=_("Currency name (en)"), max_length=250, blank=True)
+    iso_num = models.CharField(verbose_name=_("Numeric code ISO 4217"), max_length=250, blank=True)
+    iso_code = models.CharField(verbose_name=_("Code ISO 4217"), max_length=250, blank=True)
+    symbol = models.CharField(verbose_name=_("Symbol"), max_length=5, blank=True)
+    countries = models.ManyToManyField("Country", related_name="currencies", verbose_name=_("Countries"), blank=True)
+
+    class Meta:
+        verbose_name = _("Currency")
+        verbose_name_plural = _("Currencies")
