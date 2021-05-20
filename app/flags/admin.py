@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import Currency
+from django.utils.translation import gettext_lazy as _
+
+from .models import Currency, Region, Subregion
 
 
 class CurrencyAdmin(admin.ModelAdmin):
@@ -8,4 +10,52 @@ class CurrencyAdmin(admin.ModelAdmin):
     filter_horizontal = ("countries",)
 
 
+class RegionAdmin(admin.ModelAdmin):
+    prepopulated_fields = {"slug": ("name",)}
+    list_display = ("name", "slug")
+    search_fields = ["name"]
+    fieldsets = [
+        (None, {"fields": ["name", "slug", "description"]}),
+        (
+            _("SEO"),
+            {
+                "classes": ("collapse", "wide"),
+                "fields": [
+                    "seo_title",
+                    "seo_description",
+                    "seo_h1",
+                    "is_published",
+                    "is_index",
+                    "is_follow",
+                ],
+            },
+        ),
+    ]
+
+
+class SubregionAdmin(admin.ModelAdmin):
+    prepopulated_fields = {"slug": ("name",)}
+    list_display = ("name", "slug", "subregion")
+    search_fields = ["name", "subregion"]
+    fieldsets = [
+        (None, {"fields": ["subregion", "name", "slug", "description"]}),
+        (
+            _("SEO"),
+            {
+                "classes": ("collapse", "wide"),
+                "fields": [
+                    "seo_title",
+                    "seo_description",
+                    "seo_h1",
+                    "is_published",
+                    "is_index",
+                    "is_follow",
+                ],
+            },
+        ),
+    ]
+
+
 admin.site.register(Currency, CurrencyAdmin)
+admin.site.register(Region, CurrencyAdmin)
+admin.site.register(Subregion, CurrencyAdmin)
