@@ -46,3 +46,39 @@ class Currency(models.Model):
 
     # def get_absolute_url(self):
     #     return reverse('flags:currencies', kwargs={'iso_code': self.iso_code})
+
+
+class Region(Seo, models.Model):
+    name = models.CharField(verbose_name=_("Region name"), max_length=250)
+    description = models.TextField(verbose_name=_("Region description"), blank=True)
+
+    class Meta:
+        verbose_name = _("Region")
+        verbose_name_plural = _("Regions")
+
+    def __str__(self):
+        return f"{self.name})"
+
+    # def get_absolute_url(self):
+    #     return reverse('flags:regions', kwargs={'iso_code': self.iso_code})
+
+
+class SubRegion(Seo, models.Model):
+    name = models.CharField(verbose_name=_("Region name"), max_length=250)
+    description = models.TextField(verbose_name=_("Region description"), blank=True)
+    region = models.ForeignKey(Region, on_delete=models.CASCADE, related_name="subregion")
+
+    class Meta:
+        verbose_name = _("Subregion")
+        verbose_name_plural = _("Subregions")
+
+    def __str__(self):
+        return f"{self.name} ({self.region})"
+
+    # def get_absolute_url(self):
+    #     return reverse('flags:regions', kwargs={'iso_code': self.iso_code})
+
+    @property
+    def get_region(self):
+        """Rreturn name of parent region"""
+        return self.region
