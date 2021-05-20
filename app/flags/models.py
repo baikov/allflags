@@ -1,5 +1,6 @@
 from django.db import models
-from django.urls import reverse
+
+# from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 
@@ -30,12 +31,12 @@ class PublishedQuerySet(models.QuerySet):
 class Currency(models.Model):
     """Model for countries currency with m2m rel"""
 
-    ru_name = models.CharField(verbose_name=_("Currency name (ru)"), max_length=250, blank=True)
-    en_name = models.CharField(verbose_name=_("Currency name (en)"), max_length=250, blank=True)
-    iso_num = models.CharField(verbose_name=_("Numeric code ISO 4217"), max_length=250, blank=True)
-    iso_code = models.CharField(verbose_name=_("Code ISO 4217"), max_length=250, blank=True)
+    ru_name = models.CharField(verbose_name=_("Currency name (ru)"), max_length=100, blank=True)
+    en_name = models.CharField(verbose_name=_("Currency name (en)"), max_length=100, blank=True)
+    iso_num = models.CharField(verbose_name=_("Numeric code ISO 4217"), max_length=3, blank=True)
+    iso_code = models.CharField(verbose_name=_("Code ISO 4217"), max_length=3)
     symbol = models.CharField(verbose_name=_("Symbol"), max_length=5, blank=True)
-    countries = models.ManyToManyField("Country", related_name="currencies", verbose_name=_("Countries"), blank=True)
+    # countries = models.ManyToManyField("Country", related_name="currencies", verbose_name=_("Countries"), blank=True)
 
     class Meta:
         verbose_name = _("Currency")
@@ -57,7 +58,7 @@ class Region(Seo, models.Model):
         verbose_name_plural = _("Regions")
 
     def __str__(self):
-        return f"{self.name})"
+        return f"{self.name}"
 
     # def get_absolute_url(self):
     #     return reverse('flags:regions', kwargs={'iso_code': self.iso_code})
