@@ -7,7 +7,7 @@ from .models import Currency, Region, Subregion
 class CurrencyAdmin(admin.ModelAdmin):
     list_display = ("ru_name", "iso_code")
     search_fields = ["ru_name", "iso_code"]
-    filter_horizontal = ("countries",)
+    # filter_horizontal = ("countries",)
 
 
 class RegionAdmin(admin.ModelAdmin):
@@ -35,10 +35,10 @@ class RegionAdmin(admin.ModelAdmin):
 
 class SubregionAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
-    list_display = ("name", "slug", "subregion")
-    search_fields = ["name", "subregion"]
+    list_display = ("name", "slug", "region")
+    search_fields = ["name", "region"]
     fieldsets = [
-        (None, {"fields": ["subregion", "name", "slug", "description"]}),
+        (None, {"fields": ["region", "name", "slug", "description"]}),
         (
             _("SEO"),
             {
@@ -57,5 +57,5 @@ class SubregionAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Currency, CurrencyAdmin)
-admin.site.register(Region, CurrencyAdmin)
-admin.site.register(Subregion, CurrencyAdmin)
+admin.site.register(Region, RegionAdmin)
+admin.site.register(Subregion, SubregionAdmin)
