@@ -63,7 +63,7 @@ class Region(Seo, models.Model):
     #     return reverse('flags:regions', kwargs={'iso_code': self.iso_code})
 
 
-class SubRegion(Seo, models.Model):
+class Subregion(Seo, models.Model):
     name = models.CharField(verbose_name=_("Region name"), max_length=250)
     description = models.TextField(verbose_name=_("Region description"), blank=True)
     region = models.ForeignKey(Region, on_delete=models.CASCADE, related_name="subregion")
