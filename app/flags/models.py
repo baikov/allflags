@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 
@@ -39,3 +40,9 @@ class Currency(models.Model):
     class Meta:
         verbose_name = _("Currency")
         verbose_name_plural = _("Currencies")
+
+    def __str__(self):
+        return f"{self.ru_name} ({self.iso_code})"
+
+    # def get_absolute_url(self):
+    #     return reverse('flags:currencies', kwargs={'iso_code': self.iso_code})
