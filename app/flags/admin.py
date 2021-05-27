@@ -84,12 +84,11 @@ class CountryAdmin(admin.ModelAdmin):
                 "fields": [
                     "subregion",
                     "name",
+                    "iso_code_a2",
                     "slug",
                     "conventional_long_name",
                     "local_long_name",
                     "local_short_name",
-                    "capital_name",
-                    "continent",
                     "anthem",
                     "motto",
                     "official_language",
@@ -103,7 +102,7 @@ class CountryAdmin(admin.ModelAdmin):
             {
                 "classes": ("collapse", "wide"),
                 "fields": [
-                    ("iso_code_a2", "iso_code_a3", "iso_code_num"),
+                    ("iso_code_a3", "iso_code_num"),
                 ],
             },
         ),
@@ -114,6 +113,7 @@ class CountryAdmin(admin.ModelAdmin):
                 "fields": [
                     "en_short_form",
                     "en_long_form",
+                    "ru_capital_name",
                     "en_capital_name",
                     "ru_government_type",
                     "ru_chief_of_state",
@@ -150,10 +150,9 @@ class CountryAdmin(admin.ModelAdmin):
             {
                 "classes": ("collapse", "wide"),
                 "fields": [
-                    "meta_title",
-                    "meta_description",
-                    "meta_keywords",
-                    "meta_h1",
+                    "seo_title",
+                    "seo_description",
+                    "seo_h1",
                     "is_published",
                     "is_index",
                     "is_follow",
@@ -167,8 +166,8 @@ class CountryAdmin(admin.ModelAdmin):
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(CountryAdmin, self).get_form(request, obj, **kwargs)
-        form.base_fields["meta_description"].widget.attrs["rows"] = 2
-        form.base_fields["meta_description"].widget.attrs["cols"] = 10  # doesn't work...
+        form.base_fields["seo_description"].widget.attrs["rows"] = 2
+        form.base_fields["seo_description"].widget.attrs["cols"] = 10  # doesn't work...
         return form
 
     formfield_overrides = {
