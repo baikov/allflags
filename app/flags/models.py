@@ -67,7 +67,7 @@ class Region(Seo, models.Model):
 class Subregion(Seo, models.Model):
     name = models.CharField(verbose_name=_("Region name"), max_length=250)
     description = models.TextField(verbose_name=_("Region description"), blank=True)
-    region = models.ForeignKey(Region, on_delete=models.SET_NULL, related_name="subregion")
+    region = models.ForeignKey(Region, on_delete=models.PROTECT, related_name="subregion")
 
     class Meta:
         verbose_name = _("Subregion")
@@ -125,17 +125,19 @@ class Country(Seo, models.Model):
     area_land = models.CharField(verbose_name=_("Land area"), max_length=250, blank=True)
     area_water = models.CharField(verbose_name=_("Water area"), max_length=250, blank=True)
     coastline = models.CharField(verbose_name=_("Coastline"), max_length=250, blank=True)
-    area_global_rank = models.PositiveSmallIntegerField(verbose_name=_("Area global rank"), blank=True)
+    area_global_rank = models.PositiveSmallIntegerField(verbose_name=_("Area global rank"), blank=True, null=True)
     population_total = models.CharField(verbose_name=_("Population"), max_length=250, blank=True)
     population_date = models.CharField(verbose_name=_("Population stat year"), max_length=250, blank=True)
-    population_global_rank = models.PositiveSmallIntegerField(verbose_name=_("Population global rank"), blank=True)
+    population_global_rank = models.PositiveSmallIntegerField(
+        verbose_name=_("Population global rank"), blank=True, null=True
+    )
     gdp_value = models.CharField(verbose_name=_("GDP value"), max_length=250, blank=True)
     gdp_date = models.CharField(verbose_name=_("GDP stat year"), max_length=250, blank=True)
-    gdp_global_rank = models.PositiveSmallIntegerField(verbose_name=_("GDP global rank"), blank=True)
+    gdp_global_rank = models.PositiveSmallIntegerField(verbose_name=_("GDP global rank"), blank=True, null=True)
     external_debt_value = models.CharField(verbose_name=_("External debt value"), max_length=250, blank=True)
     external_debt_date = models.CharField(verbose_name=_("External debt year"), max_length=250, blank=True)
     external_debt_global_rank = models.PositiveSmallIntegerField(
-        verbose_name=_("External debt global rank"), blank=True
+        verbose_name=_("External debt global rank"), blank=True, null=True
     )
     info_updated = models.CharField(verbose_name=_("Info updated date"), max_length=250, blank=True)
 
@@ -163,7 +165,7 @@ class Country(Seo, models.Model):
 
 class BorderCountry(models.Model):
     country = models.ForeignKey(Country, on_delete=models.CASCADE)  # related_name="country"
-    border_country = models.ForeignKey(Country, on_delete=models.CASCADE)  # related_name="neighbour"
+    border_country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="neighbours")
     border = models.PositiveIntegerField(
         verbose_name=_("Border length"),
         help_text=_("in metres"),
