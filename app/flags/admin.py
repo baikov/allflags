@@ -1,7 +1,9 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
+from django.forms import TextInput
+from django.db import models
 
-from .models import Currency, Region, Subregion
+from .models import Currency, Region, Subregion, Country, BorderCountry
 
 
 class CurrencyAdmin(admin.ModelAdmin):
@@ -56,6 +58,125 @@ class SubregionAdmin(admin.ModelAdmin):
     ]
 
 
+class BorderCountryInline(admin.TabularInline):
+    model = BorderCountry
+    extra = 2
+    fk_name = "country"
+    raw_id_fields = ("border_country",)
+
+
+class CountryAdmin(admin.ModelAdmin):
+    prepopulated_fields = {"slug": ("iso_code_a2",)}
+    list_display = (
+        "name",
+        "iso_code_a2",
+        "slug",
+        "is_published",
+    )
+    # list_filter = ['name']
+    search_fields = ["name", "iso_code_a2"]
+    readonly_fields = ["updated_date", "created_date"]
+    inlines = (BorderCountryInline,)
+    fieldsets = [
+        (
+            None,
+            {
+                "fields": [
+                    "subregion",
+                    "name",
+                    "slug",
+                    "conventional_long_name",
+                    "local_long_name",
+                    "local_short_name",
+                    "capital_name",
+                    "continent",
+                    "anthem",
+                    "motto",
+                    "official_language",
+                    "phone_code",
+                    "internet_tld",
+                ]
+            },
+        ),
+        (
+            _("ISO"),
+            {
+                "classes": ("collapse", "wide"),
+                "fields": [
+                    ("iso_code_a2", "iso_code_a3", "iso_code_num"),
+                ],
+            },
+        ),
+        (
+            _("Government"),
+            {
+                "classes": ("collapse", "wide"),
+                "fields": [
+                    "en_short_form",
+                    "en_long_form",
+                    "en_capital_name",
+                    "ru_government_type",
+                    "ru_chief_of_state",
+                    "ru_head_of_government",
+                    "en_government_type",
+                    "en_chief_of_state",
+                    "en_head_of_government",
+                ],
+            },
+        ),
+        (
+            _("Area and population"),
+            {
+                "classes": ("collapse", "wide"),
+                "fields": [
+                    ("area_total", "area_land", "area_water", "coastline", "area_global_rank"),
+                    ("population_total", "population_date", "population_global_rank"),
+                ],
+            },
+        ),
+        (
+            _("Economic"),
+            {
+                "classes": ("collapse", "wide"),
+                "fields": [
+                    ("gdp_value", "gdp_date", "gdp_global_rank"),
+                    ("external_debt_value", "external_debt_date", "external_debt_global_rank"),
+                    "info_updated",
+                ],
+            },
+        ),
+        (
+            _("SEO"),
+            {
+                "classes": ("collapse", "wide"),
+                "fields": [
+                    "meta_title",
+                    "meta_description",
+                    "meta_keywords",
+                    "meta_h1",
+                    "is_published",
+                    "is_index",
+                    "is_follow",
+                    "created_date",
+                    "updated_date",
+                    "dl_imgs",
+                ],
+            },
+        ),
+    ]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(CountryAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields["meta_description"].widget.attrs["rows"] = 2
+        form.base_fields["meta_description"].widget.attrs["cols"] = 10  # doesn't work...
+        return form
+
+    formfield_overrides = {
+        models.CharField: {"widget": TextInput(attrs={"size": "100"})},
+    }
+
+
 admin.site.register(Currency, CurrencyAdmin)
 admin.site.register(Region, RegionAdmin)
 admin.site.register(Subregion, SubregionAdmin)
+admin.site.register(Country, CountryAdmin)
