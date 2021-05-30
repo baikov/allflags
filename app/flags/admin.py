@@ -9,7 +9,7 @@ from .models import Currency, Region, Subregion, Country, BorderCountry
 class CurrencyAdmin(admin.ModelAdmin):
     list_display = ("ru_name", "iso_code")
     search_fields = ["ru_name", "iso_code"]
-    # filter_horizontal = ("countries",)
+    filter_horizontal = ("countries",)
 
 
 class RegionAdmin(admin.ModelAdmin):
