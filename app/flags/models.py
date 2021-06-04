@@ -36,7 +36,7 @@ class Currency(models.Model):
     iso_num = models.CharField(verbose_name=_("Numeric code ISO 4217"), max_length=3, blank=True)
     iso_code = models.CharField(verbose_name=_("Code ISO 4217"), max_length=3)
     symbol = models.CharField(verbose_name=_("Symbol"), max_length=5, blank=True)
-    # countries = models.ManyToManyField("Country", related_name="currencies", verbose_name=_("Countries"), blank=True)
+    countries = models.ManyToManyField("Country", related_name="currencies", verbose_name=_("Countries"), blank=True)
 
     class Meta:
         verbose_name = _("Currency")
