@@ -65,6 +65,11 @@ class BorderCountryInline(admin.TabularInline):
     raw_id_fields = ("border_country",)
 
 
+class CurrencyInline(admin.TabularInline):
+    model = Currency.countries.through
+    extra = 1
+
+
 class CountryAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("iso_code_a2",)}
     list_display = (
@@ -76,7 +81,7 @@ class CountryAdmin(admin.ModelAdmin):
     # list_filter = ['name']
     search_fields = ["name", "iso_code_a2"]
     readonly_fields = ["updated_date", "created_date"]
-    inlines = (BorderCountryInline,)
+    inlines = (BorderCountryInline, CurrencyInline)
     fieldsets = [
         (
             None,
