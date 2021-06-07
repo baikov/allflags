@@ -179,10 +179,12 @@ class BorderCountry(models.Model):
 
     def save(self, *args, **kwargs):
         super(BorderCountry, self).save(*args, **kwargs)
-        neighbour, _ = BorderCountry.objects.get_or_create(
-            country=self.border_country,
-            border_country=self.country,
-        )
+
+        # neighbour, created = BorderCountry.objects.update_or_create(
+        #     country=self.border_country, border_country=self.country, border=self.border
+        # )
+
+        neighbour, _ = BorderCountry.objects.get_or_create(country=self.border_country, border_country=self.country)
         if neighbour.border != self.border:
             neighbour.border = self.border
             neighbour.save()
