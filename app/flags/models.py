@@ -45,6 +45,11 @@ class Currency(models.Model):
     def __str__(self):
         return f"{self.ru_name} ({self.iso_code})"
 
+    def save(self, *args, **kwargs):
+        self.iso_code = self.iso_code.upper()
+        # self.slug = self.iso_code_a2.lower()
+        super(Currency, self).save(*args, **kwargs)
+
     # def get_absolute_url(self):
     #     return reverse('flags:currencies', kwargs={'iso_code': self.iso_code})
 
