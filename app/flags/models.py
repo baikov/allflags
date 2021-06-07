@@ -105,7 +105,6 @@ class Country(Seo, models.Model):
         "self",
         verbose_name=_("Border countries"),
         through="BorderCountry",
-        blank=True,
         symmetrical=False,
         related_name="border_to+",
     )
