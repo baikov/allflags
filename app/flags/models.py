@@ -168,11 +168,10 @@ class Country(Seo, models.Model):
 
 
 class BorderCountry(models.Model):
-    country = models.ForeignKey(Country, on_delete=models.CASCADE)  # related_name="country"
-    border_country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="neighbours")
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="country")
+    border_country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="border_country")
     border = models.PositiveIntegerField(
-        verbose_name=_("Border length"),
-        help_text=_("in metres"),
+        verbose_name=_("Border length"), help_text=_("in metres"), blank=True, null=True
     )
 
     class Meta:
