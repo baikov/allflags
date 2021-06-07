@@ -1,6 +1,4 @@
 from django.db import models
-
-# from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 
@@ -188,3 +186,11 @@ class BorderCountry(models.Model):
         if neighbour.border != self.border:
             neighbour.border = self.border
             neighbour.save()
+
+    def delete(self, *args, **kwargs):
+        super(BorderCountry, self).delete(*args, **kwargs)
+        try:
+            neighbour = BorderCountry.objects.get(country=self.border_country, border_country=self.country)
+            neighbour.delete()
+        except BorderCountry.DoesNotExist:
+            return
