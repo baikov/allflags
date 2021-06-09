@@ -11,7 +11,17 @@ def test_country_postsave(sender, instance, **kwargs):
 
 @receiver(post_save, sender=BorderCountry)
 def create_neighbour(sender, instance, **kwargs):
-    print("Post_save")
+    """Create symmetric record for a neighbouring country in m2m through model.
+
+    Args:
+        sender (BorderCountry): Through model for border_countries m2m field in Country model
+        instance (object): has three fields (country, border_country, border)
+    """
+    logging.info("This is a info message")
+    neighbour, _ = sender.objects.get_or_create(country=instance.border_country, border_country=instance.country)
+    if neighbour.border != instance.border:
+        neighbour.border = instance.border
+        neighbour.save()
 
 
 @receiver(post_delete, sender=BorderCountry)
