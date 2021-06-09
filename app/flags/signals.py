@@ -1,12 +1,17 @@
+import logging
+
 from django.db.models.signals import m2m_changed, post_delete, post_save
 from django.dispatch import receiver
 
 from .models import BorderCountry, Country
 
+logger = logging.getLogger(__name__)
+
 
 @receiver(post_save, sender=Country)
 def test_country_postsave(sender, instance, **kwargs):
-    print("Country Post_save")
+    logger.info("This is a info message")
+    logger.debug("This is a debug message")
 
 
 @receiver(post_save, sender=BorderCountry)
