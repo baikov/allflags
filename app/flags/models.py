@@ -174,23 +174,3 @@ class BorderCountry(models.Model):
 
     class Meta:
         unique_together = ("country", "border_country")
-
-    def save(self, *args, **kwargs):
-        super(BorderCountry, self).save(*args, **kwargs)
-
-        # neighbour, created = BorderCountry.objects.update_or_create(
-        #     country=self.border_country, border_country=self.country, border=self.border
-        # )
-
-        neighbour, _ = BorderCountry.objects.get_or_create(country=self.border_country, border_country=self.country)
-        if neighbour.border != self.border:
-            neighbour.border = self.border
-            neighbour.save()
-
-    def delete(self, *args, **kwargs):
-        super(BorderCountry, self).delete(*args, **kwargs)
-        try:
-            neighbour = BorderCountry.objects.get(country=self.border_country, border_country=self.country)
-            neighbour.delete()
-        except BorderCountry.DoesNotExist:
-            return
