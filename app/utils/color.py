@@ -1,3 +1,6 @@
+from colorsys import rgb_to_hls
+
+
 class Colorize:
     def __init__(self, color=None, **kwargs):
 
@@ -33,6 +36,10 @@ class Colorize:
     def cmyk(self, value):
         self._color = self.__cmyk_to_rgb(value)
 
+    @property
+    def hsl(self) -> list:
+        return self.__rgb_to_hsl(self.rgb)
+
     def __rgb_to_hex(self, rgb: tuple) -> str:
         """
         Convert an RGB color representation to a HEX color representation.
@@ -65,6 +72,11 @@ class Colorize:
         g = round(255 * (1 - m / 100) * (1 - k / 100))
         b = round(255 * (1 - y / 100) * (1 - k / 100))
         return r, g, b
+
+    def __rgb_to_hsl(self, rgb: tuple) -> tuple:
+        rgb_float = (x / 255 for x in rgb)
+        hue, sat, light = tuple(round(x, 2) for x in rgb_to_hls(*rgb_float))
+        return (round(360 * hue), sat * 100, light * 100)  # return HSL not HLS
 
     def __iter__(self):
         """Iterator"""
