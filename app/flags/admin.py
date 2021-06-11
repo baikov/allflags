@@ -180,6 +180,18 @@ class CountryAdmin(admin.ModelAdmin):
     }
 
 
+class ColorAdmin(admin.ModelAdmin):
+    # list_display = ('color_group', 'hex', 'rgb', 'cmyk', 'get_flags')
+    list_display = ("color_group", "hex", "rgb", "cmyk")
+    search_fields = ["color_group", "hex", "rgb"]
+    # list_filter = ['color_group']
+    # inlines = [FlagInline]
+
+    # def get_flags(self, obj):
+    #     return obj.flags.first()
+    # return obj.flags.all().values('title')
+
+
 admin.site.register(Currency, CurrencyAdmin)
 admin.site.register(Region, RegionAdmin)
 admin.site.register(Subregion, SubregionAdmin)
