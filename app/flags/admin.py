@@ -9,6 +9,7 @@ from .models import (
     ColorGroup,
     Country,
     Currency,
+    FlagElement,
     Region,
     Subregion,
 )
@@ -223,9 +224,31 @@ class ColorAdmin(admin.ModelAdmin):
     # return obj.flags.all().values('title')
 
 
+class FlagElementAdmin(admin.ModelAdmin):
+    prepopulated_fields = {"slug": ("name",)}
+    list_display = ("name", "slug")
+    search_fields = ["name"]
+    fieldsets = [
+        (
+            None,
+            {
+                "fields": ["name", "slug", "description"],
+            },
+        ),
+        (
+            _("SEO"),
+            {
+                "classes": ("collapse", "wide"),
+                "fields": ["seo_title", "seo_description", "seo_h1", "is_published", "is_index", "is_follow"],
+            },
+        ),
+    ]
+
+
 admin.site.register(Currency, CurrencyAdmin)
 admin.site.register(Region, RegionAdmin)
 admin.site.register(Subregion, SubregionAdmin)
 admin.site.register(Country, CountryAdmin)
 admin.site.register(ColorGroup, ColorGroupAdmin)
 admin.site.register(Color, ColorAdmin)
+admin.site.register(FlagElement, FlagElementAdmin)
