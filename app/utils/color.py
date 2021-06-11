@@ -10,21 +10,21 @@ class Colorize:
             setattr(self, k, v)
 
     @property
-    def rgb(self):
+    def rgb(self) -> tuple:
         """An RGB representation of the color."""
         return self._color
 
     @rgb.setter
-    def rgb(self, value):
+    def rgb(self, value: tuple):
         self._color = value
 
     @property
-    def hex(self):
+    def hex(self) -> str:
         """A 6-char HEX representation of the color."""
         return self.__rgb_to_hex(self.rgb)
 
     @hex.setter
-    def hex(self, value):
+    def hex(self, value: str):
         self._color = self.__hex_to_rgb(value)
 
     @property
@@ -60,7 +60,7 @@ class Colorize:
     def __hex_to_rgb(self, hex: str):
         # r, g, b = (int(hex.lstrip('#')[i:i+2], 16) for i in (0, 2, 4))
         # return r, g, b
-        return list(int(hex.lstrip("#")[i: i + 2], 16) for i in (0, 2, 4))  # E203
+        return list(int(hex.lstrip("#")[i : i + 2], 16) for i in (0, 2, 4))  # noqa E203
 
     def __rgb_to_cmyk(self, rgb: tuple):
         r, g, b = rgb
@@ -81,6 +81,13 @@ class Colorize:
         rgb_float = (x / 255 for x in rgb)
         hue, sat, light = tuple(round(x, 2) for x in rgb_to_hls(*rgb_float))
         return (round(360 * hue), sat * 100, light * 100)  # return HSL not HLS
+
+    def __hsl_to_rgb(self, hsl: tuple) -> tuple:
+        hue, sat, light = hsl
+        r = round(hue / 360 * 255)
+        g = round(sat / 100 * 255)
+        b = round(light / 100 * 255)
+        return r, g, b
 
     def __iter__(self):
         """Iterator"""
