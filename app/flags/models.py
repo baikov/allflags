@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from slugify import slugify
 
 from app.utils.color import Colorize
 
@@ -241,3 +242,21 @@ class Color(models.Model):
 
     def get_absolute_url(self):
         return reverse("countries:colors-group", kwargs={"color_group": self.color_group})
+
+
+class FlagElement(Seo, models.Model):
+    name = models.CharField(verbose_name=_("Name"), max_length=250)
+    description = models.TextField(verbose_name=_("Description"), blank=True)
+
+    class Meta:
+        verbose_name = _("Flag element")
+        verbose_name_plural = _("Flags elements")
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            # self.slug = custom_slugify(FlagElement, self.name)
+            self.slug = slugify(self.name)
+        super(FlagElement, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
