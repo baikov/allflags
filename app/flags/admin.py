@@ -1,9 +1,17 @@
 from django.contrib import admin
-from django.utils.translation import gettext_lazy as _
-from django.forms import TextInput
 from django.db import models
+from django.forms import TextInput
+from django.utils.translation import gettext_lazy as _
 
-from .models import Currency, Region, Subregion, Country, BorderCountry
+from .models import (
+    BorderCountry,
+    Color,
+    ColorGroup,
+    Country,
+    Currency,
+    Region,
+    Subregion,
+)
 
 
 class CurrencyAdmin(admin.ModelAdmin):
