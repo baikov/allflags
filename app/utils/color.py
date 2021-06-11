@@ -40,6 +40,10 @@ class Colorize:
     def hsl(self) -> list:
         return self.__rgb_to_hsl(self.rgb)
 
+    @hsl.setter
+    def hsl(self, value):
+        self._color = self.__hsl_to_rgb(value)
+
     def __rgb_to_hex(self, rgb: tuple) -> str:
         """
         Convert an RGB color representation to a HEX color representation.
