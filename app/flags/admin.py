@@ -194,19 +194,17 @@ class ColorGroupAdmin(admin.ModelAdmin):
     list_display = ("name", "slug")
     search_fields = ["name"]
     fieldsets = [
-        (None, {"fields": ["name", "slug", "short_name", "description", "colorgroup_meanings"]}),
+        (
+            None,
+            {
+                "fields": ["name", "slug", "short_name", "description", "colorgroup_meanings"],
+            },
+        ),
         (
             _("SEO"),
             {
                 "classes": ("collapse", "wide"),
-                "fields": [
-                    "seo_title",
-                    "seo_description",
-                    "seo_h1",
-                    "is_published",
-                    "is_index",
-                    "is_follow",
-                ],
+                "fields": ["seo_title", "seo_description", "seo_h1", "is_published", "is_index", "is_follow"],
             },
         ),
     ]
