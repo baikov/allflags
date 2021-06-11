@@ -174,3 +174,22 @@ class BorderCountry(models.Model):
 
     class Meta:
         unique_together = ("country", "border_country")
+
+
+class ColorGroup(Seo, models.Model):
+    name = models.CharField(verbose_name=_("Name"), max_length=100)
+    short_name = models.CharField(verbose_name=_("Short name"), max_length=100)
+    description = models.TextField(verbose_name=_("Color description"), blank=True)
+    colorgroup_meanings = models.TextField(verbose_name=_("Colorgroup meanings"), blank=True)
+
+    class Meta:
+        verbose_name = _("Color group")
+        verbose_name_plural = _("Color groups")
+
+    def __str__(self):
+        return f"{self.name}"
+
+    def get_absolute_url(self):
+        return reverse("countries:color-group", kwargs={"slug": self.slug})
+
+
