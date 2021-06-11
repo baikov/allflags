@@ -1,5 +1,10 @@
+from django.contrib.postgres.fields import ArrayField
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+
+from app.utils.color import Colorize
 
 
 class Seo(models.Model):
@@ -193,3 +198,46 @@ class ColorGroup(Seo, models.Model):
         return reverse("countries:color-group", kwargs={"slug": self.slug})
 
 
+class Color(models.Model):
+
+    color_group = models.ForeignKey(
+        ColorGroup, verbose_name=_("Color group"), on_delete=models.PROTECT, related_name="colors"
+    )
+    color_meaning = models.TextField(verbose_name=_("Color meaning"), blank=True)
+    hex = models.CharField(verbose_name=_("HEX"), max_length=7, unique=True, blank=True)
+    rgb = ArrayField(models.SmallIntegerField(), blank=True, size=3, verbose_name=_("RGB"))
+    cmyk = ArrayField(models.SmallIntegerField(), blank=True, size=4, verbose_name=_("CMYK"))
+    hsl = ArrayField(models.SmallIntegerField(), blank=True, size=3, verbose_name=_("HSL"))
+    pantone = models.CharField(verbose_name=_("Pantone"), max_length=100, blank=True)
+
+    class Meta:
+        verbose_name = _("Color")
+        verbose_name_plural = _("Flag colors")
+
+    def save(self, *args, **kwargs):
+
+        if self.cmyk:
+            color = Colorize(cmyk=self.cmyk)
+
+        if self.hex:
+            color = Colorize(hex=self.hex)
+
+        if self.rgb:
+            color = Colorize(self.rgb)
+
+        self.hex = color.hex
+        self.rgb = color.rgb
+        self.cmyk = color.cmyk
+        self.hsl = color.hsl
+
+        super(Color, self).save(*args, **kwargs)
+
+    def clean(self):
+        if not self.rgb and not self.hex and not self.cmyk:
+            raise ValidationError({"rgb": "Одно из полей должно быть заполнено"})
+
+    def __str__(self):
+        return f"{self.color_group}: #{self.hex}"
+
+    def get_absolute_url(self):
+        return reverse("countries:colors-group", kwargs={"color_group": self.color_group})
