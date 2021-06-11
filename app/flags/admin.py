@@ -180,6 +180,29 @@ class CountryAdmin(admin.ModelAdmin):
     }
 
 
+class ColorGroupAdmin(admin.ModelAdmin):
+    prepopulated_fields = {"slug": ("name",)}
+    list_display = ("name", "slug")
+    search_fields = ["name"]
+    fieldsets = [
+        (None, {"fields": ["name", "slug", "short_name", "description", "colorgroup_meanings"]}),
+        (
+            _("SEO"),
+            {
+                "classes": ("collapse", "wide"),
+                "fields": [
+                    "seo_title",
+                    "seo_description",
+                    "seo_h1",
+                    "is_published",
+                    "is_index",
+                    "is_follow",
+                ],
+            },
+        ),
+    ]
+
+
 class ColorAdmin(admin.ModelAdmin):
     # list_display = ('color_group', 'hex', 'rgb', 'cmyk', 'get_flags')
     list_display = ("color_group", "hex", "rgb", "cmyk")
