@@ -10,12 +10,6 @@ from .models import BorderCountry, Country, HistoricalFlag
 logger = logging.getLogger(__name__)
 
 
-@receiver(post_save, sender=Country)
-def test_country_postsave(sender, instance, **kwargs):
-    logger.info("This is a info message")
-    logger.debug("This is a debug message")
-
-
 @receiver(post_save, sender=BorderCountry)
 def create_neighbour(sender, instance, **kwargs):
     """Create symmetric record for a neighbouring country in m2m through model.
@@ -47,6 +41,34 @@ def delete_neighbour(sender, instance, **kwargs):
         return
 
 
+@receiver(pre_save, sender=HistoricalFlag)
+def on_create_historical_flag(sender, instance, **kwargs):
+    """Download svg image from link in image_url field and save file in svg_file field
+
+    Args:
+        sender (HistoricalFlag): Model
+        instance (object): has image_url as models.URLField and svg_image as models.FileField
+    """
+    if instance.image_url and not instance.svg_file:
+        file = get_historical_flag_img(
+            instance.image_url, instance.from_year, instance.to_year, instance.country.iso_code_a2
+        )
+        instance.svg_file = file
+
+
+@receiver(post_delete, sender=HistoricalFlag)
+def after_delete_historical_flag(sender, instance, **kwargs):
+    if instance.svg_file:
+        if os.path.isfile(instance.svg_file.path):
+            os.remove(instance.svg_file.path)
+
+
+@receiver(post_save, sender=Country)
+def test_country_postsave(sender, instance, **kwargs):
+    logger.info("This is a info message")
+    logger.debug("This is a debug message")
+
+
 @receiver(m2m_changed, sender=BorderCountry)
 def m2m_test(sender, instance, **kwargs):
     print("m2m change!")
@@ -65,19 +87,3 @@ def m2m_test_2(sender, instance, **kwargs):
         print("m2m postsave!")
     if action == "post_remove":
         print("m2m postdelete!")
-
-
-@receiver(pre_save, sender=HistoricalFlag)
-def on_create_historical_flag(sender, instance, **kwargs):
-    if instance.image_url and not instance.svg_file:
-        file = get_historical_flag_img(
-            instance.image_url, instance.from_year, instance.to_year, instance.country.iso_code_a2
-        )
-        instance.svg_file = file
-
-
-@receiver(post_delete, sender=HistoricalFlag)
-def after_delete_historical_flag(sender, instance, **kwargs):
-    if instance.svg_file:
-        if os.path.isfile(instance.svg_file.path):
-            os.remove(instance.svg_file.path)
