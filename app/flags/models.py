@@ -327,9 +327,12 @@ class MainFlag(Seo, models.Model):
         verbose_name_plural = _("Country flags")
 
     def save(self, *args, **kwargs):
-        if not self.meta_title:
-            # self.meta_title = f"{self.title} {self.emoji} цвета, история, скачать"
-            self.meta_title = f"{self.title} цвета, история, скачать"
+        country = Country.objects.get(name=self.country)
+        if not self.title and country.ru_name_rod:
+            self.title = f"Флаг {country.ru_name_rod}"
+        if not self.seo_title:
+            # self.seo_title = f"{self.title} {self.emoji} цвета, история, скачать"
+            self.seo_title = f"{self.title} цвета, история, скачать"
         if not self.slug:
             if self.title:
                 self.slug = slugify(self.title)
