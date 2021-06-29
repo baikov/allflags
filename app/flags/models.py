@@ -183,8 +183,13 @@ class BorderCountry(models.Model):
 
 
 class ColorGroup(Seo, models.Model):
-    name = models.CharField(verbose_name=_("Name"), max_length=100)
-    short_name = models.CharField(verbose_name=_("Short name"), max_length=100)
+    name = models.CharField(verbose_name=_("Name (ru)"), max_length=50)
+    en_name = models.CharField(verbose_name=_("Name (en)"), max_length=100, blank=True)
+    # ru_name_rod = models.CharField(verbose_name=_("Name (rod)"), max_length=50, blank=True)
+    # ru_name_dat = models.CharField(verbose_name=_("Name (dat)"), max_length=50, blank=True)
+    # ru_name_tvo = models.CharField(verbose_name=_("Name (tvo)"), max_length=50, blank=True)
+    # ru_name_pre = models.CharField(verbose_name=_("Name (pre)"), max_length=50, blank=True)
+    short_name = models.CharField(verbose_name=_("Short name"), max_length=50)
     description = models.TextField(verbose_name=_("Color description"), blank=True)
     colorgroup_meanings = models.TextField(verbose_name=_("Colorgroup meanings"), blank=True)
 
