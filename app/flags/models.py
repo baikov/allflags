@@ -298,3 +298,43 @@ class FlagElement(Seo, models.Model):
 #     image = models.ImageField(verbose_name=_("Fact image"), blank=True)
 
 
+class MainFlag(Seo, models.Model):
+
+    country = models.ForeignKey(Country, verbose_name=_("Country"), on_delete=models.CASCADE, related_name="flags")
+    title = models.CharField(verbose_name=_("Title"), max_length=250, blank=True)
+    name = models.CharField(verbose_name=_("Flag name"), max_length=250, blank=True)
+    adopted_date = models.DateField(verbose_name=_("Adopted date"), blank=True, null=True)
+    proportion = models.CharField(verbose_name="Пропорции", max_length=10, blank=True)
+    short_description = models.TextField(verbose_name=_("Short description"), max_length=550, blank=True)
+    colors = models.ManyToManyField(Color, verbose_name=_("Colors"), related_name="flags", blank=True)
+    elements = models.ManyToManyField(
+        FlagElement, verbose_name=_("Flags elements"), related_name="flags_with_elem", blank=True
+    )
+    flag_day = models.DateField(verbose_name=_("Flag day"), blank=True, null=True)
+
+    # Text fields
+    construction_image = models.ImageField(verbose_name=_("Construction image"), blank=True)
+    design_description = models.TextField(verbose_name=_("Design description"), blank=True)
+    history_text = models.TextField(verbose_name=_("Flag history"), blank=True)
+
+    objects = PublishedQuerySet.as_manager()
+
+    class Meta:
+        verbose_name = _("Country flag")
+        verbose_name_plural = _("Country flags")
+
+    def save(self, *args, **kwargs):
+        if not self.meta_title:
+            self.meta_title = f"{self.title} {self.emoji} цвета, история, скачать"
+        if not self.slug:
+            if self.title:
+                self.slug = slugify(self.title)
+            else:
+                self.slug = f"flag-{self.id}"
+        super(MainFlag, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title
+
+    # def get_absolute_url(self):
+    #     return reverse('countries:flag-detail', kwargs={'slug': self.slug})
