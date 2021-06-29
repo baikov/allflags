@@ -15,6 +15,7 @@ from .models import (
     MainFlag,
     FlagEmoji,
     HistoricalFlag,
+    FlagFact,
 )
 
 
@@ -261,6 +262,12 @@ class FlagEmojiInline(admin.TabularInline):
     fields = ("unicode", "slug")
 
 
+class FlagFactInline(admin.TabularInline):
+    model = FlagFact
+    extra = 1
+    fields = ("caption", "text")
+
+
 class FlagEmojiAdmin(admin.ModelAdmin):
     # prepopulated_fields = {"slug": ("name",)}
     list_display = ("unicode", "flag")
@@ -290,7 +297,7 @@ class MainFlagAdmin(admin.ModelAdmin):
     raw_id_fields = ("country",)
     readonly_fields = ["updated_date", "created_date"]
     filter_horizontal = ("colors", "elements")
-    inlines = (FlagEmojiInline,)
+    inlines = (FlagEmojiInline, FlagFactInline)
     fieldsets = [
         (
             None,
@@ -349,6 +356,17 @@ class HistoricalFlagAdmin(admin.ModelAdmin):
         (None, {"fields": ["country", "title", "image_url", "svg_file", ("from_year", "to_year"), "description"]}),
     ]
 
+
+class FlagFactAdmin(admin.ModelAdmin):
+    list_display = ("flag", "caption", "label")
+    search_fields = ["flag__name", "caption", "label"]
+    list_filter = ["flag__name"]
+    raw_id_fields = ("flag",)
+    fieldsets = [
+        (None, {"fields": ["flag", "caption", "label", "text", "image"]}),
+    ]
+
+
 admin.site.register(Currency, CurrencyAdmin)
 admin.site.register(Region, RegionAdmin)
 admin.site.register(Subregion, SubregionAdmin)
@@ -358,3 +376,5 @@ admin.site.register(Color, ColorAdmin)
 admin.site.register(FlagElement, FlagElementAdmin)
 admin.site.register(MainFlag, MainFlagAdmin)
 admin.site.register(FlagEmoji, FlagEmojiAdmin)
+admin.site.register(HistoricalFlag, HistoricalFlagAdmin)
+admin.site.register(FlagFact, FlagFactAdmin)
