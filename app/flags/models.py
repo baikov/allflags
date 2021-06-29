@@ -172,6 +172,12 @@ class Country(Seo, models.Model):
 
 
 class BorderCountry(models.Model):
+    """
+    Signals:
+        post_save: Create symmetric record for a neighbouring country in m2m through model.
+        post_delete: Remove symmetric record for a neighbouring country in m2m through model.
+    """
+
     country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="country")
     border_country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="border_country")
     border = models.PositiveIntegerField(
@@ -268,13 +274,17 @@ class FlagElement(Seo, models.Model):
 
 
 class HistoricalFlag(models.Model):
+    """Historical flags model
+    Signals:
+        pre_save: Download svg image from link in image_url field fnd save file in svg_file field
+        post_delete: Remove file in svg_file field
+    """
 
     country = models.ForeignKey(Country, verbose_name=_("Country"), on_delete=models.CASCADE, related_name="h_flags")
     title = models.CharField(verbose_name=_("Title"), max_length=150, blank=True)
     from_year = models.PositiveSmallIntegerField(verbose_name=_("Adopted year"))
     to_year = models.PositiveSmallIntegerField(verbose_name=_("Ended year"))
-    image_url = models.URLField(verbose_name=_("SVG image link"), max_length=300)
-    # image_path = models.FilePathField(path=f'{MEDIA_ROOT}/historical-flags', blank=True, recursive=True)
+    image_url = models.URLField(verbose_name=_("SVG image link"), max_length=300, blank=True)
     svg_file = models.FileField(verbose_name=_("SVG image"), upload_to="historical-flags/", blank=True)
     description = models.TextField(verbose_name=_("Hstorical flag description"), blank=True)
 
