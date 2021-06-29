@@ -292,3 +292,9 @@ class FlagElement(Seo, models.Model):
 #     description = models.TextField(verbose_name=_("Emoji description"), blank=True)
 
 
+# class FlagFact(models.Model):
+#     flag = models.ForeignKey("MainFlag", verbose_name=_("Flag"), on_delete=models.CASCADE, related_name="facts")
+#     text = models.TextField(verbose_name=_("Fact text"), blank=True)
+#     image = models.ImageField(verbose_name=_("Fact image"), blank=True)
+
+
