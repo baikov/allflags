@@ -3,16 +3,7 @@ from django.db import models
 from django.forms import TextInput
 from django.utils.translation import gettext_lazy as _
 
-from .models import (
-    BorderCountry,
-    Color,
-    ColorGroup,
-    Country,
-    Currency,
-    FlagElement,
-    Region,
-    Subregion,
-)
+from .models import BorderCountry, Color, ColorGroup, Country, Currency, FlagElement, Region, Subregion, MainFlag
 
 
 class CurrencyAdmin(admin.ModelAdmin):
@@ -243,6 +234,63 @@ class FlagElementAdmin(admin.ModelAdmin):
     ]
 
 
+class MainFlagAdmin(admin.ModelAdmin):
+    prepopulated_fields = {"slug": ("title",)}
+    list_display = ("title", "slug", "country", "is_published")
+    search_fields = ["title", "country__name"]
+    list_filter = ["colors__color_group"]
+    raw_id_fields = ("country",)
+    readonly_fields = ["updated_date", "created_date"]
+    filter_horizontal = ("colors", "elements")
+    fieldsets = [
+        (
+            None,
+            {
+                "fields": [
+                    "country",
+                    "title",
+                    "slug",
+                    "name",
+                    "adopted_date",
+                    "flag_day",
+                    "proportion",
+                    "colors",
+                    "short_description",
+                    "construction_image",
+                    "design_description",
+                    "history_text",
+                ]
+            },
+        ),
+        (
+            _("Elements"),
+            {
+                "classes": ("collapse", "wide", "extrapretty"),
+                "fields": [
+                    "elements",
+                ],
+            },
+        ),
+        (
+            _("SEO"),
+            {
+                "classes": ("collapse", "wide"),
+                "fields": ["seo_title", "seo_description", "seo_h1", "is_published", "is_index", "is_follow"],
+            },
+        ),
+    ]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(MainFlagAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields["meta_description"].widget.attrs["rows"] = 2
+        form.base_fields["meta_description"].widget.attrs["cols"] = 10  # doesn't work...
+        return form
+
+    formfield_overrides = {
+        models.CharField: {"widget": TextInput(attrs={"size": "100"})},
+    }
+
+
 admin.site.register(Currency, CurrencyAdmin)
 admin.site.register(Region, RegionAdmin)
 admin.site.register(Subregion, SubregionAdmin)
@@ -250,3 +298,4 @@ admin.site.register(Country, CountryAdmin)
 admin.site.register(ColorGroup, ColorGroupAdmin)
 admin.site.register(Color, ColorAdmin)
 admin.site.register(FlagElement, FlagElementAdmin)
+admin.site.register(MainFlag, MainFlagAdmin)
