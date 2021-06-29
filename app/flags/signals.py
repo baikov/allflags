@@ -1,9 +1,11 @@
 import logging
+import os
 
-from django.db.models.signals import m2m_changed, post_delete, post_save
+from django.db.models.signals import m2m_changed, post_delete, post_save, pre_save
 from django.dispatch import receiver
+from utils.flag_image import get_historical_flag_img
 
-from .models import BorderCountry, Country
+from .models import BorderCountry, Country, HistoricalFlag
 
 logger = logging.getLogger(__name__)
 
@@ -63,3 +65,19 @@ def m2m_test_2(sender, instance, **kwargs):
         print("m2m postsave!")
     if action == "post_remove":
         print("m2m postdelete!")
+
+
+@receiver(pre_save, sender=HistoricalFlag)
+def on_create_historical_flag(sender, instance, **kwargs):
+    if instance.image_url and not instance.svg_file:
+        file = get_historical_flag_img(
+            instance.image_url, instance.from_year, instance.to_year, instance.country.iso_code_a2
+        )
+        instance.svg_file = file
+
+
+@receiver(post_delete, sender=HistoricalFlag)
+def after_delete_historical_flag(sender, instance, **kwargs):
+    if instance.svg_file:
+        if os.path.isfile(instance.svg_file.path):
+            os.remove(instance.svg_file.path)
