@@ -25,7 +25,7 @@ def get_historical_flag_img(url, from_year, to_year, country_iso2):
     file_name = f"{iso2}-{from_year}-{to_year}.svg"
     download_img(url, path, file_name)
 
-    return f"{iso2}/{file_name}"
+    return f"historical-flags/{iso2}/{file_name}"
 
 
 # def get_flag_img(iso2):
