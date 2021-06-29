@@ -275,7 +275,7 @@ class HistoricalFlag(models.Model):
     to_year = models.PositiveSmallIntegerField(verbose_name=_("Ended year"))
     image_url = models.URLField(verbose_name=_("SVG image link"), max_length=300)
     # image_path = models.FilePathField(path=f'{MEDIA_ROOT}/historical-flags', blank=True, recursive=True)
-    svg_file = models.FileField(verbose_name=_("SVG image"), upload_to="historical-flags/")
+    svg_file = models.FileField(verbose_name=_("SVG image"), upload_to="historical-flags/", blank=True)
     description = models.TextField(verbose_name=_("Hstorical flag description"), blank=True)
 
     class Meta:
@@ -294,12 +294,6 @@ class FlagEmoji(Seo, models.Model):
     class Meta:
         verbose_name = _("Flag Emoji")
         verbose_name_plural = _("Flags Emoji")
-
-
-# class FlagFact(models.Model):
-#     flag = models.ForeignKey("MainFlag", verbose_name=_("Flag"), on_delete=models.CASCADE, related_name="facts")
-#     text = models.TextField(verbose_name=_("Fact text"), blank=True)
-#     image = models.ImageField(verbose_name=_("Fact image"), blank=True)
 
 
 class MainFlag(Seo, models.Model):
@@ -346,3 +340,11 @@ class MainFlag(Seo, models.Model):
 
     # def get_absolute_url(self):
     #     return reverse('countries:flag-detail', kwargs={'slug': self.slug})
+
+
+class FlagFact(models.Model):
+    flag = models.ForeignKey(MainFlag, verbose_name=_("Flag"), on_delete=models.CASCADE, related_name="facts")
+    caption = models.CharField(verbose_name=_("Fact caption"), max_length=250, blank=True)
+    label = models.CharField(verbose_name=_("Fact label"), max_length=50, blank=True)
+    text = models.TextField(verbose_name=_("Fact text"), blank=True)
+    image = models.ImageField(verbose_name=_("Fact image"), blank=True)
