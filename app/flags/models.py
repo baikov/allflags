@@ -265,3 +265,22 @@ class FlagElement(Seo, models.Model):
 
     def __str__(self):
         return self.name
+
+
+# class HistoricalFlag(models.Model):
+
+#     country = models.ForeignKey(to=Country, on_delete=models.CASCADE, related_name='h_flags')
+#     title = models.CharField(verbose_name='Заголовок', max_length=150, blank=True)
+#     from_year = models.PositiveSmallIntegerField(verbose_name='Год принятия',)
+#     to_year = models.PositiveSmallIntegerField(verbose_name='Год отмены',)
+#     image_url = models.URLField(verbose_name='Ссылка на изображение', max_length=300)
+#     image_path = FilePathField(path=f'{MEDIA_ROOT}/historical-flags', blank=True, recursive=True)
+#     description = models.TextField(verbose_name='Описание', blank=True)
+
+#     class Meta:
+#         verbose_name = 'Флаг'
+#         verbose_name_plural = 'Исторические флаги'
+
+#     def __str__(self):
+#         return f'{self.from_year}-{self.to_year} {self.title}'
+
