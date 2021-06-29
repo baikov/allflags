@@ -3,7 +3,18 @@ from django.db import models
 from django.forms import TextInput
 from django.utils.translation import gettext_lazy as _
 
-from .models import BorderCountry, Color, ColorGroup, Country, Currency, FlagElement, Region, Subregion, MainFlag
+from .models import (
+    BorderCountry,
+    Color,
+    ColorGroup,
+    Country,
+    Currency,
+    FlagElement,
+    Region,
+    Subregion,
+    MainFlag,
+    FlagEmoji,
+)
 
 
 class CurrencyAdmin(admin.ModelAdmin):
@@ -100,6 +111,15 @@ class CountryAdmin(admin.ModelAdmin):
                     "phone_code",
                     "internet_tld",
                 ]
+            },
+        ),
+        (
+            _("Name cases"),
+            {
+                "classes": ("collapse", "wide"),
+                "fields": [
+                    ("ru_name_rod", "ru_name_dat", "ru_name_vin", "ru_name_tvo", "ru_name_pre"),
+                ],
             },
         ),
         (
@@ -234,14 +254,42 @@ class FlagElementAdmin(admin.ModelAdmin):
     ]
 
 
+class FlagEmojiInline(admin.TabularInline):
+    model = FlagEmoji
+    extra = 1
+    fields = ("unicode", "slug")
+
+
+class FlagEmojiAdmin(admin.ModelAdmin):
+    # prepopulated_fields = {"slug": ("name",)}
+    list_display = ("unicode", "flag")
+    search_fields = ["flag"]
+    fieldsets = [
+        (
+            None,
+            {
+                "fields": ["flag", "slug", "unicode", "description"],
+            },
+        ),
+        (
+            _("SEO"),
+            {
+                "classes": ("collapse", "wide"),
+                "fields": ["seo_title", "seo_description", "seo_h1", "is_published", "is_index", "is_follow"],
+            },
+        ),
+    ]
+
+
 class MainFlagAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
-    list_display = ("title", "slug", "country", "is_published")
+    list_display = ("country", "title", "slug", "is_published")
     search_fields = ["title", "country__name"]
     list_filter = ["colors__color_group"]
     raw_id_fields = ("country",)
     readonly_fields = ["updated_date", "created_date"]
     filter_horizontal = ("colors", "elements")
+    inlines = (FlagEmojiInline,)
     fieldsets = [
         (
             None,
@@ -299,3 +347,4 @@ admin.site.register(ColorGroup, ColorGroupAdmin)
 admin.site.register(Color, ColorAdmin)
 admin.site.register(FlagElement, FlagElementAdmin)
 admin.site.register(MainFlag, MainFlagAdmin)
+admin.site.register(FlagEmoji, FlagEmojiAdmin)
