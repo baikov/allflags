@@ -285,10 +285,14 @@ class FlagElement(Seo, models.Model):
 #         return f'{self.from_year}-{self.to_year} {self.title}'
 
 
-# class FlagEmoji(Seo, models.Model):
-#     flag = models.OneToOneField("MainFlag", verbose_name=_("Emoji"), on_delete=models.CASCADE, related_name="emoji")
-#     unicode = models.CharField()
-#     description = models.TextField(verbose_name=_("Emoji description"), blank=True)
+class FlagEmoji(Seo, models.Model):
+    flag = models.OneToOneField("MainFlag", verbose_name=_("Emoji"), on_delete=models.CASCADE, related_name="emoji")
+    unicode = models.CharField()
+    description = models.TextField(verbose_name=_("Emoji description"), blank=True)
+
+    class Meta:
+        verbose_name = _("Flag Emoji")
+        verbose_name_plural = _("Flags Emoji")
 
 
 # class FlagFact(models.Model):
