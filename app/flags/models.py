@@ -285,7 +285,6 @@ class FlagElement(Seo, models.Model):
 #         return f'{self.from_year}-{self.to_year} {self.title}'
 
 
-
 # class FlagEmoji(Seo, models.Model):
 #     flag = models.OneToOneField("MainFlag", verbose_name=_("Emoji"), on_delete=models.CASCADE, related_name="emoji")
 #     unicode = models.CharField()
@@ -325,7 +324,8 @@ class MainFlag(Seo, models.Model):
 
     def save(self, *args, **kwargs):
         if not self.meta_title:
-            self.meta_title = f"{self.title} {self.emoji} цвета, история, скачать"
+            # self.meta_title = f"{self.title} {self.emoji} цвета, история, скачать"
+            self.meta_title = f"{self.title} цвета, история, скачать"
         if not self.slug:
             if self.title:
                 self.slug = slugify(self.title)
