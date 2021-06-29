@@ -282,8 +282,8 @@ class MainFlagAdmin(admin.ModelAdmin):
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(MainFlagAdmin, self).get_form(request, obj, **kwargs)
-        form.base_fields["meta_description"].widget.attrs["rows"] = 2
-        form.base_fields["meta_description"].widget.attrs["cols"] = 10  # doesn't work...
+        form.base_fields["seo_description"].widget.attrs["rows"] = 2
+        form.base_fields["seo_description"].widget.attrs["cols"] = 10  # doesn't work...
         return form
 
     formfield_overrides = {
