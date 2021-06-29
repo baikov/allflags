@@ -267,27 +267,28 @@ class FlagElement(Seo, models.Model):
         return self.name
 
 
-# class HistoricalFlag(models.Model):
+class HistoricalFlag(models.Model):
 
-#     country = models.ForeignKey(to=Country, on_delete=models.CASCADE, related_name='h_flags')
-#     title = models.CharField(verbose_name='Заголовок', max_length=150, blank=True)
-#     from_year = models.PositiveSmallIntegerField(verbose_name='Год принятия',)
-#     to_year = models.PositiveSmallIntegerField(verbose_name='Год отмены',)
-#     image_url = models.URLField(verbose_name='Ссылка на изображение', max_length=300)
-#     image_path = FilePathField(path=f'{MEDIA_ROOT}/historical-flags', blank=True, recursive=True)
-#     description = models.TextField(verbose_name='Описание', blank=True)
+    country = models.ForeignKey(Country, verbose_name=_("Country"), on_delete=models.CASCADE, related_name="h_flags")
+    title = models.CharField(verbose_name=_("Title"), max_length=150, blank=True)
+    from_year = models.PositiveSmallIntegerField(verbose_name=_("Adopted year"))
+    to_year = models.PositiveSmallIntegerField(verbose_name=_("Ended year"))
+    image_url = models.URLField(verbose_name=_("SVG image link"), max_length=300)
+    # image_path = models.FilePathField(path=f'{MEDIA_ROOT}/historical-flags', blank=True, recursive=True)
+    svg_file = models.FileField(verbose_name=_("SVG image"), upload_to="historical-flags/")
+    description = models.TextField(verbose_name=_("Hstorical flag description"), blank=True)
 
-#     class Meta:
-#         verbose_name = 'Флаг'
-#         verbose_name_plural = 'Исторические флаги'
+    class Meta:
+        verbose_name = _("Historical flag")
+        verbose_name_plural = _("Historical flags")
 
-#     def __str__(self):
-#         return f'{self.from_year}-{self.to_year} {self.title}'
+    def __str__(self):
+        return f"{self.from_year}-{self.to_year} {self.title}"
 
 
 class FlagEmoji(Seo, models.Model):
-    flag = models.OneToOneField("MainFlag", verbose_name=_("Emoji"), on_delete=models.CASCADE, related_name="emoji")
-    unicode = models.CharField()
+    flag = models.ForeignKey("MainFlag", verbose_name=_("Flag"), on_delete=models.CASCADE, related_name="emoji")
+    unicode = models.CharField(verbose_name=_("Unicode"), max_length=50, blank=True)
     description = models.TextField(verbose_name=_("Emoji description"), blank=True)
 
     class Meta:
