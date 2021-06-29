@@ -14,6 +14,7 @@ from .models import (
     Subregion,
     MainFlag,
     FlagEmoji,
+    HistoricalFlag,
 )
 
 
@@ -338,6 +339,15 @@ class MainFlagAdmin(admin.ModelAdmin):
         models.CharField: {"widget": TextInput(attrs={"size": "100"})},
     }
 
+
+class HistoricalFlagAdmin(admin.ModelAdmin):
+    list_display = ("from_year", "to_year", "country", "title")
+    search_fields = ["title", "from_year", "country__name"]
+    list_filter = ["country__name"]
+    raw_id_fields = ("country",)
+    fieldsets = [
+        (None, {"fields": ["country", "title", "image_url", "svg_file", ("from_year", "to_year"), "description"]}),
+    ]
 
 admin.site.register(Currency, CurrencyAdmin)
 admin.site.register(Region, RegionAdmin)
