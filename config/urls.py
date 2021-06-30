@@ -8,9 +8,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
-    path(
-        "about/", TemplateView.as_view(template_name="pages/about.html"), name="about"
-    ),
+    path("about/", TemplateView.as_view(template_name="pages/about.html"), name="about"),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
     # User management
@@ -19,6 +17,8 @@ urlpatterns = [
     # Your stuff: custom urls includes go here
     path("robots.txt", TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),
     path("", include("app.flags.urls", namespace="flags")),
+    # path('sitemap.xml', views.index, {'sitemaps': sitemaps}),
+    # path("sitemap-<section>.xml", views.sitemap, {"sitemaps": sitemaps}, name="django.contrib.sitemaps.views.sitemap"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # API URLS
