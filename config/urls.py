@@ -17,6 +17,7 @@ urlpatterns = [
     path("users/", include("app.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
     # Your stuff: custom urls includes go here
+    path("robots.txt", TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # API URLS
