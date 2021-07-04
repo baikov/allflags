@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.db import models
 from django.forms import TextInput
 from django.utils.translation import gettext_lazy as _
+from django.utils.html import format_html
 
 from .models import (
     BorderCountry,
@@ -225,7 +226,7 @@ class ColorGroupAdmin(admin.ModelAdmin):
 
 class ColorAdmin(admin.ModelAdmin):
     # list_display = ('color_group', 'hex', 'rgb', 'cmyk', 'get_flags')
-    list_display = ("color_group", "hex", "rgb", "cmyk")
+    list_display = ("color_group", "color_html", "hex", "rgb", "cmyk")
     search_fields = ["color_group", "hex", "rgb"]
     # list_filter = ['color_group']
     # inlines = [FlagInline]
@@ -233,6 +234,9 @@ class ColorAdmin(admin.ModelAdmin):
     # def get_flags(self, obj):
     #     return obj.flags.first()
     # return obj.flags.all().values('title')
+
+    def color_html(self, obj):
+        return format_html(f'<div style="background-color:#{obj.hex};width:90%;height:1rem;"></div>')
 
 
 class FlagElementAdmin(admin.ModelAdmin):
