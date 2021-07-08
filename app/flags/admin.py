@@ -3,6 +3,12 @@ from django.db import models
 from django.forms import TextInput
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import format_html
+from import_export import resources
+
+# from import_export.admin import ImportExportModelAdmin
+from import_export.admin import ImportExportMixin
+from import_export.formats import base_formats
+import tablib
 
 from .models import (
     BorderCountry,
@@ -31,9 +37,23 @@ class SCSV(base_formats.CSV):
         # return super().create_dataset(in_stream, **kwargs)
 
 
+class CurrencyResource(resources.ModelResource):
+    class Meta:
+        model = Currency
+
+
+class CurrencyAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = ("ru_name", "iso_code")
     search_fields = ["ru_name", "iso_code"]
     filter_horizontal = ("countries",)
+    resource_class = CurrencyResource
+
+    def get_import_formats(self):
+        # self.formats += [SCSV]
+        # return [f for f in self.formats if f().can_import()]
+        return self.formats + [
+            SCSV,
+        ]
 
 
 class RegionAdmin(admin.ModelAdmin):
