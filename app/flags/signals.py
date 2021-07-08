@@ -3,9 +3,9 @@ import os
 
 from django.db.models.signals import m2m_changed, post_delete, post_save, pre_save
 from django.dispatch import receiver
-from utils.flag_image import get_historical_flag_img
+from utils.flag_image import get_historical_flag_img, get_flag_img
 
-from .models import BorderCountry, Country, HistoricalFlag
+from .models import BorderCountry, Country, HistoricalFlag, MainFlag
 
 logger = logging.getLogger(__name__)
 
@@ -63,27 +63,29 @@ def after_delete_historical_flag(sender, instance, **kwargs):
             os.remove(instance.svg_file.path)
 
 
-@receiver(post_save, sender=Country)
-def test_country_postsave(sender, instance, **kwargs):
-    logger.info("This is a info message")
-    logger.debug("This is a debug message")
+@receiver(post_save, sender=MainFlag)
+def on_create_or_updated_flag(sender, instance, **kwargs):
+    if kwargs["created"] or instance.dl_imgs:
+        get_flag_img(instance.iso_code_a2)
+    # else:
+    #     get_flag_img(instance.iso_code_a2)
 
 
-@receiver(m2m_changed, sender=BorderCountry)
-def m2m_test(sender, instance, **kwargs):
-    print("m2m change!")
-    action = kwargs.pop("action", None)
-    if action == "post_add":
-        print("m2m postsave!")
-    if action == "post_remove":
-        print("m2m postdelete!")
+# @receiver(m2m_changed, sender=BorderCountry)
+# def m2m_test(sender, instance, **kwargs):
+#     print("m2m change!")
+#     action = kwargs.pop("action", None)
+#     if action == "post_add":
+#         print("m2m postsave!")
+#     if action == "post_remove":
+#         print("m2m postdelete!")
 
 
-@receiver(m2m_changed, sender=Country.border_countries.through)
-def m2m_test_2(sender, instance, **kwargs):
-    print("m2m change!")
-    action = kwargs.pop("action", None)
-    if action == "post_add":
-        print("m2m postsave!")
-    if action == "post_remove":
-        print("m2m postdelete!")
+# @receiver(m2m_changed, sender=Country.border_countries.through)
+# def m2m_test_2(sender, instance, **kwargs):
+#     print("m2m change!")
+#     action = kwargs.pop("action", None)
+#     if action == "post_add":
+#         print("m2m postsave!")
+#     if action == "post_remove":
+#         print("m2m postdelete!")
