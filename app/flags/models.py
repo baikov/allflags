@@ -118,7 +118,6 @@ class Country(Seo, models.Model):
     official_language = models.CharField(verbose_name=_("Official language"), max_length=50, blank=True)
     internet_tld = models.CharField(verbose_name=_("Internet domain"), max_length=10, blank=True)
     phone_code = models.CharField(verbose_name=_("Phone code"), max_length=10, blank=True)
-    dl_imgs = models.BooleanField(verbose_name=_("Download flag images"), default=False)
 
     en_long_form = models.CharField(verbose_name=_("Official long name (en)"), max_length=250, blank=True)
     en_short_form = models.CharField(verbose_name=_("Short name (en)"), max_length=250, blank=True)
@@ -324,6 +323,7 @@ class MainFlag(Seo, models.Model):
     construction_image = models.ImageField(verbose_name=_("Construction image"), blank=True)
     design_description = models.TextField(verbose_name=_("Design description"), blank=True)
     history_text = models.TextField(verbose_name=_("Flag history"), blank=True)
+    dl_imgs = models.BooleanField(verbose_name=_("Download flag images"), default=False)
 
     objects = PublishedQuerySet.as_manager()
 

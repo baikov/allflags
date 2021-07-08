@@ -186,7 +186,6 @@ class CountryAdmin(admin.ModelAdmin):
                     "is_follow",
                     "created_date",
                     "updated_date",
-                    "dl_imgs",
                 ],
             },
         ),
@@ -335,7 +334,15 @@ class MainFlagAdmin(admin.ModelAdmin):
             _("SEO"),
             {
                 "classes": ("collapse", "wide"),
-                "fields": ["seo_title", "seo_description", "seo_h1", "is_published", "is_index", "is_follow"],
+                "fields": [
+                    "seo_title",
+                    "seo_description",
+                    "seo_h1",
+                    "is_published",
+                    "is_index",
+                    "is_follow",
+                    "dl_imgs",
+                ],
             },
         ),
     ]
