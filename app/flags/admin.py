@@ -20,7 +20,17 @@ from .models import (
 )
 
 
-class CurrencyAdmin(admin.ModelAdmin):
+class SCSV(base_formats.CSV):
+    def get_title(self):
+        return "scsv"
+
+    def create_dataset(self, in_stream, **kwargs):
+        kwargs["delimiter"] = ";"
+        kwargs["format"] = "csv"
+        return tablib.import_set(in_stream, **kwargs)
+        # return super().create_dataset(in_stream, **kwargs)
+
+
     list_display = ("ru_name", "iso_code")
     search_fields = ["ru_name", "iso_code"]
     filter_horizontal = ("countries",)
