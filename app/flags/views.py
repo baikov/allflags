@@ -1,13 +1,22 @@
-# from django.db.models import Count
-# from django.http import Http404
-# from django.shortcuts import render
-from django.views.generic import ListView
+from django.db.models import Count
+from django.http import Http404
+from django.shortcuts import render, get_object_or_404
 
+# from django.shortcuts import render
+from django.views.generic import ListView, DetailView
+
+from .models import (
     ColorGroup,
     MainFlag,
+    Country,
+    HistoricalFlag,
+    BorderCountry,
     Color,
+    Currency,
+    Region,
     Subregion,
     FlagElement,
+)
 
 
 class FlagListView(ListView):
@@ -155,3 +164,17 @@ class FlagElementListView(ListView):
         elements = FlagElement.objects.annotate(flags_count=Count("flags_with_elem")).filter(flags_count__gt=0)
         return elements
 
+
+def flags_with_element(request, slug):
+    template_name = "flags/elements-list.html"
+    flags = MainFlag.objects.filter(elements__slug=slug)
+    element = FlagElement.objects.get(slug=slug)
+    # We can take all elements or...
+    # elements = FlagElement.objects.all()
+    # we can take only not empty elements
+    elements = FlagElement.objects.annotate(flags_count=Count("flags_with_elem")).filter(flags_count__gt=0)
+    context = {"flags": flags, "element": element, "elements": elements}
+    if flags:
+        return render(request, template_name, context)
+    else:
+        raise Http404
