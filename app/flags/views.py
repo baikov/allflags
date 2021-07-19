@@ -134,3 +134,12 @@ def region_flags(request, slug):
     return render(request, template_name, context)
 
 
+def colors_count(request, color_count):
+    template_name = "flags/colors-count.html"
+    flags = MainFlag.objects.annotate(num_colors=Count("colors")).filter(num_colors=color_count)
+    context = {"flags": flags, "color_count": color_count}
+    if flags:
+        return render(request, template_name, context)
+    else:
+        raise Http404
+
