@@ -5,6 +5,7 @@ from django.views.generic import ListView
 
     ColorGroup,
     Color,
+    Subregion,
 
 
 class FlagListView(ListView):
@@ -107,4 +108,17 @@ class ColorDetailView(DetailView):
         context["colors"] = colors
         return context
 
+
+class RegionDetailView(DetailView):
+    model = Subregion
+    template_name = "flags/region-list.html"
+    context_object_name = "region"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        flags = MainFlag.objects.filter(country__subregion=self.object.id)
+
+        context["flags"] = flags
+        context["reg"] = self.object.region
+        return context
 
