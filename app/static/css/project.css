@@ -8870,3 +8870,21 @@ img.main-flag {
   background-color: #343a40;
   min-height: 100px;
   color: #fff; }
+
+.dropdown-submenu {
+  position: relative; }
+
+.dropdown-submenu a::after {
+  -webkit-transform: rotate(-90deg);
+          transform: rotate(-90deg);
+  position: absolute;
+  right: 6px;
+  top: .8em; }
+
+.dropdown-submenu .dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-left: 1.6px;
+  margin-left: .1rem;
+  margin-right: 1.6px;
+  margin-right: .1rem; }
