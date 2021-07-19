@@ -7,6 +7,7 @@
     "gulp-concat": "^2.6.1",
     "jquery": "3.5.0",
     "popper.js": "1.14.3",
+    "clipboard": "2.0.8",
     "autoprefixer": "^9.4.7",
     "browser-sync": "^2.14.0",
     "cssnano": "^4.1.10",
