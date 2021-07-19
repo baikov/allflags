@@ -69,8 +69,8 @@ class Region(Seo, models.Model):
     def __str__(self):
         return f"{self.name}"
 
-    # def get_absolute_url(self):
-    #     return reverse('flags:regions', kwargs={'iso_code': self.iso_code})
+    def get_absolute_url(self):
+        return reverse("flags:region-detail", kwargs={"slug": self.slug})
 
 
 class Subregion(Seo, models.Model):
@@ -206,7 +206,7 @@ class ColorGroup(Seo, models.Model):
         return f"{self.name}"
 
     def get_absolute_url(self):
-        return reverse("countries:color-group", kwargs={"slug": self.slug})
+        return reverse("flags:colors", kwargs={"slug": self.slug})
 
 
 class Color(models.Model):
@@ -348,8 +348,8 @@ class MainFlag(Seo, models.Model):
     def __str__(self):
         return self.title
 
-    # def get_absolute_url(self):
-    #     return reverse('countries:flag-detail', kwargs={'slug': self.slug})
+    def get_absolute_url(self):
+        return reverse("flags:flag-detail", kwargs={"slug": self.slug})
 
 
 class FlagFact(models.Model):
