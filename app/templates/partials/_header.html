@@ -21,21 +21,36 @@
           </li>
 
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            <a class="nav-link dropdown-toggle" href="" id="navbarDropdownMenuLink" data-toggle="dropdown"
               aria-haspopup="true" aria-expanded="false">
               По регионам
             </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="#">Европа</a>
-              <a class="dropdown-item" href="#">Южная Америка</a>
-              <a class="dropdown-item" href="#">Северная Америка</a>
-              <a class="dropdown-item" href="#">Африка</a>
-              <a class="dropdown-item" href="#">Океания</a>
-            </div>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              {% for region in regions_menu %}
+
+              {% if region.subregion.all %}
+              <li class="dropdown-submenu"><a class="dropdown-item dropdown-toggle" href="#">{{region.name}}</a>
+
+                <ul class="dropdown-menu">
+                  {% for sub in region.subregion.all %}
+                  <li><a class="dropdown-item" href="#">{{sub.name}} ({{sub.countries.all|length}})</a></li>
+                  {% endfor %}
+                </ul>
+              </li>
+
+              {% else %}
+              <li><a class="dropdown-item" href="#">{{region.name}}</a></li>
+              {% endif %}
+
+              {% endfor %}
+            </ul>
           </li>
-          <!--<li class="nav-item">
-                        <a class="nav-link" href="{% url 'flags:flags-list' %}">Флаги</a>
-                    </li>-->
+
+
+
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'flags:colors-list' %}">Цвета</a>
+          </li>
 
           <li class="nav-item">
             <a class="nav-link" href="{% url 'about' %}">О проекте</a>
