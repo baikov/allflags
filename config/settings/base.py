@@ -189,6 +189,7 @@ TEMPLATES = [
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
                 "app.utils.context_processors.settings_context",
+                "app.flags.context_processors.regions_menu",
             ],
         },
     }
