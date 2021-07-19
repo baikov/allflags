@@ -122,3 +122,15 @@ class RegionDetailView(DetailView):
         context["reg"] = self.object.region
         return context
 
+
+def region_flags(request, slug):
+    template_name = "flags/region-list.html"
+    region = get_object_or_404(Subregion, slug=slug)
+    countries = region.countries.all()
+    flags = MainFlag.objects.filter(country__in=countries)
+
+    context = {"region": region, "flags": flags}
+
+    return render(request, template_name, context)
+
+
