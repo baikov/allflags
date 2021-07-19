@@ -3,7 +3,8 @@
 # from django.shortcuts import render
 from django.views.generic import ListView
 
-from .models import MainFlag
+    ColorGroup,
+    Color,
 
 
 class FlagListView(ListView):
@@ -85,4 +86,9 @@ class FlagDetailView(DetailView):
 
         return context
 
+
+class ColorListView(ListView):
+    model = ColorGroup
+    template_name = "flags/colors-list.html"
+    context_object_name = "colors"
 
