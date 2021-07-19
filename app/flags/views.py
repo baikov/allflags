@@ -92,3 +92,19 @@ class ColorListView(ListView):
     template_name = "flags/colors-list.html"
     context_object_name = "colors"
 
+
+class ColorDetailView(DetailView):
+    model = ColorGroup
+    template_name = "flags/color-detail.html"
+    context_object_name = "group"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        colors = Color.objects.filter(color_group=self.object.id)
+        flags = MainFlag.objects.filter(colors__in=colors)
+
+        context["flags"] = flags
+        context["colors"] = colors
+        return context
+
+
