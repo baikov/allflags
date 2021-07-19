@@ -1,7 +1,8 @@
 import logging
 import os
+from .tasks import get_flag_img_task
 
-from django.db.models.signals import m2m_changed, post_delete, post_save, pre_save
+from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 from utils.flag_image import get_historical_flag_img, get_flag_img
 
@@ -64,28 +65,47 @@ def after_delete_historical_flag(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=MainFlag)
-def on_create_or_updated_flag(sender, instance, **kwargs):
-    if kwargs["created"] or instance.dl_imgs:
-        get_flag_img(instance.iso_code_a2)
+def on_create_flag(sender, instance, **kwargs):
+    if kwargs["created"]:
+        country = Country.objects.get(name=instance.country)
+        get_flag_img(country.iso_code_a2)
     # else:
     #     get_flag_img(instance.iso_code_a2)
 
 
-# @receiver(m2m_changed, sender=BorderCountry)
-# def m2m_test(sender, instance, **kwargs):
-#     print("m2m change!")
-#     action = kwargs.pop("action", None)
-#     if action == "post_add":
-#         print("m2m postsave!")
-#     if action == "post_remove":
-#         print("m2m postdelete!")
+@receiver(pre_save, sender=MainFlag)
+def on_update_flag(sender, instance, **kwargs):
+    if instance.dl_imgs:
+        country = Country.objects.get(name=instance.country)
+        result = get_flag_img_task.delay(country.iso_code_a2)
+        task_id = result.task_id
+        # get_flag_img(country.iso_code_a2)
+        instance.dl_imgs = False
 
 
-# @receiver(m2m_changed, sender=Country.border_countries.through)
-# def m2m_test_2(sender, instance, **kwargs):
-#     print("m2m change!")
-#     action = kwargs.pop("action", None)
-#     if action == "post_add":
-#         print("m2m postsave!")
-#     if action == "post_remove":
-#         print("m2m postdelete!")
+@receiver(post_save, sender=Country)
+def create_country_flag(sender, instance, **kwargs):
+    if kwargs["created"]:
+        flag, _ = MainFlag.objects.get_or_create(country=instance, slug=instance.iso_code_a2)
+
+
+"""
+@receiver(m2m_changed, sender=BorderCountry)
+def m2m_test(sender, instance, **kwargs):
+    print("m2m change!")
+    action = kwargs.pop("action", None)
+    if action == "post_add":
+        print("m2m postsave!")
+    if action == "post_remove":
+        print("m2m postdelete!")
+
+
+@receiver(m2m_changed, sender=Country.border_countries.through)
+def m2m_test_2(sender, instance, **kwargs):
+    print("m2m change!")
+    action = kwargs.pop("action", None)
+    if action == "post_add":
+        print("m2m postsave!")
+    if action == "post_remove":
+        print("m2m postdelete!")
+"""
