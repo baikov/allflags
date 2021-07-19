@@ -4,8 +4,10 @@
 from django.views.generic import ListView
 
     ColorGroup,
+    MainFlag,
     Color,
     Subregion,
+    FlagElement,
 
 
 class FlagListView(ListView):
@@ -142,4 +144,14 @@ def colors_count(request, color_count):
         return render(request, template_name, context)
     else:
         raise Http404
+
+
+class FlagElementListView(ListView):
+    model = FlagElement
+    template_name = "flags/elements-list.html"
+    context_object_name = "elements"
+
+    def get_queryset(self):
+        elements = FlagElement.objects.annotate(flags_count=Count("flags_with_elem")).filter(flags_count__gt=0)
+        return elements
 
