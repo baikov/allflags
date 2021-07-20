@@ -1,0 +1,1085 @@
+{% extends "base.html" %}
+{% load i18n my_filter %}
+{% load static %}
+{% get_media_prefix as MEDIA_URL %}
+
+{% block breadcrumb %}
+{# Breadcrumbs #}
+<div class="pt-3 bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'flags:flags-list' %}">Главная</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Государственный флаг {{country.ru_name_rod}}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock breadcrumb %}
+
+{% block content %}
+{# Main screen #}
+<div class="py-3 py-xl-5 bg-light">
+    <div class="container">
+
+        <div class="row">
+            <div class="py-1 py-md-3 col-xs-12 col-sm-12 col-md-12 col-lg-12 d-flex justify-content-center">
+                <h1>{% if flag.seo_h1%}{{flag.seo_h1}}{% else %}{{flag.title}}{%endif%}</h1>
+            </div>
+            <div class="py-3 col-xs-12 col-sm-12 col-md-12 col-lg-5 d-flex justify-content-center">
+                <picture>
+                    <source type="image/webp" media="(min-width: 1921px)"
+                        srcset="{{country.iso_code_a2|get_img_path:'w1280'}}.webp">
+                    <source type="image/png" media="(min-width: 1921px)"
+                        srcset="{{country.iso_code_a2|get_img_path:'w1280'}}.png">
+
+                    <source type="image/webp" media="(min-width: 1281px) and (max-width: 1920px)"
+                        srcset="{{country.iso_code_a2|get_img_path:'w640'}}.webp">
+                    <source type="image/png" media="(min-width: 1281px) and (max-width: 1920px)"
+                        srcset="{{country.iso_code_a2|get_img_path:'w640'}}.png">
+
+                    <source type="image/webp" media="(max-width: 460px)"
+                        srcset="{{country.iso_code_a2|get_img_path:'w320'}}.webp">
+                    <source type="image/png" media="(max-width: 460px)"
+                        srcset="{{country.iso_code_a2|get_img_path:'w320'}}.png">
+
+                    <img src="{{country.iso_code_a2|get_img_path:'w640'}}.png" alt="{{ flag.title }}"
+                        title="{{ flag.title }} {{flag.name}} - картинка" class="main-flag">
+                </picture>
+            </div>
+            <div class="py-3 col-xs-12 col-sm-12 col-md-12 col-lg-7">
+                <p>
+                    {{country.name}} - государство, расположенное в регионе {{country.subregion}},
+                    столицей которого является город {{country.ru_capital_name}}.
+                </p>
+
+                {% if country.ru_motto %}
+                <p>
+                    Девиз {{country.ru_name_rod}}: "{{country.motto}}", что переводится как "{{country.ru_motto}}".
+                </p>
+                {% endif %}
+
+                {% if flag.adopted_date %}
+                <p>
+                    Современный вариант национального флага {{country.ru_name_rod}} был утвержден
+                    {% language 'ru' %}{{flag.adopted_date|date:"j E Y"}}{% endlanguage %}. До него
+                    в истории страны было примерно {{historical|length}} флагов.
+                </p>
+                {% endif %}
+                {% if colors %}
+                <p>
+                    {{colors|length|ru_count|capfirst}} основных цвета флага:
+                    {%if colors|length > 1 %}
+                    {% for color in colors %}
+                    {% if forloop.last %}и {% endif %}
+                    {% if not forloop.first and not forloop.last %}, {% endif %}
+                    {{color.color_group|lower}}
+                    {% endfor %}
+                    {%else%}
+                    {{colors.0.color_group|lower}}
+                    {%endif%}.
+                </p>
+                {% else %}
+                <p>Цвета флага не выбраны</p>
+                {% endif %}
+
+                <p>
+                    Флаг имеет пропорции {{flag.proportion}}.
+                </p>
+                {% if flag.flag_day %}
+                <p>
+                    День флага отмечают {% language 'ru' %}{{flag.flag_day|date:"j E Y"}}{% endlanguage %}
+                </p>
+                {% endif %}
+            </div>
+            <div class="col-12">
+                {% if flag.short_description %}
+                <p>
+                    {{flag.short_description|safe}}
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{# Second menu #}
+<!--
+<div class="py-3 py-xl-3 sticky-top bg-white">
+    <div class="container">
+        <ul class="nav" id="navbar-scroll">
+            <li class="nav-item">
+                <a class="nav-link" href="#">Цвета флага</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">История</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#country">О стране</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Скачать</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Флаги соседей</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Похожие флаги</a>
+            </li>
+        </ul>
+    </div>
+</div>
+-->
+
+{# Downloads v2 #}
+<div class="py-3 py-xl-5">
+    <div class="container">
+        <h2 class="py-3">Скачать флаг {{country.ru_name_rod}} в форматах png, jpg, webp, svg, eps, ai, pdf</h2>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-2 col-lg-4 d-none d-lg-block">
+                <p class="text-center"><span class="badge badge-info badge-100">Пример изображения</span></p>
+                <div class="card border-success my-3">
+                    <!--<div class="card-header">Пример скачиваемого изображения</div>-->
+                    <div class="card-body">
+                        <img src="{{country.iso_code_a2|get_img_path}}.svg" class="img-fluid"
+                            alt="{{ flag.title }} скачать бесплатно">
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
+                <p class="text-center"><span class="badge badge-primary badge-100">Фиксированная ширина</span></p>
+                <table class="table table-hover table-sm table-bordered">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="text-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-images" viewBox="0 0 16 16">
+                                    <path d="M4.502 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
+                                    <path
+                                        d="M14.002 13a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2V5A2 2 0 0 1 2 3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-1.998 2zM14 2H4a1 1 0 0 0-1 1h9.002a2 2 0 0 1 2 2v7A1 1 0 0 0 15 11V3a1 1 0 0 0-1-1zM2.002 4a1 1 0 0 0-1 1v8l2.646-2.354a.5.5 0 0 1 .63-.062l2.66 1.773 3.71-3.71a.5.5 0 0 1 .577-.094l1.777 1.947V5a1 1 0 0 0-1-1h-10z" />
+                                </svg>
+                            </th>
+                            <th>Размер (px)</th>
+                            <th class="text-center">JPG</th>
+                            <th class="text-center">PNG</th>
+                            <th class="text-center">WebP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for w, size in widths.items %}
+                        <tr>
+                            <td class="text-center">
+                                <img src="{{country.iso_code_a2|get_img_path:'w20'}}.png"
+                                    alt="Изображение флага {{ country.ru_name_rod }} {{size}}px.jpg"
+                                    title="Скачать изображение флага {{ country.ru_name_rod }} {{size}}px jpg">
+                            </td>
+                            <td>
+                                <strong>{{size.width}}</strong>x{{size.height}}
+                            </td>
+                            <td class="text-center">
+                                <a href="{{country.iso_code_a2|get_img_path:w}}.jpg" target="_blank">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                                        <path
+                                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                                    </svg>
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="{{country.iso_code_a2|get_img_path:w}}.png" target="_blank">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                                        <path
+                                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                                    </svg>
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="{{country.iso_code_a2|get_img_path:w}}.webp" target="_blank">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                                        <path
+                                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                                    </svg>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
+                <p class="text-center"><span class="badge badge-primary badge-100">Фиксированная высота</span></p>
+                <table class="table table-hover table-sm table-bordered">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="text-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-images" viewBox="0 0 16 16">
+                                    <path d="M4.502 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
+                                    <path
+                                        d="M14.002 13a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2V5A2 2 0 0 1 2 3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-1.998 2zM14 2H4a1 1 0 0 0-1 1h9.002a2 2 0 0 1 2 2v7A1 1 0 0 0 15 11V3a1 1 0 0 0-1-1zM2.002 4a1 1 0 0 0-1 1v8l2.646-2.354a.5.5 0 0 1 .63-.062l2.66 1.773 3.71-3.71a.5.5 0 0 1 .577-.094l1.777 1.947V5a1 1 0 0 0-1-1h-10z" />
+                                </svg>
+                            </th>
+                            <th>Размер (px)</th>
+                            <th class="text-center">JPG</th>
+                            <th class="text-center">PNG</th>
+                            <th class="text-center">WebP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for h, size in heights.items %}
+                        <tr>
+                            <td class="text-center">
+                                <img src="{{country.iso_code_a2|get_img_path:'w20'}}.png"
+                                    alt="Изображение флага {{ country.ru_name_rod }} {{size}}px.jpg"
+                                    title="Скачать изображение флага {{ country.ru_name_rod }} {{size}}px jpg">
+                            </td>
+                            <td>
+                                {{size.width}}x<strong>{{size.height}}</strong>
+                            </td>
+                            <td class="text-center">
+                                <a href="{{country.iso_code_a2|get_img_path:h}}.jpg" target="_blank">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                                        <path
+                                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                                    </svg>
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="{{country.iso_code_a2|get_img_path:h}}.png" target="_blank">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                                        <path
+                                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                                    </svg>
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="{{country.iso_code_a2|get_img_path:h}}.webp" target="_blank">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                                        <path
+                                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                                    </svg>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
+                <p class="text-center"><span class="badge badge-success badge-100">Векторный формат</span></p>
+                <table class="table table-hover table-sm table-bordered">
+                    <thead class="thead-light">
+                        <tr class="text-center">
+                            <th>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-images" viewBox="0 0 16 16">
+                                    <path d="M4.502 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
+                                    <path
+                                        d="M14.002 13a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2V5A2 2 0 0 1 2 3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-1.998 2zM14 2H4a1 1 0 0 0-1 1h9.002a2 2 0 0 1 2 2v7A1 1 0 0 0 15 11V3a1 1 0 0 0-1-1zM2.002 4a1 1 0 0 0-1 1v8l2.646-2.354a.5.5 0 0 1 .63-.062l2.66 1.773 3.71-3.71a.5.5 0 0 1 .577-.094l1.777 1.947V5a1 1 0 0 0-1-1h-10z" />
+                                </svg>
+                            </th>
+                            <th>AI</th>
+                            <th>SVG</th>
+                            <th>EPS</th>
+                            <th>PDF</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center">
+                                <img src="{{country.iso_code_a2|get_img_path:'w20'}}.png"
+                                    alt="Изображение флага {{ country.ru_name_rod }} {{size}}px.jpg"
+                                    title="Скачать изображение флага {{ country.ru_name_rod }} {{size}}px jpg">
+                            </td>
+                            <td class="text-center">
+                                <a href="{{country.iso_code_a2|get_img_path}}.ai" target="_blank">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                                        <path
+                                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                                    </svg>
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="{{country.iso_code_a2|get_img_path}}.svg" target="_blank">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                                        <path
+                                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                                    </svg>
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="{{country.iso_code_a2|get_img_path}}.eps" target="_blank">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                                        <path
+                                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                                    </svg>
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="{{country.iso_code_a2|get_img_path}}.pdf" target="_blank">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                                        <path
+                                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                                    </svg>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4">
+                <a href="{{country.iso_code_a2|get_img_path}}-bitmap.zip" target="_blank"
+                    class="btn btn-xs btn-outline-primary btn-block">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                        <path
+                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                        <path
+                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                    </svg>
+                    Скачать все изображения <strong>флага {{country.ru_name_rod}}</strong> одним архивом
+                </a>
+                <a href="{{country.iso_code_a2|get_img_path}}-bitmap.zip" target="_blank"
+                    class="btn btn-xs btn-outline-success btn-block">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                        <path
+                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                        <path
+                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                    </svg>
+                    Скачать флаги <strong>всех стран</strong> одним архивом
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Colors & design v3#}
+<div class="py-3 py-xl-5 bg-light">
+    <div class="container">
+        <h2 class="py-3">Цвета и дизайн государственного флага {{country.ru_name_rod}}</h2>
+
+        <div class="row">
+
+            <div class="py-3 col-md-12 col-sm-12 col-xs-12">
+                <div class="row">
+                {% for color in colors %}
+
+                {% if colors|length < 3 %}
+                    <div class="col-12 col-xs-6 col-sm-6 col-md-6 col-lg-4">
+                    {% elif colors|length < 4 %}
+                        <div class="col-12 col-xs-6 col-sm-6 col-md-4 col-lg-4">
+                    {%else%}
+                        <div class="col-12 col-xs-6 col-sm-6 col-md-4 col-lg-3">
+                    {%endif%}
+
+                        <table class="table table-hover table-sm table-bordered country_info"
+                            style="border: 2px solid #{%if color.hex|lower == 'ffffff'%}dee2e6{%else%}{{color.hex}}{%endif%} !important;">
+                            <thead>
+                                <tr class="text-center">
+                                    <th colspan="3"
+                                        style="background-color:#{{color.hex}}; border: 1px solid #{{color.hex}} !important;">
+                                        <a href="{% url 'flags:color-detail' color.color_group.slug %}"
+                                            class="badge badge-light badge-100">
+                                            {{color.color_group}}
+                                        </a>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th
+                                        style="border: 2px solid #{%if color.hex|lower == 'ffffff'%}dee2e6{%else%}{{color.hex}}{%endif%} !important;">
+                                        HEX</th>
+                                    <td
+                                        style="border: 2px solid #{%if color.hex|lower == 'ffffff'%}dee2e6{%else%}{{color.hex}}{%endif%} !important;">
+                                        #{{color.hex|upper}}</td>
+                                    <td class="text-center"
+                                        style="border: 2px solid #{%if color.hex|lower == 'ffffff'%}dee2e6{%else%}{{color.hex}}{%endif%} !important;">
+                                        <a data-clipboard-text="{{color.hex}}" class="cp" data-toggle="tooltip"
+                                            data-placement="top" title="Скопировать">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-clipboard-plus"
+                                                viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd"
+                                                    d="M8 7a.5.5 0 0 1 .5.5V9H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V10H6a.5.5 0 0 1 0-1h1.5V7.5A.5.5 0 0 1 8 7z" />
+                                                <path
+                                                    d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z" />
+                                                <path
+                                                    d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z" />
+                                            </svg>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th
+                                        style="border: 2px solid #{%if color.hex|lower == 'ffffff'%}dee2e6{%else%}{{color.hex}}{%endif%} !important;">
+                                        RGB</th>
+                                    <td
+                                        style="border: 2px solid #{%if color.hex|lower == 'ffffff'%}dee2e6{%else%}{{color.hex}}{%endif%} !important;">
+                                        rgb({%for val in color.rgb%}{{val}}{% if not forloop.last %},
+                                        {% endif %}{%endfor%})</td>
+                                    <td class="text-center"
+                                        style="border: 2px solid #{%if color.hex|lower == 'ffffff'%}dee2e6{%else%}{{color.hex}}{%endif%} !important;">
+                                        <a data-clipboard-text="rgb({%for val in color.rgb%}{{val}}{% if not forloop.last %}, {% endif %}{%endfor%})"
+                                            class="cp" data-toggle="tooltip" data-placement="top"
+                                            title="Скопировать">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-clipboard-plus"
+                                                viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd"
+                                                    d="M8 7a.5.5 0 0 1 .5.5V9H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V10H6a.5.5 0 0 1 0-1h1.5V7.5A.5.5 0 0 1 8 7z" />
+                                                <path
+                                                    d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z" />
+                                                <path
+                                                    d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z" />
+                                            </svg>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th
+                                        style="border: 2px solid #{%if color.hex|lower == 'ffffff'%}dee2e6{%else%}{{color.hex}}{%endif%} !important;">
+                                        CMYK</th>
+                                    <td colspan="2"
+                                        style="border: 2px solid #{%if color.hex|lower == 'ffffff'%}dee2e6{%else%}{{color.hex}}{%endif%} !important;">
+                                        {%for val in color.cmyk%}{{val}}%{% if not forloop.last %},
+                                        {% endif %}{%endfor%}</td>
+                                </tr>
+                                {% if color.pantone %}
+                                <tr>
+                                    <th
+                                        style="border: 2px solid #{%if color.hex|lower == 'ffffff'%}dee2e6{%else%}{{color.hex}}{%endif%} !important;">
+                                        Pantone</th>
+                                    <td colspan="2"
+                                        style="border: 2px solid #{%if color.hex|lower == 'ffffff'%}dee2e6{%else%}{{color.hex}}{%endif%} !important;">
+                                        {{color.pantone}}</td>
+                                </tr>
+                                {% endif %}
+
+                            </tbody>
+                        </table>
+                        </div>
+                {% endfor %}
+
+                </div>
+            </div>
+
+            <div class="py-3 col-md-12 col-sm-12 col-xs-12">
+                <div class="alert alert-primary" role="alert">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                        class="bi bi-info-square" viewBox="0 0 16 16">
+                        <path
+                            d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
+                        <path
+                            d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                    </svg>
+                    Список государственных флагов с
+                    <a href="{% url 'flags:colors-count' colors.count %}" class="alert-link">
+                        {{colors|length|ru_count:'t'}} цветами
+                    </a>
+                </div>
+            </div>
+
+                {% if flag.design_description and flag.construction_image or flag.elements.all|length > 0 %}
+                <div class="py-3 col-xs-12 col-sm-12 col-md-8 col-lg-8">
+                    {{flag.design_description|safe}}
+                </div>
+                {%elif flag.design_description and not flag.construction_image or flag.elements.all|length == 0 %}
+                <div class="py-3 col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    {{flag.design_description|safe}}
+                </div>
+                {% endif %}
+
+                {% if flag.construction_image or flag.elements.all|length > 0 %}
+                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                    {% if flag.construction_image %}
+                    <h3 class="py-2">Схема флага</h3>
+                    <figure class="figure">
+                        <img src="{{flag.construction_image.url}}" class="figure-img img-fluid">
+                        <figcaption class="figure-caption text-right">{{flag.title}}: схема</figcaption>
+                    </figure>
+                    {% endif %}
+
+                    {% if flag.elements.all|length > 0 %}
+                    <div class="card border-primary mb-3">
+                        <div class="card-body text-primary">
+                            <h3 class="text-dark text-center">Элементы флага</h3>
+                            {% for elem in flag.elements.all %}
+                            <a href="{% url 'flags:element-detail' elem.slug %}"
+                                class="btn btn-outline-primary mb-2">{{elem.name}}</a>
+                            {# <a href="{% url 'flags:element-detail' elem.slug %}" class="badge badge-primary mb-2">{{elem.name}}</a> #}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {# {% if flag.elements.all|length > 0 %} #}
+                    {# <h3 class="py-2">Элементы флага</h3> #}
+                    {# {% for elem in flag.elements.all %} #}
+                    {# <a href="{% url 'flags:element-detail' elem.slug %}" class="btn btn-outline-primary mb-2">{{elem.name}}</a> #}
+                    {# {% endfor %} #}
+                    {# {% endif %} #}
+                </div>
+                {% endif %}
+
+        </div>
+    </div>
+</div>
+
+{# Historical flags and history text v2#}
+{% if historical|length > 0 or flag.history_text %}
+<div class="py-3 py-xl-5">
+    <div class="container">
+        {% if historical|length > 0 %}
+        <h2 class="py-3">Исторические флаги {{country.ru_name_rod}} по годам</h2>
+        <div class="history-carousel-hor">
+            {% for h_flag in historical %}
+
+            <div class="card mb-3">
+                <div class="row no-gutters">
+                    <div class="col-md-4">
+                        <img
+                            src="{{MEDIA_URL}}historical-flags/{{h_flag.country.iso_code_a2|lower}}/{{h_flag.country.iso_code_a2|lower}}-{{h_flag.from_year}}-{{h_flag.to_year}}.svg">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h3 class="card-title">{{h_flag.from_year}}-{{h_flag.to_year}} {{h_flag.title}}</h3>
+                            <p class="card-text">{{h_flag.description}}</p>
+                            <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if historical|length > 0 %}
+        <div class="row">
+            {{flag.history_text|safe}}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+{# About country v2 #}
+<div class="py-3 py-xl-5 bg-light" id="country">
+    <div class="container">
+
+        <h2 class="py-3">Краткая информация о {{country.ru_name_dat}}</h2>
+        <div class="row">
+            <div class="py-3 col-12 col-md-8">
+                <p>
+                    {{country.name}} занимает {{country.area_global_rank}} место в мире по размерам.
+                    Площадь территории страны {{country.area_total}} км<sup>2</sup>,
+                    из которых {{country.area_land}} км<sup>2</sup> - суша. Протяженность береговой линии
+                    {{country.coastline}} км.
+                    По данным на {{country.population_date}} год численность населения {{country.ru_name_rod}}
+                    около {{country.population_total}} человек - это {{country.population_global_rank}} место в
+                    мире.
+                </p>
+                <p>
+                    Официальное название страны - {{country.conventional_long_name}}.
+                    Формой правления {{country.ru_name_rod}} является {{country.ru_government_type}}.
+                    Глава государства - {{country.ru_chief_of_state}}.
+                    Главой правительства назначен {{country.ru_head_of_government}}.
+                </p>
+                <p>
+                    Официальный язык {{country.ru_name_rod}} - {{country.official_language}}.
+                    На местном языке страна называется {{country.local_long_name}}
+                </p>
+            </div>
+            <div class="py-3 col-12 col-md-4">
+                <table class="table table-striped table-sm table-bordered country_info">
+                    <tbody>
+                        <tr>
+                            <th colspan="2" class="text-center">Важная информация</th>
+                        </tr>
+                        <tr>
+                            <td>Регион</td>
+                            <td>{{country.subregion.region}} - {{country.subregion.name}}</td>
+                        </tr>
+                        <!-- <tr>
+                            <td>Валюта</td>
+                            <td>
+                                {% for cur in currencies %}
+                                {{cur.ru_name}} {{cur.symbol}} ({{cur.iso_code}}, {{cur.iso_num}})
+                                {% endfor %}
+                            </td>
+                        </tr> -->
+                        <tr>
+                            <td>Валюта</td>
+                            <td>
+                                {% for cur in country.currencies.all %}
+                                {{cur.ru_name}} {{cur.symbol}} ({{cur.iso_code}}, {{cur.iso_num}})
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>ISO 3166-1</td>
+                            <td>{{country.iso_code_a2}}, {{country.iso_code_a3}}, {{country.iso_code_num}}</td>
+                        </tr>
+                        <tr>
+                            <td>Интернет-домен</td>
+                            <td>{{country.internet_tld}}</td>
+                        </tr>
+                        <tr>
+                            <td>Телефонный код</td>
+                            <td>+{{country.phone_code}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-striped table-sm table-bordered country_info">
+                    <tbody>
+                        <tr>
+                            <th colspan="2" class="text-center">Экономика</th>
+                        </tr>
+                        <tr>
+                            <td>ВВП (ППС) на душу</td>
+                            <td>{{country.gdp_value}} $ ({{country.gdp_date}})</td>
+                        </tr>
+                        <tr>
+                            <td>Внешний долг</td>
+                            <td>{{country.external_debt_value}} $ ({{country.external_debt_date}})</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Map v2 #}
+<div class="py-3 py-xl-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-md-4">
+                <table class="table table-striped table-hover table-sm table-bordered country_info">
+                    <thead>
+                        <tr>
+                            <th>Соседняя страна</th>
+                            <th>Граница</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for neighbour in neighbours %}
+                        <tr>
+                            <th>{{neighbour.border_country}}</th>
+                            <td>{{neighbour.border|in_km}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-12 col-md-8">
+                <div id="svgMap"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Border countries flags v2 #}
+{% if border_flags|length > 0 %}
+<div class="py-3 py-xl-5 bg-light">
+    <div class="container">
+        <h2 class="py-3">Флаги соседних с {{country.ru_name_tvo}} стран</h2>
+        <div class="row">
+            {% for flag in border_flags %}
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2 col-xl-2 pb-3">
+                <div class="flag-card hover-country">
+                    <img src="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png" alt="{{flag.title}}"
+                        class="image">
+                    <div class="middle">
+                        <div class="text">
+                            <a href="{% url 'flags:flag-detail' flag.slug %}">
+                                {{flag.title}}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{# Same color flags v1 #}
+{% if same_flags|length > 0 %}
+<div class="py-3 py-xl-5">
+    <div class="container">
+        <h2 class="py-3">Флаги с похожими цветами</h2>
+        <div class="row">
+            {% for flag in same_flags %}
+            <div class="col-6 col-sm-3 col-md-2 col-lg-2 col-xl-2 pb-3">
+                <div class="flag-card hover-country">
+                    <img src="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png" alt="{{flag.title}}"
+                        class="image">
+                    <div class="middle">
+                        <div class="text">
+                            <a href="{% url 'flags:flag-detail' flag.slug %}">
+                                {{flag.title}}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{# Copy color #}
+<div class="position-fixed top-0 right-0 p-3" style="z-index: 1500; right: 0; top: 0;">
+    <div id="copy" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
+        <div class="toast-header bg-success text-white">
+            <strong class="mr-auto">Цвет скопирован в буфер!</strong>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .svgMap-map-wrapper{
+        background: #fff;
+        color: #111;
+        border: 1px solid #eee;
+    }
+    #svgMap-map-country-{{flag.country.iso_code_a2}} {
+        fill: #28a745;
+    }
+</style>
+<script>
+    var svgMapCountryNamesRU = {
+        AF: 'Афганистан',
+        AX: 'Аландские о-ва',
+        AL: 'Албания',
+        DZ: 'Алжир',
+        AS: 'Американское Самоа',
+        AD: 'Андорра',
+        AO: 'Ангола',
+        AI: 'Ангилья',
+        AQ: 'Антарктида',
+        AG: 'Антигуа и Барбуда',
+        AR: 'Аргентина',
+        AM: 'Армения',
+        AW: 'Аруба',
+        AU: 'Австралия',
+        AT: 'Австрия',
+        AZ: 'Азербайджан',
+        BS: 'Багамы',
+        BH: 'Бахрейн',
+        BD: 'Бангладеш',
+        BB: 'Барбадос',
+        BY: 'Беларусь',
+        BE: 'Бельгия',
+        BZ: 'Белиз',
+        BJ: 'Бенин',
+        BM: 'Бермуды',
+        BT: 'Бутан',
+        BO: 'Боливия',
+        BA: 'Босния и Герцеговина',
+        BW: 'Ботсвана',
+        BR: 'Бразилия',
+        IO: 'Британская территория в Индийском океане',
+        VG: 'Виргинские о-ва (Британские)',
+        BN: 'Бруней-Даруссалам',
+        BG: 'Болгария',
+        BF: 'Буркина-Фасо',
+        BI: 'Бурунди',
+        KH: 'Камбоджа',
+        CM: 'Камерун',
+        CA: 'Канада',
+        CV: 'Кабо-Верде',
+        BQ: 'Бонэйр, Синт-Эстатиус и Саба',
+        KY: 'Каймановы о-ва',
+        CF: 'ЦАР',
+        TD: 'Чад',
+        CL: 'Чили',
+        CN: 'Китай',
+        CX: 'о-в Рождества',
+        CC: 'Кокосовые о-ва',
+        CO: 'Колумбия',
+        KM: 'Коморы',
+        CG: 'Конго - Браззавиль',
+        CK: 'Острова Кука',
+        CR: 'Коста-Рика',
+        HR: 'Хорватия',
+        CU: 'Куба',
+        CW: 'Кюрасао',
+        CY: 'Кипр',
+        CZ: 'Чехия',
+        CD: 'Конго - Киншаса',
+        DK: 'Дания',
+        DJ: 'Джибути',
+        DM: 'Доминика',
+        DO: 'Доминиканская Республика',
+        EC: 'Эквадор',
+        EG: 'Египет',
+        SV: 'Сальвадор',
+        GQ: 'Экваториальная Гвинея',
+        ER: 'Эритрея',
+        EE: 'Эстония',
+        ET: 'Эфиопия',
+        FK: 'Фолклендские о-ва',
+        FO: 'Фарерские о-ва',
+        FM: 'Федеративные Штаты Микронезии',
+        FJ: 'Фиджи',
+        FI: 'Финляндия',
+        FR: 'Франция',
+        GF: 'Французская Гвиана',
+        PF: 'Французская Полинезия',
+        TF: 'Французские Южные территории',
+        GA: 'Габон',
+        GM: 'Гамбия',
+        GE: 'Грузия',
+        DE: 'Германия',
+        GH: 'Гана',
+        GI: 'Гибралтар',
+        GR: 'Греция',
+        GL: 'Гренландия',
+        GD: 'Гренада',
+        GP: 'Гваделупа',
+        GU: 'Гуам',
+        GT: 'Гватемала',
+        GN: 'Гвинея',
+        GW: 'Гвинея-Бисау',
+        GY: 'Гайана',
+        HT: 'Гаити',
+        HN: 'Гондурас',
+        HK: 'Гонконг (специальный административный район)',
+        HU: 'Венгрия',
+        IS: 'Исландия',
+        IN: 'Индия',
+        ID: 'Индонезия',
+        IR: 'Иран',
+        IQ: 'Ирак',
+        IE: 'Ирландия',
+        IM: 'о-в Мэн',
+        IL: 'Израиль',
+        IT: 'Италия',
+        CI: 'Кот-д’Ивуар',
+        JM: 'Ямайка',
+        JP: 'Япония',
+        JE: 'Джерси',
+        JO: 'Иордания',
+        KZ: 'Казахстан',
+        KE: 'Кения',
+        KI: 'Кирибати',
+        XK: 'Косово',
+        KW: 'Кувейт',
+        KG: 'Киргизия',
+        LA: 'Лаос',
+        LV: 'Латвия',
+        LB: 'Ливан',
+        LS: 'Лесото',
+        LR: 'Либерия',
+        LY: 'Ливия',
+        LI: 'Лихтенштейн',
+        LT: 'Литва',
+        LU: 'Люксембург',
+        MO: 'Макао (специальный административный район)',
+        MK: 'Македония',
+        MG: 'Мадагаскар',
+        MW: 'Малави',
+        MY: 'Малайзия',
+        MV: 'Мальдивы',
+        ML: 'Мали',
+        MT: 'Мальта',
+        MH: 'Маршалловы Острова',
+        MQ: 'Мартиника',
+        MR: 'Мавритания',
+        MU: 'Маврикий',
+        YT: 'Майотта',
+        MX: 'Мексика',
+        MD: 'Молдова',
+        MC: 'Монако',
+        MN: 'Монголия',
+        ME: 'Черногория',
+        MS: 'Монтсеррат',
+        MA: 'Марокко',
+        MZ: 'Мозамбик',
+        MM: 'Мьянма (Бирма)',
+        NA: 'Намибия',
+        NR: 'Науру',
+        NP: 'Непал',
+        NL: 'Нидерланды',
+        NC: 'Новая Каледония',
+        NZ: 'Новая Зеландия',
+        NI: 'Никарагуа',
+        NE: 'Нигер',
+        NG: 'Нигерия',
+        NU: 'Ниуэ',
+        NF: 'о-в Норфолк',
+        KP: 'КНДР',
+        MP: 'Северные Марианские о-ва',
+        NO: 'Норвегия',
+        OM: 'Оман',
+        PK: 'Пакистан',
+        PW: 'Палау',
+        PS: 'Палестинские территории',
+        PA: 'Панама',
+        PG: 'Папуа – Новая Гвинея',
+        PY: 'Парагвай',
+        PE: 'Перу',
+        PH: 'Филиппины',
+        PN: 'острова Питкэрн',
+        PL: 'Польша',
+        PT: 'Португалия',
+        PR: 'Пуэрто-Рико',
+        QA: 'Катар',
+        RE: 'Реюньон',
+        RO: 'Румыния',
+        RU: 'Россия',
+        RW: 'Руанда',
+        SH: 'о-в Св. Елены',
+        KN: 'Сент-Китс и Невис',
+        LC: 'Сент-Люсия',
+        PM: 'Сен-Пьер и Микелон',
+        VC: 'Сент-Винсент и Гренадины',
+        WS: 'Самоа',
+        SM: 'Сан-Марино',
+        ST: 'Сан-Томе и Принсипи',
+        SA: 'Саудовская Аравия',
+        SN: 'Сенегал',
+        RS: 'Сербия',
+        SC: 'Сейшельские Острова',
+        SL: 'Сьерра-Леоне',
+        SG: 'Сингапур',
+        SX: 'Синт-Мартен',
+        SK: 'Словакия',
+        SI: 'Словения',
+        SB: 'Соломоновы Острова',
+        SO: 'Сомали',
+        ZA: 'ЮАР',
+        GS: 'Южная Георгия и Южные Сандвичевы о-ва',
+        KR: 'Республика Корея',
+        SS: 'Южный Судан',
+        ES: 'Испания',
+        LK: 'Шри-Ланка',
+        SD: 'Судан',
+        SR: 'Суринам',
+        SJ: 'Шпицберген и Ян-Майен',
+        SZ: 'Свазиленд',
+        SE: 'Швеция',
+        CH: 'Швейцария',
+        SY: 'Сирия',
+        TW: 'Тайвань',
+        TJ: 'Таджикистан',
+        TZ: 'Танзания',
+        TH: 'Таиланд',
+        TL: 'Восточный Тимор',
+        TG: 'Того',
+        TK: 'Токелау',
+        TO: 'Тонга',
+        TT: 'Тринидад и Тобаго',
+        TN: 'Тунис',
+        TR: 'Турция',
+        TM: 'Туркменистан',
+        TC: 'о-ва Тёркс и Кайкос',
+        TV: 'Тувалу',
+        UG: 'Уганда',
+        UA: 'Украина',
+        AE: 'ОАЭ',
+        GB: 'Великобритания',
+        US: 'Соединенные Штаты',
+        UM: 'Внешние малые о-ва (США)',
+        VI: 'Виргинские о-ва (США)',
+        UY: 'Уругвай',
+        UZ: 'Узбекистан',
+        VU: 'Вануату',
+        VA: 'Ватикан',
+        VE: 'Венесуэла',
+        VN: 'Вьетнам',
+        WF: 'Уоллис и Футуна',
+        EH: 'Западная Сахара',
+        YE: 'Йемен',
+        ZM: 'Замбия',
+        ZW: 'Зимбабве'
+        };
+    var svgMapData = {
+        data: {
+            area: {
+            name: 'Площадь',
+            format: '{0} км<sup>2</sup>',
+            thousandSeparator: ' ',
+            },
+            population: {
+            name: 'Население',
+            format: '{0} чел',
+            thousandSeparator: ' '
+            },
+            density: {
+            name: 'Столица',
+            format: '{0}',
+            thousandSeparator: '',
+
+            }
+        },
+        applyData: 'area',
+        values: {
+            {{country.iso_code_a2|upper}}: {area: '{{country.area_total}}', population: '{{country.population_total}}', density: '{{flag.country.ru_capital_name}}'},
+        }
+    }
+    new svgMap({
+        targetElementID: 'svgMap',
+        data: svgMapData,
+        countryNames: svgMapCountryNamesRU,
+        flagType: 'emoji',
+        colorNoData: '#eeeeee',
+        noDataText: '',
+        mouseWheelZoomEnabled: false,
+        initialZoom: 1.2,
+    });
+</script>
+
+{% endblock content %}
+
+{# SEO block #}
+{# {% block canonical %}{% url 'flags:flag-detail' flag.slug %}{% endblock canonical %} #}
+{% block meta_title %}{{flag.seo_title}}{% endblock meta_title %}
+
+{% block meta_description %}{{flag.emoji}}{{flag.seo_description}}{% endblock meta_description %}
+
+{% block meta_keywords %}{{flag.seo_keywords}}{% endblock meta_keywords %}
+
+{% block meta_robots %}
+{% if flag.is_index %}index,{% else %}noindex,{% endif %}
+{% if flag.is_follow %}follow{% else %}nofollow{% endif %}
+{% endblock meta_robots %}
