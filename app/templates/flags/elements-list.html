@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load i18n my_filter %}
+
+
+{% block breadcrumb %}
+<div class="pt-3">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'flags:flags-list' %}">Главная</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'flags:elements-list' %}">Элементы флагов</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{element.name}}</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+{% endblock breadcrumb %}
+
+{% block content %}
+<div class="py-3">
+  <div class="container">
+    <div class="row">
+      <div class="py-1 py-md-3 col-12 d-flex justify-content-center">
+        {% if element.seo_h1 %}
+        <h1>{{element.seo_h1}}</h1>
+        {% else %}
+        <h1>{{element.name}} на флагах стран</h1>
+        {% endif %}
+      </div>
+      {% for flag in flags %}
+      <div class="col-4 col-md-3 col-lg-2 col-xl-2">
+        <div class="flag-card hover-country">
+
+          <a href="{% url 'flags:flag-detail' flag.slug %}">
+            <picture>
+              <source type="image/webp" srcset="{{flag.country.iso_code_a2|get_img_path:'w320'}}.webp">
+              <source type="image/png" srcset="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png">
+
+              <img src="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png" alt="{{ flag.title }}"
+                title="{{ flag.title }} {{flag.name}} - картинка" class="image">
+            </picture>
+          </a>
+
+          <div class="middle">
+            <div class="text">
+              <a href="{% url 'flags:flag-detail' flag.slug %}">
+                {{flag.title}}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+      <div class="col-12 py-3">
+        {{element.description|safe}}
+      </div>
+    </div>
+  </div>
+</div>
+
+{# Flag's elements #}
+<div class="py-5 bg-light">
+  <div class="container">
+    <h2 class="py-3">Полный список элементов флагов</h2>
+    {% for elem in elements %}
+    <a href="{% url 'flags:element-detail' elem.slug %}" class="btn btn-outline-primary mb-2">{{elem.name}}</a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock content %}
+
+{# SEO block #}
+{# {% block canonical %}{% if flags %}{% url 'flags:element-detail' element.slug %}
+{% else %}{% url 'flags:elements-list' %}{% endif %}
+{% endblock canonical %} #}
+
+{% block meta_title %}{{element.seo_title}}{% endblock meta_title %}
+
+{% block meta_description %}{{element.seo_description}}{% endblock meta_description %}
+
+{% block meta_keywords %}{{element.meta_keywords}}{% endblock meta_keywords %}
+
+{% block meta_robots %}
+{% if element.is_index %}index,{% else %}noindex,{% endif %}
+{% if element.is_follow %}follow{% else %}nofollow{% endif %}
+{% endblock meta_robots %}
