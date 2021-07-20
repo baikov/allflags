@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load i18n my_filter %}
+
+{% block breadcrumb %}
+<div class="pt-3">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'flags:flags-list' %}">Главная</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'flags:colors-list' %}">Цвета флагов мира</a></li>
+        <li class="breadcrumb-item active" aria-current="page">
+          {{group.name}}
+        </li>
+      </ol>
+    </nav>
+  </div>
+</div>
+{% endblock breadcrumb %}
+
+{% block content %}
+<div class="py-3">
+  <div class="container">
+    <div class="row">
+      <div class="py-1 py-md-3 col-12 d-flex justify-content-center">
+        <h1>Флаги стран содержащие {{group.name}} цвет</h1>
+      </div>
+
+      {% for flag in flags %}
+      <div class="col-4 col-md-3 col-lg-2 col-xl-2">
+        <div class="flag-card hover-country">
+
+          <a href="{% url 'flags:flag-detail' flag.slug %}">
+            <picture>
+              <source type="image/webp" srcset="{{flag.country.iso_code_a2|get_img_path:'w320'}}.webp">
+              <source type="image/png" srcset="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png">
+
+              <img src="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png" alt="{{ flag.title }}"
+                title="{{ flag.title }} {{flag.name}} - картинка" class="image">
+            </picture>
+          </a>
+
+          <div class="middle">
+            <div class="text">
+              <a href="{% url 'flags:flag-detail' flag.slug %}">
+                {{flag.title}}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{# SEO block #}
+{# Canonical #}
+{# {% block canonical %}{% url 'countries:colors-group' colors.0.color_group %}{% endblock canonical %} #}
+
+{# Meta title #}
+{% block meta_title %}
+{{group.name}} цвет в составе государственных флагов стран | AllFlags.ru
+{% endblock meta_title %}
+
+{# Meta description #}
+{% block meta_description %}
+{{group.name|upper}}
+цвет {%if flags|length > 15 %}довольно часто {%else%}редко {%endif%}входит в состав цветов государственных флагов
+стран. На AllFlags мы составили полный
+список из {{flags|length}} флагов с этими цветами
+{% endblock meta_description %}
+
+{# Meta keywords #}
+{% block meta_keywords %}
+
+{% endblock meta_keywords %}
+
+{% block meta_robots %}
+index,follow
+{% endblock meta_robots %}
