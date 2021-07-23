@@ -17,12 +17,13 @@ from .models import (
     Country,
     Currency,
     FlagElement,
-    Region,
-    Subregion,
+    # Region,
+    # Subregion,
     MainFlag,
     FlagEmoji,
     HistoricalFlag,
     FlagFact,
+    Region
 )
 
 
@@ -56,52 +57,6 @@ class CurrencyAdmin(ImportExportMixin, admin.ModelAdmin):
         ]
 
 
-class RegionAdmin(admin.ModelAdmin):
-    prepopulated_fields = {"slug": ("name",)}
-    list_display = ("name", "slug")
-    search_fields = ["name"]
-    fieldsets = [
-        (None, {"fields": ["name", "slug", "description"]}),
-        (
-            _("SEO"),
-            {
-                "classes": ("collapse", "wide"),
-                "fields": [
-                    "seo_title",
-                    "seo_description",
-                    "seo_h1",
-                    "is_published",
-                    "is_index",
-                    "is_follow",
-                ],
-            },
-        ),
-    ]
-
-
-class SubregionAdmin(admin.ModelAdmin):
-    prepopulated_fields = {"slug": ("name",)}
-    list_display = ("name", "slug", "region")
-    search_fields = ["name", "region"]
-    fieldsets = [
-        (None, {"fields": ["region", "name", "slug", "description"]}),
-        (
-            _("SEO"),
-            {
-                "classes": ("collapse", "wide"),
-                "fields": [
-                    "seo_title",
-                    "seo_description",
-                    "seo_h1",
-                    "is_published",
-                    "is_index",
-                    "is_follow",
-                ],
-            },
-        ),
-    ]
-
-
 class BorderCountryInline(admin.TabularInline):
     model = BorderCountry
     extra = 2
@@ -122,7 +77,7 @@ class CountryAdmin(admin.ModelAdmin):
         "slug",
         "is_published",
     )
-    # list_filter = ['name']
+    list_filter = ["region"]
     search_fields = ["name", "iso_code_a2"]
     readonly_fields = ["updated_date", "created_date"]
     inlines = (BorderCountryInline, CurrencyInline)
@@ -131,7 +86,7 @@ class CountryAdmin(admin.ModelAdmin):
             None,
             {
                 "fields": [
-                    "subregion",
+                    "region",
                     "name",
                     "iso_code_a2",
                     "slug",
@@ -408,9 +363,33 @@ class FlagFactAdmin(admin.ModelAdmin):
     ]
 
 
+class RegionAdmin(admin.ModelAdmin):
+    prepopulated_fields = {"slug": ("name",)}
+    list_editable = ("ordering", "is_published",)
+    list_display = ("name", "slug", "parent", "ordering", "is_published",)
+    list_filter = ["parent"]
+    search_fields = ["name", "parent__name"]
+    fieldsets = [
+        (None, {"fields": ["parent", "name", "slug", "ordering", "description"]}),
+        (
+            _("SEO"),
+            {
+                "classes": ("collapse", "wide"),
+                "fields": [
+                    "seo_title",
+                    "seo_description",
+                    "seo_h1",
+                    "is_published",
+                    "is_index",
+                    "is_follow",
+                ],
+            },
+        ),
+    ]
+
+
 admin.site.register(Currency, CurrencyAdmin)
 admin.site.register(Region, RegionAdmin)
-admin.site.register(Subregion, SubregionAdmin)
 admin.site.register(Country, CountryAdmin)
 admin.site.register(ColorGroup, ColorGroupAdmin)
 admin.site.register(Color, ColorAdmin)
@@ -419,3 +398,52 @@ admin.site.register(MainFlag, MainFlagAdmin)
 admin.site.register(FlagEmoji, FlagEmojiAdmin)
 admin.site.register(HistoricalFlag, HistoricalFlagAdmin)
 admin.site.register(FlagFact, FlagFactAdmin)
+
+# admin.site.register(Region, RegionAdmin)
+# admin.site.register(Subregion, SubregionAdmin)
+
+
+# class RegionAdmin(admin.ModelAdmin):
+#     prepopulated_fields = {"slug": ("name",)}
+#     list_display = ("name", "slug")
+#     search_fields = ["name"]
+#     fieldsets = [
+#         (None, {"fields": ["name", "slug", "description"]}),
+#         (
+#             _("SEO"),
+#             {
+#                 "classes": ("collapse", "wide"),
+#                 "fields": [
+#                     "seo_title",
+#                     "seo_description",
+#                     "seo_h1",
+#                     "is_published",
+#                     "is_index",
+#                     "is_follow",
+#                 ],
+#             },
+#         ),
+#     ]
+
+
+# class SubregionAdmin(admin.ModelAdmin):
+#     prepopulated_fields = {"slug": ("name",)}
+#     list_display = ("name", "slug", "region")
+#     search_fields = ["name", "region"]
+#     fieldsets = [
+#         (None, {"fields": ["region", "name", "slug", "description"]}),
+#         (
+#             _("SEO"),
+#             {
+#                 "classes": ("collapse", "wide"),
+#                 "fields": [
+#                     "seo_title",
+#                     "seo_description",
+#                     "seo_h1",
+#                     "is_published",
+#                     "is_index",
+#                     "is_follow",
+#                 ],
+#             },
+#         ),
+#     ]
