@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load i18n my_filter %}
+
+{% block breadcrumb %}
+<div class="pt-3">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'flags:flags-list' %}">Главная</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'flags:regions-list' %}">Регионы мира</a></li>
+      </ol>
+    </nav>
+  </div>
+</div>
+{% endblock breadcrumb %}
+
+{% block content %}
+<div class="py-3">
+  <div class="container">
+    <div class="row">
+      <div class="py-1 py-md-3 col-12 d-flex justify-content-center">
+        <h1>Регионы</h1>
+      </div>
+
+      {% for region in regions %}
+      {% if not region.parent %}
+      <div class="py-1 py-md-3 col-4">
+      {% if region.is_published %}
+        <h2><a href="{% url 'flags:region-flags' region.slug %}">{{region}}</a></h2>
+      {% elif request.user.is_superuser %}
+        <h2 class="draft"><a href="{% url 'flags:region-flags' region.slug %}">{{region}}</a></h2>
+      {% endif %}
+        <ul>
+        {% for subregion in region.subregions.all %}
+        {% if subregion.is_published %}
+          <li><a href="{% url 'flags:subregion-flags' region.slug subregion.slug %}">{{subregion}}</a></li>
+        {% elif request.user.is_superuser %}
+
+         <li class="draft"><a href="{% url 'flags:subregion-flags' region.slug subregion.slug %}">{{subregion}}</a></li>
+        {% endif %}
+
+        {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+      {% endfor %}
+
+
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{# SEO block #}
+{# Canonical #}
+{% block canonical %}{% url 'flags:regions-list' %}{% endblock canonical %}
+
+{# Meta title #}
+{% block meta_title %}{% endblock meta_title %}
+
+{# Meta description #}
+{% block meta_description %}{% endblock meta_description %}
+
+{# Meta keywords #}
+{% block meta_keywords %}{% endblock meta_keywords %}
+
+{% block meta_robots %}
+noindex,follow
+{% endblock meta_robots %}
