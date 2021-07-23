@@ -21,25 +21,25 @@
           </li>
 
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="" id="navbarDropdownMenuLink" data-toggle="dropdown"
+            <a class="nav-link dropdown-toggle" href="{% url 'flags:regions-list' %}" id="navbarDropdownMenuLink" data-toggle="dropdown"
               aria-haspopup="true" aria-expanded="false">
-              По регионам
+              Регионы мира
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
               {% for region in regions_menu %}
 
-              {% if region.subregion.all %}
-              <li class="dropdown-submenu"><a class="dropdown-item dropdown-toggle" href="#">{{region.name}}</a>
+              {% if region.subregions.all %}
+              <li class="dropdown-submenu"><a class="dropdown-item dropdown-toggle" href="{% url 'flags:region-flags' region.slug %}">{{region.name}}</a>
 
                 <ul class="dropdown-menu">
-                  {% for sub in region.subregion.all %}
-                  <li><a class="dropdown-item" href="#">{{sub.name}} ({{sub.countries.all|length}})</a></li>
+                  {% for subregion in region.subregions.all %}
+                  <li><a class="dropdown-item" href="{% url 'flags:subregion-flags' region.slug subregion.slug %}">{{subregion.name}} ({{subregion.countries.all|length}})</a></li>
                   {% endfor %}
                 </ul>
               </li>
 
               {% else %}
-              <li><a class="dropdown-item" href="#">{{region.name}}</a></li>
+              <li><a class="dropdown-item" href="{% url 'flags:region-flags' region.slug %}">{{region.name}}</a></li>
               {% endif %}
 
               {% endfor %}
