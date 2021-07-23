@@ -12,6 +12,7 @@ class Seo(models.Model):
     """Abstract class for SEO fields"""
 
     slug = models.SlugField(max_length=100, unique=True)
+    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
     seo_title = models.CharField(verbose_name=_("SEO Title"), max_length=250, blank=True)
     seo_description = models.TextField(max_length=400, verbose_name=_("SEO Description"), blank=True)
     seo_h1 = models.CharField(verbose_name=_("SEO H1"), max_length=250, blank=True)
