@@ -134,10 +134,22 @@ class RegionDetailView(DetailView):
         return context
 
 
-def region_flags(request, slug):
-    template_name = "flags/region-list.html"
-    region = get_object_or_404(Subregion, slug=slug)
-    countries = region.countries.all()
+def flags_by_region(request, region_slug, subregion_slug=None):
+    template_name = "flags/flags-by-region.html"
+    if subregion_slug:
+        region = get_object_or_404(Region, slug=subregion_slug)
+        if not region.is_published and not request.user.is_superuser:
+            raise Http404
+        else:
+            countries = region.countries.all()
+    else:
+        region = get_object_or_404(Region, slug=region_slug)
+        if not region.is_published and not request.user.is_superuser:
+            raise Http404
+        else:
+            subregions = region.subregions.filter(is_published=True)
+            countries = Country.objects.filter(region__in=subregions).order_by("ordering")
+
     flags = MainFlag.objects.filter(country__in=countries)
 
     context = {"region": region, "flags": flags}
