@@ -21,7 +21,6 @@
 {# Main screen #}
 <div class="py-3 py-xl-5 bg-light">
     <div class="container">
-
         <div class="row">
             <div class="py-1 py-md-3 col-xs-12 col-sm-12 col-md-12 col-lg-12 d-flex justify-content-center">
                 <h1>{% if flag.seo_h1%}{{flag.seo_h1}}{% else %}{{flag.title}}{%endif%}</h1>
@@ -49,7 +48,7 @@
             </div>
             <div class="py-3 col-xs-12 col-sm-12 col-md-12 col-lg-7">
                 <p>
-                    {{country.name}} - государство, расположенное в регионе {{country.subregion}},
+                    {{country.name}} - {{country.region.parent}} государство, расположенное в регионе {{country.region}},
                     столицей которого является город {{country.ru_capital_name}}.
                 </p>
 
