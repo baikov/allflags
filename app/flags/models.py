@@ -60,8 +60,18 @@ class Currency(models.Model):
 
 
 class Region(Seo, models.Model):
+    parent = models.ForeignKey(
+        "self",
+        verbose_name=_("Parent name"),
+        on_delete=models.PROTECT,
+        related_name="subregions",
+        blank=True,
+        null=True,
+    )
     name = models.CharField(verbose_name=_("Region name"), max_length=250)
     description = models.TextField(verbose_name=_("Region description"), blank=True)
+
+    objects = PublishedQuerySet.as_manager()
 
     class Meta:
         verbose_name = _("Region")
@@ -70,29 +80,28 @@ class Region(Seo, models.Model):
     def __str__(self):
         return f"{self.name}"
 
-    def get_absolute_url(self):
-        return reverse("flags:region-detail", kwargs={"slug": self.slug})
-
-
-class Subregion(Seo, models.Model):
-    name = models.CharField(verbose_name=_("Region name"), max_length=250)
-    description = models.TextField(verbose_name=_("Region description"), blank=True)
-    region = models.ForeignKey(Region, on_delete=models.PROTECT, related_name="subregion")
-
-    class Meta:
-        verbose_name = _("Subregion")
-        verbose_name_plural = _("Subregions")
-
-    def __str__(self):
-        return f"{self.name} ({self.region})"
+    @property
+    def get_parent(self):
+        """Rreturn name of parent region"""
+        return self.parent
 
     # def get_absolute_url(self):
-    #     return reverse('flags:regions', kwargs={'iso_code': self.iso_code})
+    #     if self.parent:
+    #         return '/%s/%s/' % (self.parent.slug, self.slug)
+    #     else:
+    #         return '/%s/' % (self.slug)
 
-    @property
-    def get_region(self):
-        """Rreturn name of parent region"""
-        return self.region
+    def get_absolute_url(self):
+        if self.parent:
+            return reverse(
+                'flags:subregion-flags',
+                kwargs={'region': self.parent.slug, 'subregion': self.slug}
+            )
+        else:
+            return reverse('flags:region-flags', args=[self.slug])
+
+    # def get_absolute_url(self):
+    #     return reverse("flags:region-detail", kwargs={"slug": self.slug})
 
 
 class Country(Seo, models.Model):
@@ -105,7 +114,8 @@ class Country(Seo, models.Model):
     local_short_name = models.CharField(verbose_name=_("Short local name"), max_length=250, blank=True)
     ru_capital_name = models.CharField(verbose_name=_("Capital name"), max_length=250, blank=True)
     en_capital_name = models.CharField(verbose_name="Столица на английском", max_length=250, blank=True)
-    subregion = models.ForeignKey(Subregion, on_delete=models.PROTECT, related_name="countries")
+    # subregion = models.ForeignKey(Subregion, on_delete=models.PROTECT, related_name="countries")
+    region = models.ForeignKey(Region, on_delete=models.PROTECT, related_name="countries", blank=True, null=True)
     border_countries = models.ManyToManyField(
         "self",
         verbose_name=_("Border countries"),
@@ -359,3 +369,39 @@ class FlagFact(models.Model):
     label = models.CharField(verbose_name=_("Fact label"), max_length=50, blank=True)
     text = models.TextField(verbose_name=_("Fact text"), blank=True)
     image = models.ImageField(verbose_name=_("Fact image"), blank=True)
+
+
+# class Region(Seo, models.Model):
+#     name = models.CharField(verbose_name=_("Region name"), max_length=250)
+#     description = models.TextField(verbose_name=_("Region description"), blank=True)
+
+#     class Meta:
+#         verbose_name = _("Region")
+#         verbose_name_plural = _("Regions")
+
+#     def __str__(self):
+#         return f"{self.name}"
+
+#     def get_absolute_url(self):
+#         return reverse("flags:region-detail", kwargs={"slug": self.slug})
+
+
+# class Subregion(Seo, models.Model):
+#     name = models.CharField(verbose_name=_("Region name"), max_length=250)
+#     description = models.TextField(verbose_name=_("Region description"), blank=True)
+#     region = models.ForeignKey(Region, on_delete=models.PROTECT, related_name="subregion")
+
+#     class Meta:
+#         verbose_name = _("Subregion")
+#         verbose_name_plural = _("Subregions")
+
+#     def __str__(self):
+#         return f"{self.name} ({self.region})"
+
+#     # def get_absolute_url(self):
+#     #     return reverse('flags:regions', kwargs={'iso_code': self.iso_code})
+
+#     @property
+#     def get_region(self):
+#         """Rreturn name of parent region"""
+#         return self.region
