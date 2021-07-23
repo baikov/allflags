@@ -120,18 +120,27 @@ class ColorDetailView(DetailView):
         return context
 
 
-class RegionDetailView(DetailView):
-    model = Subregion
+class RegionListView(ListView):
+    model = Region
     template_name = "flags/region-list.html"
-    context_object_name = "region"
+    context_object_name = "regions"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        flags = MainFlag.objects.filter(country__subregion=self.object.id)
+    def get_queryset(self):
+        regions = Region.objects.filter(parent=None)
+        if not self.request.user.is_superuser:
+            regions = regions.published()
+        return regions.order_by("ordering")
 
-        context["flags"] = flags
-        context["reg"] = self.object.region
-        return context
+
+# def region_list(request):
+#     template_name = "flags/region-list.html"
+#     regions = get_object_or_404(Subregion, slug=slug)
+#     countries = region.countries.all()
+#     flags = MainFlag.objects.filter(country__in=countries)
+
+#     context = {"region": region, "flags": flags}
+
+#     return render(request, template_name, context)
 
 
 def flags_by_region(request, region_slug, subregion_slug=None):
