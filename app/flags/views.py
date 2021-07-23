@@ -1,21 +1,22 @@
 from django.db.models import Count
 from django.http import Http404
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404, render
 
 # from django.shortcuts import render
-from django.views.generic import ListView, DetailView
+from django.views.generic import DetailView, ListView
 
 from .models import (
-    ColorGroup,
-    MainFlag,
-    Country,
-    HistoricalFlag,
     BorderCountry,
     Color,
+    ColorGroup,
+    Country,
     Currency,
-    Region,
-    Subregion,
     FlagElement,
+    HistoricalFlag,
+    MainFlag,
+    Region,
+    # Region,
+    # Subregion,
 )
 
 
