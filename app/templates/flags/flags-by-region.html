@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% load i18n my_filter %}
+
+{% block breadcrumb %}
+<div class="pt-3">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'flags:flags-list' %}">Главная</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'flags:regions-list' %}">Флаги по регионам</a></li>
+        {% if region.parent %}
+        <li class="breadcrumb-item"><a href="{% url 'flags:region-flags' region.parent.slug %}">{{region.parent}}</a></li>
+        {% endif %}
+        <li class="breadcrumb-item active" aria-current="page">
+          {{region.name}}
+        </li>
+      </ol>
+    </nav>
+  </div>
+</div>
+{% endblock breadcrumb %}
+
+{% block content %}
+
+{# H1 #}
+<div class="py-3">
+  <div class="container">
+      <div class="row">
+        <div class="py-1 py-md-3 col-12 d-flex justify-content-center">
+        {% if region.seo_h1 %}
+          <h1>{{region.seo_h1}}</h1>
+        {% else %}
+          <h1>Флаги стран региона {{region.name}}</h1>
+        {% endif %}
+        </div>
+      </div>
+  </div>
+</div>
+
+{# Subregions #}
+{% if region.subregions.all %}
+<div class="py-3 bg-light">
+  <div class="container">
+    <div class="row">
+
+      {% for subregion in region.subregions.all %}
+
+        {% if subregion.is_published %}
+        <div class="py-1 py-md-3 col-12 col-md-3 d-flex justify-content-center">
+          <a href="{% url 'flags:subregion-flags' region.slug subregion.slug %}">{{subregion}}</a>
+        </div>
+        {% elif request.user.is_superuser %}
+        <div class="py-1 py-md-3 col-12 col-md-3 d-flex justify-content-center draft">
+          <a href="{% url 'flags:subregion-flags' region.slug subregion.slug %}">{{subregion}}</a>
+        </div>
+        {% endif %}
+
+      {% endfor %}
+
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{# Flags list #}
+<div class="py-3">
+  <div class="container">
+    <div class="row">
+      {% for flag in flags %}
+      <div class="col-4 col-md-3 col-lg-2 col-xl-2">
+        <div class="flag-card hover-country">
+
+          <a href="{% url 'flags:flag-detail' flag.slug %}">
+            <picture>
+              <source type="image/webp" srcset="{{flag.country.iso_code_a2|get_img_path:'w320'}}.webp">
+              <source type="image/png" srcset="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png">
+
+              <img src="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png" alt="{{ flag.title }}"
+                title="{{ flag.title }} {{flag.name}} - картинка" class="image">
+            </picture>
+          </a>
+
+          <div class="middle">
+            <div class="text">
+              <a href="{% url 'flags:flag-detail' flag.slug %}">
+                {{flag.title}}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{# SEO block #}
+{# Canonical #}
+{% block canonical %}
+  {% if region.parent %}
+    {% url 'flags:subregion-flags' region.parent.slug region.slug %}
+  {% else %}
+    {% url 'flags:region-flags' region.slug %}
+  {% endif %}
+{% endblock canonical %}
+
+{# Meta title #}
+{% block meta_title %}
+{{region.seo_title}}
+{% endblock meta_title %}
+
+{# Meta description #}
+{% block meta_description %}
+{{region.seo_description}}
+{% endblock meta_description %}
+
+{% block meta_robots %}
+  {% if region.is_index %}index,{% else %}noindex,{% endif %}
+  {% if region.is_follow %}follow{% else %}nofollow{% endif %}
+{% endblock meta_robots %}
