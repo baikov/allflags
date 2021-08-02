@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n my_filter %}
+{% load i18n my_filter humanize %}
 {% load static %}
 {% get_media_prefix as MEDIA_URL %}
 
@@ -391,6 +391,7 @@
 
         <div class="row">
 
+            {% if colors %}
             <div class="py-3 col-md-12 col-sm-12 col-xs-12">
                 <div class="row">
                 {% for color in colors %}
@@ -495,6 +496,7 @@
                 </div>
             </div>
 
+
             <div class="py-3 col-md-12 col-sm-12 col-xs-12">
                 <div class="alert alert-primary" role="alert">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
@@ -510,6 +512,7 @@
                     </a>
                 </div>
             </div>
+            {% endif %}
 
                 {% if flag.design_description and flag.construction_image or flag.elements.all|length > 0 %}
                 <div class="py-3 col-xs-12 col-sm-12 col-md-8 col-lg-8">
@@ -598,16 +601,16 @@
 <div class="py-3 py-xl-5 bg-light" id="country">
     <div class="container">
 
-        <h2 class="py-3">Краткая информация о {{country.ru_name_dat}}</h2>
+        <h2 class="py-3">Краткая информация о {{country.ru_name_pre}}</h2>
         <div class="row">
             <div class="py-3 col-12 col-md-8">
                 <p>
                     {{country.name}} занимает {{country.area_global_rank}} место в мире по размерам.
-                    Площадь территории страны {{country.area_total}} км<sup>2</sup>,
-                    из которых {{country.area_land}} км<sup>2</sup> - суша. Протяженность береговой линии
-                    {{country.coastline}} км.
+                    Площадь территории страны {{country.area_total|intcomma}} км<sup>2</sup>,
+                    из которых {{country.area_land|intcomma}} км<sup>2</sup> - суша. Протяженность береговой линии
+                    {{country.coastline|intcomma}} км.
                     По данным на {{country.population_date}} год численность населения {{country.ru_name_rod}}
-                    около {{country.population_total}} человек - это {{country.population_global_rank}} место в
+                    около {{country.population_total|intcomma}} человек - это {{country.population_global_rank}} место в
                     мире.
                 </p>
                 <p>
@@ -629,16 +632,8 @@
                         </tr>
                         <tr>
                             <td>Регион</td>
-                            <td>{{country.subregion.region}} - {{country.subregion.name}}</td>
+                            <td>{{country.region.parent}} - {{country.region.name}}</td>
                         </tr>
-                        <!-- <tr>
-                            <td>Валюта</td>
-                            <td>
-                                {% for cur in currencies %}
-                                {{cur.ru_name}} {{cur.symbol}} ({{cur.iso_code}}, {{cur.iso_num}})
-                                {% endfor %}
-                            </td>
-                        </tr> -->
                         <tr>
                             <td>Валюта</td>
                             <td>
@@ -668,11 +663,11 @@
                         </tr>
                         <tr>
                             <td>ВВП (ППС) на душу</td>
-                            <td>{{country.gdp_value}} $ ({{country.gdp_date}})</td>
+                            <td>{{country.gdp_value|intcomma}} $ ({{country.gdp_date}})</td>
                         </tr>
                         <tr>
                             <td>Внешний долг</td>
-                            <td>{{country.external_debt_value}} $ ({{country.external_debt_date}})</td>
+                            <td>{{country.external_debt_value|intcomma}} $ ({{country.external_debt_date}})</td>
                         </tr>
                     </tbody>
                 </table>
