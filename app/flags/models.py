@@ -276,7 +276,7 @@ class FlagElement(Seo, models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             # self.slug = custom_slugify(FlagElement, self.name)
-            self.slug = slugify(self.name)
+            self.slug = custom_slugify(self.name)
         super(FlagElement, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -344,16 +344,20 @@ class MainFlag(Seo, models.Model):
 
     def save(self, *args, **kwargs):
         country = Country.objects.get(name=self.country)
-        if not self.title and country.ru_name_rod:
+
+        if self.title == "" and country.ru_name_rod:
             self.title = f"Флаг {country.ru_name_rod}"
         if not self.seo_title:
             # self.seo_title = f"{self.title} {self.emoji} цвета, история, скачать"
             self.seo_title = f"{self.title} цвета, история, скачать"
         if not self.slug:
-            if self.title:
-                self.slug = slugify(self.title)
+            # if country.en_short_form:
+            #     self.slug = slugify(f'flag of {country.en_short_form}', allow_unicode=True)
+            if country.ru_name_rod:
+                self.slug = custom_slugify(f'Флаг {country.ru_name_rod}')
             else:
-                self.slug = f"flag-{self.id}"
+                self.slug = f"flag-id-{self.id}"
+
         super(MainFlag, self).save(*args, **kwargs)
 
     def __str__(self):
