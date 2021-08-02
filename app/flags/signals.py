@@ -1,12 +1,15 @@
 import logging
 import os
-from .tasks import get_flag_img_task
 
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
-from utils.flag_image import get_historical_flag_img, get_flag_img
+# from slugify.slugify import slugify as ss
+# from django.utils.text import slugify
+from app.utils.ru_slugify import custom_slugify
+from app.utils.flag_image import get_historical_flag_img
 
 from .models import BorderCountry, Country, HistoricalFlag, MainFlag
+from .tasks import get_flag_img_task
 
 logger = logging.getLogger(__name__)
 
@@ -65,28 +68,51 @@ def after_delete_historical_flag(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=MainFlag)
-def on_create_flag(sender, instance, **kwargs):
-    if kwargs["created"]:
-        country = Country.objects.get(name=instance.country)
-        get_flag_img(country.iso_code_a2)
-    # else:
-    #     get_flag_img(instance.iso_code_a2)
-
-
-@receiver(pre_save, sender=MainFlag)
-def on_update_flag(sender, instance, **kwargs):
-    if instance.dl_imgs:
+def on_create_or_update_flag(sender, instance, **kwargs):
+    if kwargs["created"] or instance.dl_imgs:
         country = Country.objects.get(name=instance.country)
         result = get_flag_img_task.delay(country.iso_code_a2)
         task_id = result.task_id
         # get_flag_img(country.iso_code_a2)
         instance.dl_imgs = False
+    # else:
+    #     get_flag_img(instance.iso_code_a2)
+
+
+# @receiver(pre_save, sender=MainFlag)
+# def on_update_flag(sender, instance, **kwargs):
+#     if instance.dl_imgs:
+#         country = Country.objects.get(name=instance.country)
+#         result = get_flag_img_task.delay(country.iso_code_a2)
+#         task_id = result.task_id
+#         # get_flag_img(country.iso_code_a2)
+#         instance.dl_imgs = False
 
 
 @receiver(post_save, sender=Country)
 def create_country_flag(sender, instance, **kwargs):
     if kwargs["created"]:
-        flag, _ = MainFlag.objects.get_or_create(country=instance, slug=instance.iso_code_a2)
+        # flag, _ = MainFlag.objects.get_or_create(country=instance)
+
+        if instance.ru_name_rod:
+
+            slug = custom_slugify(f'Флаг {instance.ru_name_rod}')
+        else:
+            slug = custom_slugify(f'Флаг {instance.name}')
+        # if instance.en_short_form:
+        #     slug = slugify(f'flag of {instance.en_short_form}')
+        # else:
+        #     slug = slugify(f'{instance.iso_code_a2} flag')
+
+        try:
+            flag = MainFlag.objects.get(country=instance)
+        except MainFlag.DoesNotExist:
+            flag = MainFlag(
+                country=instance,
+                title=f'Флаг {instance.ru_name_rod}',
+                slug=slug,
+            )
+            flag.save()
 
 
 """
