@@ -27,6 +27,36 @@ from .models import (
 )
 
 
+class ParentRegionListFilter(admin.SimpleListFilter):
+    title = _('Main region')
+
+    parameter_name = 'main-region'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('main', _('Parent')),
+            ('asia', _('Asia')),
+            ('europe', _('Europe')),
+            ('america', _('America')),
+            ('africa', _('Africa')),
+            ('oceaniya', _('Okeaniya')),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'main':
+            return queryset.filter(parent=None)
+        if self.value() == 'asia':
+            return queryset.filter(parent__name="Азия")
+        if self.value() == 'europe':
+            return queryset.filter(parent__name="Европа")
+        if self.value() == 'america':
+            return queryset.filter(parent__name="Америка")
+        if self.value() == 'africa':
+            return queryset.filter(parent__name="Африка")
+        if self.value() == 'oceaniya':
+            return queryset.filter(parent__name="Океания")
+
+
 class SCSV(base_formats.CSV):
     def get_title(self):
         return "scsv"
@@ -366,8 +396,9 @@ class FlagFactAdmin(admin.ModelAdmin):
 class RegionAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
     list_editable = ("ordering", "is_published",)
-    list_display = ("name", "slug", "parent", "ordering", "is_published",)
-    list_filter = ["parent"]
+    list_display = ("id","name", "slug", "parent", "ordering", "is_published",)
+    # list_filter = ["parent"]
+    list_filter = (ParentRegionListFilter,)
     search_fields = ["name", "parent__name"]
     fieldsets = [
         (None, {"fields": ["parent", "name", "slug", "ordering", "description"]}),
