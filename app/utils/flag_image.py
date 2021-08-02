@@ -50,6 +50,7 @@ def get_flag_img(iso2):
     vector = ["svg", "ai", "pdf", "eps"]
     cdn = "https://flagcdn.com"
     save_to_path = f"{MEDIA_ROOT}/national-flags"
+    Path(save_to_path).mkdir(parents=True, exist_ok=True)
     iso2 = iso2.lower()
     for format in bitmap:
         for size in sizes:
