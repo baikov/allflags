@@ -3,7 +3,9 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from slugify import slugify
+# from slugify import slugify as ss
+# from django.utils.text import slugify
+from app.utils.ru_slugify import custom_slugify
 
 from app.utils.color import Colorize
 
@@ -112,8 +114,8 @@ class Country(Seo, models.Model):
     conventional_long_name = models.CharField(verbose_name=_("Official name"), max_length=250, blank=True)
     local_long_name = models.CharField(verbose_name=_("Official local name"), max_length=250, blank=True)
     local_short_name = models.CharField(verbose_name=_("Short local name"), max_length=250, blank=True)
-    ru_capital_name = models.CharField(verbose_name=_("Capital name"), max_length=250, blank=True)
-    en_capital_name = models.CharField(verbose_name="Столица на английском", max_length=250, blank=True)
+    ru_capital_name = models.CharField(verbose_name=_("Capital name"), max_length=600, blank=True)
+    en_capital_name = models.CharField(verbose_name="Столица на английском", max_length=600, blank=True)
     # subregion = models.ForeignKey(Subregion, on_delete=models.PROTECT, related_name="countries")
     region = models.ForeignKey(Region, on_delete=models.PROTECT, related_name="countries", blank=True, null=True)
     border_countries = models.ManyToManyField(
@@ -123,22 +125,22 @@ class Country(Seo, models.Model):
         symmetrical=False,
         related_name="border_to+",
     )
-    anthem = models.URLField(verbose_name=_("Anthem URL"), max_length=250, blank=True)
-    motto = models.CharField(verbose_name=_("Motto"), max_length=250, blank=True)
+    anthem = models.URLField(verbose_name=_("Anthem URL"), max_length=500, blank=True)
+    motto = models.CharField(verbose_name=_("Motto"), max_length=500, blank=True)
     ru_motto = models.CharField(verbose_name=_("Motto Ru translate"), max_length=250, blank=True)
     official_language = models.CharField(verbose_name=_("Official language"), max_length=50, blank=True)
-    internet_tld = models.CharField(verbose_name=_("Internet domain"), max_length=10, blank=True)
-    phone_code = models.CharField(verbose_name=_("Phone code"), max_length=10, blank=True)
+    internet_tld = models.CharField(verbose_name=_("Internet domain"), max_length=250, blank=True)
+    phone_code = models.CharField(verbose_name=_("Phone code"), max_length=250, blank=True)
 
-    en_long_form = models.CharField(verbose_name=_("Official long name (en)"), max_length=250, blank=True)
+    en_long_form = models.CharField(verbose_name=_("Official long name (en)"), max_length=500, blank=True)
     en_short_form = models.CharField(verbose_name=_("Short name (en)"), max_length=250, blank=True)
     # Extended country information
-    ru_government_type = models.CharField(verbose_name=_("Government type (ru)"), max_length=250, blank=True)
-    en_government_type = models.CharField(verbose_name=_("Government type (en)"), max_length=250, blank=True)
-    ru_chief_of_state = models.CharField(verbose_name=_("Chief of state (ru)"), max_length=250, blank=True)
-    en_chief_of_state = models.CharField(verbose_name=_("Chief of state (en)"), max_length=250, blank=True)
-    ru_head_of_government = models.CharField(verbose_name=_("Head of government (ru)"), max_length=250, blank=True)
-    en_head_of_government = models.CharField(verbose_name=_("Head of government (en)"), max_length=250, blank=True)
+    ru_government_type = models.CharField(verbose_name=_("Government type (ru)"), max_length=700, blank=True)
+    en_government_type = models.CharField(verbose_name=_("Government type (en)"), max_length=700, blank=True)
+    ru_chief_of_state = models.CharField(verbose_name=_("Chief of state (ru)"), max_length=900, blank=True)
+    en_chief_of_state = models.CharField(verbose_name=_("Chief of state (en)"), max_length=900, blank=True)
+    ru_head_of_government = models.CharField(verbose_name=_("Head of government (ru)"), max_length=900, blank=True)
+    en_head_of_government = models.CharField(verbose_name=_("Head of government (en)"), max_length=900, blank=True)
     area_total = models.CharField(verbose_name=_("Total area"), max_length=250, blank=True)
     area_land = models.CharField(verbose_name=_("Land area"), max_length=250, blank=True)
     area_water = models.CharField(verbose_name=_("Water area"), max_length=250, blank=True)
