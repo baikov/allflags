@@ -48,7 +48,6 @@ services:
     volumes:
       # - prod_media:/app/app/media:z
       - new_prod_media:/app/app/media:z
-      # - ./app/media:/app/app/media:z
 
   postgres:
     build:
@@ -126,8 +125,7 @@ services:
     container_name: prod_media_nginx
     volumes:
       # - prod_media:/usr/share/nginx/media:z
-      - new_prod_media:/usr/share/nginx/media:ro
-      # - ./app/media:/usr/share/nginx/media:z
+      - new_prod_media:/usr/share/nginx/media
       - ./compose/production/nginx:/etc/nginx/conf.d
       # - ./log/nginx:/var/log/nginx
     expose:
