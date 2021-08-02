@@ -3,9 +3,10 @@ version: '3.9'
 volumes:
   production_postgres_data: {}
   production_postgres_data_backups: {}
-  prod_media:
-    external: true
-    name: prod_media
+  new_prod_media: {}
+  # prod_media:
+  #   external: true
+  #   name: prod_media
 
 services:
   django: &django
@@ -45,7 +46,8 @@ services:
       - "traefik.docker.network=front"
 
     volumes:
-      - prod_media:/app/app/media:z
+      # - prod_media:/app/app/media:z
+      - new_prod_media:/app/app/media:z
 
   postgres:
     build:
@@ -117,6 +119,36 @@ services:
       - "traefik.docker.network=front"
     expose:
       - 5555
+
+  nginx:
+    image: nginx:1.20-alpine
+    container_name: prod_media_nginx
+    volumes:
+      # - prod_media:/usr/share/nginx/media:z
+      - new_prod_media:/usr/share/nginx/media
+      - ./compose/production/nginx:/etc/nginx/conf.d
+      # - ./log/nginx:/var/log/nginx
+    expose:
+      - 80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=front"
+      - "traefik.http.routers.nginx.priority=70"
+
+      - "traefik.http.routers.nginx.rule=(Host(`${DOMAIN}`) || Host(`www.${DOMAIN}`)) && PathPrefix(`/media`)"
+      # - "traefik.http.routers.nginx.rule=PathPrefix(`/media`)"
+      - "traefik.http.routers.nginx.entrypoints=websecure"
+      - "traefik.http.routers.nginx.tls=true"
+      - "traefik.http.routers.nginx.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.nginx.middlewares=custom-redirect@file, security-headers"
+      - "traefik.http.routers.nginx.tls.options=default"
+      - "traefik.http.services.nginx.loadbalancer.server.port=80"
+
+    restart: unless-stopped
+    # depends_on:
+    #   - reverse-proxy
+    networks:
+      - front
 
 networks:
   front:
