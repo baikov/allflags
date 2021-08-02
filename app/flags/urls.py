@@ -16,7 +16,7 @@ from .views import (
 app_name = "flags"
 urlpatterns = [
     path("", FlagListView.as_view(), name="flags-list"),
-    path("<slug:slug>/", FlagDetailView.as_view(), name="flag-detail"),
+    path("countries/<slug:slug>/", FlagDetailView.as_view(), name="flag-detail"),
     # By regions
     path("regions/", RegionListView.as_view(), name="regions-list"),
     path("regions/<slug:region_slug>/", flags_by_region, name="region-flags"),
