@@ -21,18 +21,27 @@
 
   {% block css %}
 
-  <!-- Your stuff: Third-party CSS libraries go here -->{% compress css %}
+  <!-- Your stuff: Third-party CSS libraries go here -->
+  <link href="https://cdn.jsdelivr.net/gh/StephanWagner/svgMap@v2.0.3/dist/svgMap.min.css" rel="stylesheet">
+  {% compress css %}
   <!-- This file stores project-specific CSS -->
   <link href="{% static 'css/project.css' %}" rel="stylesheet">{% endcompress %}
   {% endblock %}
   <!-- Le javascript ================================================== -->
   {# Placed at the top of the document so pages load faster with defer #}
   {% block javascript %}
-  <!-- Vendor dependencies bundled as one file-->{% compress js %}
-  <script defer src="{% static 'js/vendors.js' %}"></script>{% endcompress %}
 
-  <!-- place project specific Javascript in this file -->{% compress js %}
-  <script defer src="{% static 'js/project.js' %}"></script>{% endcompress %}
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/StephanWagner/svgMap@v2.0.3/dist/svgMap.min.js"></script>
+
+  <!-- place project specific Javascript in this file -->
+
+  <!-- Vendor dependencies bundled as one file-->
+
+  <script defer src="{% static 'js/vendors.min.js' %}"></script>
+  <script defer src="{% static 'js/slick.min.js' %}"></script>
+  <!-- place project specific Javascript in this file -->
+  {% compress js %}<script defer src="{% static 'js/project.js' %}"></script>{% endcompress %}
 
   {% endblock javascript %}
 
