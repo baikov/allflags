@@ -45,7 +45,7 @@ services:
       - "traefik.docker.network=front"
 
     volumes:
-      - prod_media:/app/media:z
+      - prod_media:/app/app/media:z
 
   postgres:
     build:
