@@ -3,7 +3,7 @@ version: '3.9'
 volumes:
   production_postgres_data: {}
   production_postgres_data_backups: {}
-  prod_media: 
+  prod_media:
     external: true
     name: prod_media
 
@@ -45,7 +45,7 @@ services:
       - "traefik.docker.network=front"
 
     volumes:
-      - prod_media:/app/name/media
+      - prod_media:/app/app/media
 
   postgres:
     build:
@@ -75,7 +75,7 @@ services:
     image: app_production_celeryworker
     command: /start-celeryworker
     networks:
-      - back   
+      - back
     labels:
       - traefik.enable=false
 
