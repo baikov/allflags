@@ -74,7 +74,7 @@ def on_create_or_update_flag(sender, instance, **kwargs):
         result = get_flag_img_task.delay(country.iso_code_a2)
         task_id = result.task_id
         # get_flag_img(country.iso_code_a2)
-    instance.dl_imgs = False
+        instance.dl_imgs = False
     # else:
     #     get_flag_img(instance.iso_code_a2)
 
