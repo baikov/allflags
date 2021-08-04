@@ -274,5 +274,6 @@ app/media/
 .vscode
 .ipython/
 .env
+backups/
 .envs/*
 env/
