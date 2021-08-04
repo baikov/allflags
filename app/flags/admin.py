@@ -1,29 +1,26 @@
+import tablib
 from django.contrib import admin
 from django.db import models
 from django.forms import TextInput
-from django.utils.translation import gettext_lazy as _
 from django.utils.html import format_html
+from django.utils.translation import gettext_lazy as _
 from import_export import resources
-
 # from import_export.admin import ImportExportModelAdmin
 from import_export.admin import ImportExportMixin
 from import_export.formats import base_formats
-import tablib
 
-from .models import (
+from .models import (  # Region,; Subregion,
     BorderCountry,
     Color,
     ColorGroup,
     Country,
     Currency,
     FlagElement,
-    # Region,
-    # Subregion,
-    MainFlag,
     FlagEmoji,
-    HistoricalFlag,
     FlagFact,
-    Region
+    HistoricalFlag,
+    MainFlag,
+    Region,
 )
 
 
