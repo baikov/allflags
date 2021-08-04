@@ -66,13 +66,17 @@ def create_countries(file):
                     area_global_rank=data["area"]["global_rank"] if data["area"]["global_rank"] else 9000,
                     population_total=data["population"]["total"] if data["population"]["total"] else 0,
                     population_date=data["population"]["date"],
-                    population_global_rank=data["population"]["global_rank"] if data["population"]["global_rank"] else 9000,
+                    population_global_rank=data["population"]["global_rank"]
+                    if data["population"]["global_rank"]
+                    else 9000,
                     gdp_value=data["gdp"]["value"] if data["gdp"]["value"] else 0,
                     gdp_date=data["gdp"]["date"],
                     gdp_global_rank=data["gdp"]["global_rank"] if data["gdp"]["global_rank"] else 9000,
                     external_debt_value=data["external_debt"]["value"] if data["external_debt"]["value"] else 0,
                     external_debt_date=data["external_debt"]["date"],
-                    external_debt_global_rank=data["external_debt"]["global_rank"] if data["external_debt"]["global_rank"] else 9000,
+                    external_debt_global_rank=data["external_debt"]["global_rank"]
+                    if data["external_debt"]["global_rank"]
+                    else 9000,
                     info_updated=data["updated"],
                 )
                 country.save()
