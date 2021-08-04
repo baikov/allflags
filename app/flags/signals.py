@@ -3,10 +3,9 @@ import os
 
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
-# from slugify.slugify import slugify as ss
-# from django.utils.text import slugify
-from app.utils.ru_slugify import custom_slugify
+
 from app.utils.flag_image import get_historical_flag_img
+from app.utils.ru_slugify import custom_slugify
 
 from .models import BorderCountry, Country, HistoricalFlag, MainFlag
 from .tasks import get_flag_img_task
