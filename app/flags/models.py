@@ -95,12 +95,9 @@ class Region(Seo, models.Model):
 
     def get_absolute_url(self):
         if self.parent:
-            return reverse(
-                'flags:subregion-flags',
-                kwargs={'region': self.parent.slug, 'subregion': self.slug}
-            )
+            return reverse("flags:subregion-flags", kwargs={"region": self.parent.slug, "subregion": self.slug})
         else:
-            return reverse('flags:region-flags', args=[self.slug])
+            return reverse("flags:region-flags", args=[self.slug])
 
     # def get_absolute_url(self):
     #     return reverse("flags:region-detail", kwargs={"slug": self.slug})
@@ -369,7 +366,7 @@ class MainFlag(Seo, models.Model):
             # if country.en_short_form:
             #     self.slug = slugify(f'flag of {country.en_short_form}', allow_unicode=True)
             if country.ru_name_rod:
-                self.slug = custom_slugify(f'Флаг {country.ru_name_rod}')
+                self.slug = custom_slugify(f"Флаг {country.ru_name_rod}")
             else:
                 self.slug = f"flag-id-{self.id}"
 
