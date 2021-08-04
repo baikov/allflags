@@ -1,8 +1,7 @@
 import json
 import os
 
-from app.flags.models import Country, Region
-
+from app.flags.models import BorderCountry, Country, Region
 from config.settings.base import MEDIA_ROOT
 
 # from django.utils.text import slugify
@@ -83,6 +82,29 @@ def create_countries(file):
                 print(f"+[Success] Country {country} created!")
 
 
-def add_border_countries():
-    # country.border_countries
-    pass
+def add_border_countries(file):
+    with open(os.path.join(MEDIA_ROOT, file), "r") as f:
+        neighbours_json = json.load(f)
+        print(f"+[Success] File {file} successfully opened!")
+    # Get data from json
+    for record in neighbours_json:
+        print(f"+[Success] {record[0]} - {record[1]} - {record[2]}")
+        try:
+            country = Country.objects.get(iso_code_a2=record[0])
+        except Country.DoesNotExist:
+            continue
+
+        try:
+            neighbour = Country.objects.get(iso_code_a2=record[1])
+        except Country.DoesNotExist:
+            continue
+
+        try:
+            neighbours_record = BorderCountry.objects.get(country=country, border_country=neighbour)
+            neighbours_record.border = int(record[2])
+            neighbours_record.save()
+            print(f"+[Warn!] Pair {country}-{neighbour} exist!")
+        except BorderCountry.DoesNotExist:
+            neighbours_record = BorderCountry(country=country, border_country=neighbour, border=int(record[2]))
+            neighbours_record.save()
+            print(f"+[Success] Record {country}-{neighbour} successfully saved!")
