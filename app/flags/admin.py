@@ -247,14 +247,18 @@ class ColorGroupAdmin(admin.ModelAdmin):
 
 class ColorAdmin(admin.ModelAdmin):
     # list_display = ('color_group', 'hex', 'rgb', 'cmyk', 'get_flags')
-    list_display = ("color_group", "color_html", "hex", "rgb", "cmyk")
+    list_display = ("color_group", "color_html", "hex", "rgb", "cmyk", "get_flags")
     search_fields = ["color_group", "hex", "rgb"]
     # list_filter = ['color_group']
     # inlines = [FlagInline]
 
     # def get_flags(self, obj):
-    #     return obj.flags.first()
-    # return obj.flags.all().values('title')
+    #     # return obj.flags.first()
+    #     flags = obj.flags.all().values('title')
+    #     flags_list = []
+    #     for flag in flags:
+    #         flags_list.append(flag["title"])
+    #     return flags_list
 
     def color_html(self, obj):
         return format_html(f'<div style="background-color:#{obj.hex};width:90%;height:1rem;"></div>')
