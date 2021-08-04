@@ -53,6 +53,15 @@ class FlagDetailView(DetailView):
         colors = Color.objects.filter(flags=self.object.id)
         context["colors"] = colors
 
+        # Get colors adjective
+        adj = ""
+        if len(colors) > 1:
+            for i in range(len(colors) - 1):
+                adj += str(colors[i].color_group.short_name).lower()
+                adj += "-"
+            adj += str(colors[len(colors) - 1].color_group.name).lower()
+        context["colors_adj"] = adj
+
         # Get flags with colors from same color groups
         if colors:
             for row in colors:
