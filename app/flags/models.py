@@ -3,11 +3,11 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+
+from app.utils.color import Colorize
 # from slugify import slugify as ss
 # from django.utils.text import slugify
 from app.utils.ru_slugify import custom_slugify
-
-from app.utils.color import Colorize
 
 
 class Seo(models.Model):
