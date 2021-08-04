@@ -320,7 +320,9 @@ class HistoricalFlag(models.Model):
 
 
 class FlagEmoji(Seo, models.Model):
-    flag = models.ForeignKey("MainFlag", verbose_name=_("Flag"), on_delete=models.CASCADE, related_name="emoji")
+    flag = models.ForeignKey(
+        "MainFlag", verbose_name=_("Flag"), on_delete=models.SET_NULL, related_name="emoji", blank=True, null=True
+    )
     unicode = models.CharField(verbose_name=_("Unicode"), max_length=50, blank=True)
     description = models.TextField(verbose_name=_("Emoji description"), blank=True)
 
