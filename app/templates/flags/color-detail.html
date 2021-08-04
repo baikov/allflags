@@ -18,15 +18,29 @@
 {% endblock breadcrumb %}
 
 {% block content %}
+
+{# H1 #}
+<div class="py-3">
+  <div class="container">
+      <div class="row">
+        <div class="py-1 py-md-3 col-12 d-flex justify-content-center">
+        {% if group.seo_h1 %}
+        <h1>{{ group.seo_h1}}</h1>
+        {% else %}
+          <h1>Флаги стран содержащие {{group.name}} цвет</h1>
+        {% endif %}
+        </div>
+      </div>
+  </div>
+</div>
+
+{# Flags list #}
 <div class="py-3">
   <div class="container">
     <div class="row">
-      <div class="py-1 py-md-3 col-12 d-flex justify-content-center">
-        <h1>Флаги стран содержащие {{group.name}} цвет</h1>
-      </div>
 
       {% for flag in flags %}
-      <div class="col-4 col-md-3 col-lg-2 col-xl-2">
+      <div class="pb-4 col-4 col-md-3 col-lg-2 col-xl-2">
         <div class="flag-card hover-country">
 
           <a href="{% url 'flags:flag-detail' flag.slug %}">
@@ -54,29 +68,43 @@
   </div>
 </div>
 
+{# Color group colorgroup_meanings #}
+{% if group.colorgroup_meanings %}
+<div class="py-3 bg-light">
+  <div class="container">
+    <div class="row">
+      {{ group.colorgroup_meanings }}
+    </div>
+  </div>
+</div>
+{% endif %}
+
 {% endblock content %}
 
 {# SEO block #}
 {# Canonical #}
-{# {% block canonical %}{% url 'countries:colors-group' colors.0.color_group %}{% endblock canonical %} #}
+{% block canonical %}{% url 'flags:color-detail' group.slug %}{% endblock canonical %}
 
 {# Meta title #}
 {% block meta_title %}
-{{group.name}} цвет в составе государственных флагов стран | AllFlags.ru
+  {% if group.seo_title %}
+    {{ group.seo_title }}
+  {% else %}
+    {{group.name}} цвет в составе государственных флагов стран | AllFlags.ru
+  {% endif %}
 {% endblock meta_title %}
 
 {# Meta description #}
 {% block meta_description %}
-{{group.name|upper}}
-цвет {%if flags|length > 15 %}довольно часто {%else%}редко {%endif%}входит в состав цветов государственных флагов
-стран. На AllFlags мы составили полный
-список из {{flags|length}} флагов с этими цветами
+  {% if group.seo_description %}
+    {{ group.seo_description}}
+  {% else %}
+    {{group.name|upper}}
+    цвет {%if flags|length > 15 %}довольно часто {%else%}редко {%endif%}входит в состав цветов государственных флагов
+    стран. На AllFlags мы составили полный
+    список из {{flags|length}} флагов с этими цветами
+  {% endif %}
 {% endblock meta_description %}
-
-{# Meta keywords #}
-{% block meta_keywords %}
-
-{% endblock meta_keywords %}
 
 {% block meta_robots %}
 index,follow
