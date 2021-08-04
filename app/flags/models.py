@@ -198,6 +198,8 @@ class BorderCountry(models.Model):
 
     class Meta:
         unique_together = ("country", "border_country")
+        verbose_name = _("Neighbours")
+        verbose_name_plural = _("Neighbours")
 
 
 class ColorGroup(Seo, models.Model):
