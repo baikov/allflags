@@ -102,6 +102,7 @@ class BorderCountryInline(admin.TabularInline):
 
 class CurrencyInline(admin.TabularInline):
     model = Currency.countries.through
+    raw_id_fields = ("currency",)
     extra = 1
 
 
