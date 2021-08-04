@@ -84,6 +84,15 @@ class CurrencyAdmin(ImportExportMixin, admin.ModelAdmin):
         ]
 
 
+class BorderCountryAdmin(admin.ModelAdmin):
+    list_display = ("country", "border_country", "border")
+    search_fields = [
+        "country",
+    ]
+    list_editable = ("border",)
+    raw_id_fields = ("country", "border_country",)
+
+
 class BorderCountryInline(admin.TabularInline):
     model = BorderCountry
     extra = 2
@@ -426,6 +435,7 @@ admin.site.register(MainFlag, MainFlagAdmin)
 admin.site.register(FlagEmoji, FlagEmojiAdmin)
 admin.site.register(HistoricalFlag, HistoricalFlagAdmin)
 admin.site.register(FlagFact, FlagFactAdmin)
+admin.site.register(BorderCountry, BorderCountryAdmin)
 
 # admin.site.register(Region, RegionAdmin)
 # admin.site.register(Subregion, SubregionAdmin)
