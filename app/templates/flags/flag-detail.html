@@ -10,7 +10,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{% url 'flags:flags-list' %}">Главная</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Государственный флаг {{country.ru_name_rod}}</li>
+                <li class="breadcrumb-item active" aria-current="page">Государственный флаг {{country.ru_name_rod}} {{flag.emoji.first.unicode}}</li>
             </ol>
         </nav>
     </div>
@@ -1066,12 +1066,20 @@
 {% endblock content %}
 
 {# SEO block #}
-{# {% block canonical %}{% url 'flags:flag-detail' flag.slug %}{% endblock canonical %} #}
+{% block canonical %}{% url 'flags:flag-detail' flag.slug %}{% endblock canonical %}
 {% block meta_title %}{{flag.seo_title}}{% endblock meta_title %}
 
-{% block meta_description %}{{flag.emoji}}{{flag.seo_description}}{% endblock meta_description %}
+{% block meta_description %}
+    {% if flag.seo_description %}
+        {{flag.emoji.first.unicode}}{{flag.seo_description}}
+    {% else %}
+        {{colors_adj}}
+        {{country.iso_code_a2|adjective:"i"}} флаг
+        {{flag.emoji}}
+    {% endif %}
+{% endblock meta_description %}
 
-{% block meta_keywords %}{{flag.seo_keywords}}{% endblock meta_keywords %}
+{# {% block meta_keywords %}{{flag.seo_keywords}}{% endblock meta_keywords %} #}
 
 {% block meta_robots %}
 {% if flag.is_index %}index,{% else %}noindex,{% endif %}
