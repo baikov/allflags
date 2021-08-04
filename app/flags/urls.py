@@ -1,16 +1,15 @@
 from django.urls import path
 
-from .views import (
-    ColorListView,
-    FlagListView,
-    FlagDetailView,
+from .views import (  # flag_detail,
     ColorDetailView,
+    ColorListView,
+    FlagDetailView,
+    FlagElementListView,
+    FlagListView,
     RegionListView,
     colors_count,
-    FlagElementListView,
-    flags_with_element,
     flags_by_region,
-    # flag_detail,
+    flags_with_element,
 )
 
 app_name = "flags"
