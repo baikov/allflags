@@ -40,3 +40,21 @@ def ru_count(object, case="i"):
     }
 
     return numerals[str(object)][case]
+
+
+@register.filter()
+def adjective(object, case="i"):
+    dictionary = {
+        "ru": {
+            "i": "Российский",
+            "r": "Российского",
+            "d": "Российскому",
+            "v": "Российский",
+            "t": "Российским",
+            "p": "Российском",
+        },
+    }
+    if str(object) in dictionary.keys():
+        return dictionary[str(object).lower()][case]
+    else:
+        return "Государственный"
