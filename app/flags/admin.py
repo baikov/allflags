@@ -337,7 +337,7 @@ class MainFlagAdmin(admin.ModelAdmin):
                     "slug",
                     "name",
                     "adopted_date",
-                    "flag_day",
+                    # "flag_day",
                     "proportion",
                     "colors",
                     "short_description",

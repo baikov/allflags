@@ -330,7 +330,7 @@ class MainFlag(Seo, models.Model):
     elements = models.ManyToManyField(
         FlagElement, verbose_name=_("Flags elements"), related_name="flags_with_elem", blank=True
     )
-    flag_day = models.DateField(verbose_name=_("Flag day"), blank=True, null=True)
+    # flag_day = models.DateField(verbose_name=_("Flag day"), blank=True, null=True)
 
     # Text fields
     construction_image = models.ImageField(verbose_name=_("Construction image"), blank=True)
