@@ -1,0 +1,33 @@
+{% load i18n my_filter %}
+<div class="py-3">
+  <div class="container">
+    <div class="row">
+
+      {% for flag in flags %}
+      <div class="pb-4 col-4 col-md-3 col-lg-2 col-xl-2">
+        <div class="flag-card hover-country">
+
+          <a href="{% url 'flags:flag-detail' flag.slug %}">
+            <picture>
+              <source type="image/webp" srcset="{{flag.country.iso_code_a2|get_img_path:'w320'}}.webp">
+              <source type="image/png" srcset="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png">
+
+              <img src="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png" alt="{{ flag.title }}"
+                title="{{ flag.title }} {{flag.name}} - картинка" class="image">
+            </picture>
+          </a>
+
+          <div class="middle">
+            <div class="text">
+              <a href="{% url 'flags:flag-detail' flag.slug %}">
+                {{flag.title}}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+    </div>
+  </div>
+</div>
