@@ -81,6 +81,7 @@ class FlagDetailView(DetailView):
         # Get flags of border countries
         border_flags = MainFlag.objects.filter(country__in=border_countries)
         context["border_flags"] = border_flags
+        context["border_flags_h2"] = f"Флаги соседних с {flag.country.ru_name_tvo} стран"
 
         # Set width and height for Download img block
         if self.object.proportion:
