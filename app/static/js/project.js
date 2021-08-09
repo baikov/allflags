@@ -20,6 +20,9 @@ $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip()
     });
 
+    // Accordion for FAQ and Toggle menu
+    $('.collapse').collapse('hide')
+
     // Dropdown Bootstrap 4 menu
     $('.dropdown-menu a.dropdown-toggle').on('mouseover', function (e) {
         if (!$(this).next().hasClass('show')) {
