@@ -95,7 +95,9 @@ class Region(Seo, models.Model):
 
     def get_absolute_url(self):
         if self.parent:
-            return reverse("flags:subregion-flags", kwargs={"region_slug": self.parent.slug, "subregion_slug": self.slug})
+            return reverse(
+                "flags:subregion-flags", kwargs={"region_slug": self.parent.slug, "subregion_slug": self.slug}
+            )
         else:
             return reverse("flags:region-flags", args=[self.slug])
 
