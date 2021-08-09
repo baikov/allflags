@@ -761,56 +761,20 @@
     </div>
 </div>
 
-{# Border countries flags v2 #}
+{# Border countries flags v3 #}
 {% if border_flags|length > 0 %}
-<div class="py-3 py-xl-5 bg-light">
-    <div class="container">
-        <h2 class="py-3">Флаги соседних с {{country.ru_name_tvo}} стран</h2>
-        <div class="row">
-            {% for flag in border_flags %}
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2 col-xl-2 pb-3">
-                <div class="flag-card hover-country">
-                    <img src="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png" alt="{{flag.title}}"
-                        class="image">
-                    <div class="middle">
-                        <div class="text">
-                            <a href="{% url 'flags:flag-detail' flag.slug %}">
-                                {{flag.title}}
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</div>
+    {# H2 #}
+    {% include "partials/_h2.html" with h2=border_flags_h2 %}
+    {# Flags list part #}
+    {% include "partials/_flags-list.html" with flags=border_flags %}
 {% endif %}
 
-{# Same color flags v1 #}
+{# Same color flags v2 #}
 {% if same_flags|length > 0 %}
-<div class="py-3 py-xl-5">
-    <div class="container">
-        <h2 class="py-3">Флаги с похожими цветами</h2>
-        <div class="row">
-            {% for flag in same_flags %}
-            <div class="col-6 col-sm-3 col-md-2 col-lg-2 col-xl-2 pb-3">
-                <div class="flag-card hover-country">
-                    <img src="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png" alt="{{flag.title}}"
-                        class="image">
-                    <div class="middle">
-                        <div class="text">
-                            <a href="{% url 'flags:flag-detail' flag.slug %}">
-                                {{flag.title}}
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</div>
+    {# H2 #}
+    {% include "partials/_h2.html" with h2="Флаги с похожими цветами" %}
+    {# Flags list part #}
+    {% include "partials/_flags-list.html" with flags=same_flags %}
 {% endif %}
 
 {# Copy color #}
@@ -1121,17 +1085,18 @@
 
 {% endblock content %}
 
-{# SEO block #}
-{% block canonical %}{% url 'flags:flag-detail' flag.slug %}{% endblock canonical %}
-{% block meta_title %}{{flag.seo_title}}{% endblock meta_title %}
+{# Begin SEO block #}
+    {% block canonical %}{% url 'flags:flag-detail' flag.slug %}{% endblock canonical %}
+    {% block meta_title %}{{flag.seo_title}}{% endblock meta_title %}
 
-{% block meta_description %}
-    {% if flag.seo_description %}
-        {{flag.emoji.first.unicode}}{{flag.seo_description}}
-    {% else %}
-        {{colors_adj}}{{country.iso_code_a2|adjective:"i"}} флаг{{flag.emoji}}
-    {% endif %}
-    {% endblock meta_description %}
-{# {% block meta_keywords %}{{flag.seo_keywords}}{% endblock meta_keywords %} #}
+    {% block meta_description %}
+        {% if flag.seo_description %}
+            {{flag.emoji.first.unicode}}{{flag.seo_description}}
+        {% else %}
+            {{colors_adj}}{{country.iso_code_a2|adjective:"i"}} флаг{{flag.emoji}}
+        {% endif %}
+        {% endblock meta_description %}
+    {# {% block meta_keywords %}{{flag.seo_keywords}}{% endblock meta_keywords %} #}
 
-{% block meta_robots %}{% if flag.is_index %}index,{% else %}noindex,{% endif %}{% if flag.is_follow %}follow{% else %}nofollow{% endif %}{% endblock meta_robots %}
+    {% block meta_robots %}{% if flag.is_index %}index,{% else %}noindex,{% endif %}{% if flag.is_follow %}follow{% else %}nofollow{% endif %}{% endblock meta_robots %}
+{# End SEO block #}
