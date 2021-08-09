@@ -271,8 +271,8 @@ class Color(models.Model):
     def __str__(self):
         return f"{self.color_group}: #{self.hex} {self.get_flags}"
 
-    def get_absolute_url(self):
-        return reverse("countries:colors-group", kwargs={"color_group": self.color_group})
+    # def get_absolute_url(self):
+    #     return reverse("countries:colors-group", kwargs={"color_group": self.color_group})
 
 
 class FlagElement(Seo, models.Model):
