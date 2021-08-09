@@ -4,7 +4,7 @@ import os
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
-from app.utils.flag_image import get_historical_flag_img
+from app.utils.flag_image import get_construction_img, get_historical_flag_img
 from app.utils.ru_slugify import custom_slugify
 
 from .models import BorderCountry, Country, HistoricalFlag, MainFlag
@@ -56,7 +56,7 @@ def on_create_historical_flag(sender, instance, **kwargs):
         file = get_historical_flag_img(
             instance.image_url, instance.from_year, instance.to_year, instance.country.iso_code_a2
         )
-        instance.svg_file = file
+        instance.svg_file = f"{file}.svg"
 
 
 @receiver(post_delete, sender=HistoricalFlag)
