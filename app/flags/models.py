@@ -342,8 +342,11 @@ class MainFlag(Seo, models.Model):
     )
     # flag_day = models.DateField(verbose_name=_("Flag day"), blank=True, null=True)
 
-    # Text fields
-    construction_image = models.ImageField(verbose_name=_("Construction image"), blank=True)
+    construction_image_url = models.URLField(verbose_name=_("Construction SVG image link"), max_length=600, blank=True)
+    construction_image_file = models.FileField(
+        verbose_name=_("Construction SVG image"), upload_to="construction/", blank=True
+    )
+    construction_image = models.ImageField(verbose_name=_("Construction image"), upload_to="construction/", blank=True)
     design_description = models.TextField(verbose_name=_("Design description"), blank=True)
     history_text = models.TextField(verbose_name=_("Flag history"), blank=True)
     dl_imgs = models.BooleanField(verbose_name=_("Download flag images"), default=False)
