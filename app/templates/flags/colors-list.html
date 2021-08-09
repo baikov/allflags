@@ -15,15 +15,24 @@
 {% endblock breadcrumb %}
 
 {% block content %}
+{# H1 #}
+<div class="pt-5 pb-3">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 d-flex justify-content-center">
+        <h1>Все цвета государственных флагов мира</h1>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# Color groups list #}
 <div class="py-3">
   <div class="container">
     <div class="row">
-      <div class="py-1 py-md-3 col-12 d-flex justify-content-center">
-        <h1>Все цвета государственных флагов мира</h1>
-      </div>
 
       {% for group in colors %}
-      <div class="col-4 col-md-4 col-lg-3 col-xl-3 py-3">
+      <div class="col-12 col-md-4 col-lg-3 col-xl-3 py-3">
         <div class="card">
           <div class="card-body">
             <h5 class="card-title">{{ group.name }}</h5>
@@ -49,23 +58,24 @@
 </div>
 {% endblock content %}
 
-{# SEO block #}
-{# Canonical #}
-{# {% block canonical %}{% url 'countries:colors-list' %}{% endblock canonical %} #}
+{# Begin SEO block #}
+  {# Canonical #}
+  {# {% block canonical %}{% url 'countries:colors-list' %}{% endblock canonical %} #}
 
-{# Meta title #}
-{% block meta_title %}
+  {# Meta title #}
+  {% block meta_title %}
 
-{% endblock meta_title %}
+  {% endblock meta_title %}
 
-{# Meta description #}
-{% block meta_description %}
+  {# Meta description #}
+  {% block meta_description %}
 
-{% endblock meta_description %}
+  {% endblock meta_description %}
 
-{# Meta keywords #}
-{% block meta_keywords %}
+  {# Meta keywords #}
+  {% block meta_keywords %}
 
-{% endblock meta_keywords %}
+  {% endblock meta_keywords %}
 
-{% block meta_robots %}all{% endblock meta_robots %}
+  {% block meta_robots %}all{% endblock meta_robots %}
+{# End SEO block #}

@@ -3,14 +3,24 @@
 {% load static %}
 {% get_media_prefix as MEDIA_URL %}
 
+
 {% block breadcrumb %}
 {# Breadcrumbs #}
 <div class="pt-3 bg-light">
     <div class="container">
         <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{% url 'flags:flags-list' %}">Главная</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Государственный флаг {{country.ru_name_rod}} {{flag.emoji.first.unicode}}</li>
+            <ol class="breadcrumb" vocab="https://schema.org/" typeof="BreadcrumbList">
+                <li class="breadcrumb-item" property="itemListElement" typeof="ListItem">
+                    {# <a property="item" typeof="WebPage" href="{% url 'flags:flags-list' %}"> #}
+                    <a property="item" typeof="WebPage" href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}">
+                        <span property="name">Главная</span>
+                    </a>
+                    <meta property="position" content="1">
+                </li>
+                <li class="breadcrumb-item active" aria-current="page" property="itemListElement" typeof="ListItem">
+                    <span property="name">Государственный флаг {{country.ru_name_rod}} {{flag.emoji.first.unicode}}</span>
+                    <meta property="position" content="2">
+                </li>
             </ol>
         </nav>
     </div>
@@ -48,7 +58,11 @@
             </div>
             <div class="py-3 col-xs-12 col-sm-12 col-md-12 col-lg-7">
                 <p>
-                    {{country.name}} - {{country.region.parent}} государство, расположенное в регионе {{country.region}},
+                    {% if country.conventional_long_name %}
+                        {{ country.conventional_long_name }}
+                    {% else %}
+                        {{country.name}}
+                    {% endif %} - государство, расположенное в регионе {{country.region}},
                     столицей которого является город {{country.ru_capital_name}}.
                 </p>
 
@@ -529,7 +543,13 @@
                     {% if flag.construction_image %}
                     <h3 class="py-2">Схема флага</h3>
                     <figure class="figure">
-                        <img src="{{flag.construction_image.url}}" class="figure-img img-fluid">
+                        <picture>
+                            <source type="image/webp"
+                                srcset="{{MEDIA_URL}}/construction/{{country.iso_code_a2}}-flag-construction.webp">
+
+                            <img src="{{MEDIA_URL}}/construction/{{country.iso_code_a2}}-flag-construction.png" alt="{{ flag.title }}"
+                                title="{{ flag.title }} {{flag.name}} - картинка" class="figure-img img-fluid">
+                        </picture>
                         <figcaption class="figure-caption text-right">{{flag.title}}: схема</figcaption>
                     </figure>
                     {% endif %}
@@ -572,8 +592,13 @@
             <div class="card mb-3">
                 <div class="row no-gutters">
                     <div class="col-md-4">
-                        <img
-                            src="{{MEDIA_URL}}historical-flags/{{h_flag.country.iso_code_a2|lower}}/{{h_flag.country.iso_code_a2|lower}}-{{h_flag.from_year}}-{{h_flag.to_year}}.svg">
+                        <picture>
+                            <source type="image/webp"
+                                srcset="{{MEDIA_URL}}/historical-flags/{{h_flag.country.iso_code_a2|lower}}/{{h_flag.country.iso_code_a2|lower}}-{{h_flag.from_year}}-{{h_flag.to_year}}.webp">
+
+                            <img src="{{MEDIA_URL}}/historical-flags/{{h_flag.country.iso_code_a2|lower}}/{{h_flag.country.iso_code_a2|lower}}-{{h_flag.from_year}}-{{h_flag.to_year}}.png" alt="{{ h_flag.title }} {{h_flag.from_year}}-{{h_flag.to_year}}"
+                                title="{{ h_flag.title }} {{h_flag.from_year}}-{{h_flag.to_year}} - картинка" class="figure-img img-fluid">
+                        </picture>
                     </div>
                     <div class="col-md-8">
                         <div class="card-body">
@@ -588,11 +613,42 @@
         </div>
         {% endif %}
 
-        {% if historical|length > 0 %}
+        {% if flag.history_text %}
         <div class="row">
             {{flag.history_text|safe}}
         </div>
         {% endif %}
+    </div>
+</div>
+{% endif %}
+
+{# Flag facts v2 #}
+{% if flag.facts.all|length > 0 %}
+<div class="py-3 py-xl-5">
+    <div class="container">
+        <h2 class="py-3">Интересные и забавные факты о флаге {{country.ru_name_rod}}</h2>
+        <div class="" itemscope itemtype="https://schema.org/FAQPage">
+
+            <div class="accordion" id="FAQ">
+                {% for fact in flag.facts.all %}
+                <div class="card" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                    <div class="card-header" id="heading{{fact.id}}">
+                        <h3 class="mb-0">
+                            <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{{fact.id}}" aria-expanded="true" aria-controls="collapse{{fact.id}}">
+                                <span itemprop="name">{{fact.caption}}</span>
+                            </button>
+                        </h3>
+                    </div>
+
+                    <div id="collapse{{fact.id}}" class="collapse" aria-labelledby="heading{{fact.id}}" data-parent="#FAQ">
+                        <div class="card-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                            <span itemprop="text">{{fact.text|safe}}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </div>
 {% endif %}
@@ -1073,15 +1129,9 @@
     {% if flag.seo_description %}
         {{flag.emoji.first.unicode}}{{flag.seo_description}}
     {% else %}
-        {{colors_adj}}
-        {{country.iso_code_a2|adjective:"i"}} флаг
-        {{flag.emoji}}
+        {{colors_adj}}{{country.iso_code_a2|adjective:"i"}} флаг{{flag.emoji}}
     {% endif %}
-{% endblock meta_description %}
-
+    {% endblock meta_description %}
 {# {% block meta_keywords %}{{flag.seo_keywords}}{% endblock meta_keywords %} #}
 
-{% block meta_robots %}
-{% if flag.is_index %}index,{% else %}noindex,{% endif %}
-{% if flag.is_follow %}follow{% else %}nofollow{% endif %}
-{% endblock meta_robots %}
+{% block meta_robots %}{% if flag.is_index %}index,{% else %}noindex,{% endif %}{% if flag.is_follow %}follow{% else %}nofollow{% endif %}{% endblock meta_robots %}

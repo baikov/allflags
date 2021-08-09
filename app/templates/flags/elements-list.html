@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% load i18n my_filter %}
 
-
 {% block breadcrumb %}
 <div class="pt-3">
   <div class="container">
@@ -17,47 +16,34 @@
 {% endblock breadcrumb %}
 
 {% block content %}
-<div class="py-3">
+{# H1 #}
+<div class="pt-5 pb-3">
   <div class="container">
     <div class="row">
-      <div class="py-1 py-md-3 col-12 d-flex justify-content-center">
+      <div class="col-12 d-flex justify-content-center">
         {% if element.seo_h1 %}
-        <h1>{{element.seo_h1}}</h1>
-        {% else %}
-        <h1>{{element.name}} на флагах стран</h1>
+          <h1>{{element.seo_h1}}</h1>
+          {% else %}
+          <h1>{{element.name}} на флагах стран</h1>
         {% endif %}
-      </div>
-      {% for flag in flags %}
-      <div class="col-4 col-md-3 col-lg-2 col-xl-2">
-        <div class="flag-card hover-country">
-
-          <a href="{% url 'flags:flag-detail' flag.slug %}">
-            <picture>
-              <source type="image/webp" srcset="{{flag.country.iso_code_a2|get_img_path:'w320'}}.webp">
-              <source type="image/png" srcset="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png">
-
-              <img src="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png" alt="{{ flag.title }}"
-                title="{{ flag.title }} {{flag.name}} - картинка" class="image">
-            </picture>
-          </a>
-
-          <div class="middle">
-            <div class="text">
-              <a href="{% url 'flags:flag-detail' flag.slug %}">
-                {{flag.title}}
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-      {% endfor %}
-
-      <div class="col-12 py-3">
-        {{element.description|safe}}
       </div>
     </div>
   </div>
 </div>
+
+{# Flags list #}
+{% include "partials/_flags-list.html" with flags=flags %}
+
+{# Flag element description #}
+{% if element.description %}
+<div class="py-3">
+  <div class="container">
+    <div class="row">
+      {{element.description|safe}}
+    </div>
+  </div>
+</div>
+{% endif %}
 
 {# Flag's elements #}
 <div class="py-5 bg-light">
@@ -70,18 +56,19 @@
 </div>
 {% endblock content %}
 
-{# SEO block #}
-{# {% block canonical %}{% if flags %}{% url 'flags:element-detail' element.slug %}
-{% else %}{% url 'flags:elements-list' %}{% endif %}
-{% endblock canonical %} #}
+{# Begin SEO block #}
+  {% block canonical %}{% if flags %}{% url 'flags:element-detail' element.slug %}
+  {% else %}{% url 'flags:elements-list' %}{% endif %}
+  {% endblock canonical %}
 
-{% block meta_title %}{{element.seo_title}}{% endblock meta_title %}
+  {% block meta_title %}{{element.seo_title}}{% endblock meta_title %}
 
-{% block meta_description %}{{element.seo_description}}{% endblock meta_description %}
+  {% block meta_description %}{{element.seo_description}}{% endblock meta_description %}
 
-{% block meta_keywords %}{{element.meta_keywords}}{% endblock meta_keywords %}
+  {% block meta_keywords %}{{element.meta_keywords}}{% endblock meta_keywords %}
 
-{% block meta_robots %}
-{% if element.is_index %}index,{% else %}noindex,{% endif %}
-{% if element.is_follow %}follow{% else %}nofollow{% endif %}
-{% endblock meta_robots %}
+  {% block meta_robots %}
+  {% if element.is_index %}index,{% else %}noindex,{% endif %}
+  {% if element.is_follow %}follow{% else %}nofollow{% endif %}
+  {% endblock meta_robots %}
+{# End SEO block #}

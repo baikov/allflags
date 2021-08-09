@@ -20,53 +20,22 @@
 {% block content %}
 
 {# H1 #}
-<div class="py-3">
+<div class="pt-5 pb-3">
   <div class="container">
-      <div class="row">
-        <div class="py-1 py-md-3 col-12 d-flex justify-content-center">
-        {% if group.seo_h1 %}
-        <h1>{{ group.seo_h1}}</h1>
-        {% else %}
-          <h1>Флаги стран содержащие {{group.name}} цвет</h1>
-        {% endif %}
-        </div>
+    <div class="row">
+      <div class="col-12 d-flex justify-content-center">
+      {% if group.seo_h1 %}
+      <h1>{{ group.seo_h1}}</h1>
+      {% else %}
+        <h1>Флаги стран содержащие {{group.name}} цвет</h1>
+      {% endif %}
       </div>
+    </div>
   </div>
 </div>
 
 {# Flags list #}
-<div class="py-3">
-  <div class="container">
-    <div class="row">
-
-      {% for flag in flags %}
-      <div class="pb-4 col-4 col-md-3 col-lg-2 col-xl-2">
-        <div class="flag-card hover-country">
-
-          <a href="{% url 'flags:flag-detail' flag.slug %}">
-            <picture>
-              <source type="image/webp" srcset="{{flag.country.iso_code_a2|get_img_path:'w320'}}.webp">
-              <source type="image/png" srcset="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png">
-
-              <img src="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png" alt="{{ flag.title }}"
-                title="{{ flag.title }} {{flag.name}} - картинка" class="image">
-            </picture>
-          </a>
-
-          <div class="middle">
-            <div class="text">
-              <a href="{% url 'flags:flag-detail' flag.slug %}">
-                {{flag.title}}
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-      {% endfor %}
-
-    </div>
-  </div>
-</div>
+{% include "partials/_flags-list.html" with flags=flags %}
 
 {# Color group colorgroup_meanings #}
 {% if group.colorgroup_meanings %}
@@ -81,31 +50,32 @@
 
 {% endblock content %}
 
-{# SEO block #}
-{# Canonical #}
-{% block canonical %}{% url 'flags:color-detail' group.slug %}{% endblock canonical %}
+{# Begin SEO block #}
+  {# Canonical #}
+  {% block canonical %}{% url 'flags:color-detail' group.slug %}{% endblock canonical %}
 
-{# Meta title #}
-{% block meta_title %}
-  {% if group.seo_title %}
-    {{ group.seo_title }}
-  {% else %}
-    {{group.name}} цвет в составе государственных флагов стран | AllFlags.ru
-  {% endif %}
-{% endblock meta_title %}
+  {# Meta title #}
+  {% block meta_title %}
+    {% if group.seo_title %}
+      {{ group.seo_title }}
+    {% else %}
+      {{group.name}} цвет в составе государственных флагов стран | AllFlags.ru
+    {% endif %}
+  {% endblock meta_title %}
 
-{# Meta description #}
-{% block meta_description %}
-  {% if group.seo_description %}
-    {{ group.seo_description}}
-  {% else %}
-    {{group.name|upper}}
-    цвет {%if flags|length > 15 %}довольно часто {%else%}редко {%endif%}входит в состав цветов государственных флагов
-    стран. На AllFlags мы составили полный
-    список из {{flags|length}} флагов с этими цветами
-  {% endif %}
-{% endblock meta_description %}
+  {# Meta description #}
+  {% block meta_description %}
+    {% if group.seo_description %}
+      {{ group.seo_description}}
+    {% else %}
+      {{group.name|upper}}
+      цвет {%if flags|length > 15 %}довольно часто {%else%}редко {%endif%}входит в состав цветов государственных флагов
+      стран. На AllFlags мы составили полный
+      список из {{flags|length}} флагов с этими цветами
+    {% endif %}
+  {% endblock meta_description %}
 
-{% block meta_robots %}
-index,follow
-{% endblock meta_robots %}
+  {% block meta_robots %}
+  index,follow
+  {% endblock meta_robots %}
+{# End SEO block #}
