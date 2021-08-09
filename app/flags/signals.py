@@ -4,7 +4,11 @@ import os
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
-from app.utils.flag_image import get_construction_img, get_historical_flag_img
+from app.utils.flag_image import (
+    get_construction_img,
+    get_historical_flag_img,
+    svg_convert,
+)
 from app.utils.ru_slugify import custom_slugify
 
 from .models import BorderCountry, Country, HistoricalFlag, MainFlag
@@ -45,7 +49,7 @@ def delete_neighbour(sender, instance, **kwargs):
 
 
 @receiver(pre_save, sender=HistoricalFlag)
-def on_create_historical_flag(sender, instance, **kwargs):
+def before_create_historical_flag(sender, instance, **kwargs):
     """Download svg image from link in image_url field and save file in svg_file field
 
     Args:
@@ -56,7 +60,16 @@ def on_create_historical_flag(sender, instance, **kwargs):
         file = get_historical_flag_img(
             instance.image_url, instance.from_year, instance.to_year, instance.country.iso_code_a2
         )
-        instance.svg_file = f"{file}.svg"
+        instance.svg_file = file
+
+
+@receiver(post_save, sender=HistoricalFlag)
+def after_create_historical_flag(sender, instance, **kwargs):
+    """
+    Converting uploaded or downloaded svg file into png and webp
+    """
+    if instance.svg_file:
+        svg_convert(instance.svg_file.path)
 
 
 @receiver(post_delete, sender=HistoricalFlag)
@@ -66,28 +79,32 @@ def after_delete_historical_flag(sender, instance, **kwargs):
             os.remove(instance.svg_file.path)
 
 
-@receiver(post_save, sender=MainFlag)
-def on_create_or_update_flag(sender, instance, **kwargs):
-    if kwargs["created"]:
-        country = Country.objects.get(name=instance.country)
-        result = get_flag_img_task.delay(country.iso_code_a2)
-        task_id = result.task_id # noqa F841
-
-
 @receiver(pre_save, sender=MainFlag)
-def convert_construction_svg(sender, instance, **kwargs):
+def befor_mainflag_save(sender, instance, **kwargs):
     if instance.construction_image_url and not instance.construction_image_file:
         file = get_construction_img(
             instance.construction_image_url, instance.country.iso_code_a2
         )
-        instance.construction_image_file = f"{file}.svg"
-        instance.construction_image = f"{file}.png"
+        # instance.construction_image_file = f"{file}.svg"
+        instance.construction_image_file = file
 
     if instance.dl_imgs:
         # country = Country.objects.get(name=instance.country)
         result = get_flag_img_task.delay(instance.country.iso_code_a2)
         task_id = result.task_id  # noqa F841
         instance.dl_imgs = False
+
+
+@receiver(post_save, sender=MainFlag)
+def after_create_or_update_flag(sender, instance, **kwargs):
+    if kwargs["created"]:
+        country = Country.objects.get(name=instance.country)
+        result = get_flag_img_task.delay(country.iso_code_a2)
+        task_id = result.task_id # noqa F841
+
+    if instance.construction_image_file:
+        svg_convert(instance.construction_image_file.path)
+        # instance.construction_image = f"{}.png"
 
 
 @receiver(post_save, sender=Country)
