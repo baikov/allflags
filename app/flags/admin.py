@@ -114,6 +114,7 @@ class CountryAdmin(admin.ModelAdmin):
         "slug",
         "is_published",
     )
+    list_editable = ("is_published",)
     list_filter = ["region"]
     search_fields = ["name", "iso_code_a2"]
     readonly_fields = ["updated_date", "created_date"]
@@ -219,9 +220,9 @@ class CountryAdmin(admin.ModelAdmin):
         form.base_fields["seo_description"].widget.attrs["cols"] = 10  # doesn't work...
         return form
 
-    formfield_overrides = {
-        models.CharField: {"widget": TextInput(attrs={"size": "100"})},
-    }
+    # formfield_overrides = {
+    #     models.CharField: {"widget": TextInput(attrs={"size": "100"})},
+    # }
 
 
 class ColorGroupAdmin(admin.ModelAdmin):
@@ -341,7 +342,7 @@ class MainFlagAdmin(admin.ModelAdmin):
                     "proportion",
                     "colors",
                     "short_description",
-                    "construction_image",
+                    ("construction_image", "construction_image_url", "construction_image_file"),
                     "design_description",
                     "history_text",
                 ]
@@ -411,7 +412,7 @@ class RegionAdmin(admin.ModelAdmin):
         "is_published",
     )
     list_display = (
-        "id",
+        # "id",
         "name",
         "slug",
         "parent",
