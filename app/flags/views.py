@@ -36,6 +36,13 @@ class FlagDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        if self.request.user.is_superuser:
+            flag = get_object_or_404(MainFlag, slug=self.object.slug)
+        else:
+            flag = get_object_or_404(MainFlag, slug=self.object.slug, is_index=True, is_published=True)
+
+        context["flag"] = flag
         border_countries = []
         same_colors = []
         # Get all historical flags
