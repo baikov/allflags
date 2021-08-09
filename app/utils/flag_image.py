@@ -1,7 +1,9 @@
 import os
 from pathlib import Path
 
+import cairosvg
 import requests
+from PIL import Image
 
 from config.settings.base import MEDIA_ROOT
 
@@ -63,3 +65,31 @@ def get_flag_img(iso2):
         dest = f"{save_to_path}/{iso2}"
         file_name = f"{iso2}.{format}"
         download_img(url, dest, file_name)
+
+
+
+def svg_convert(path, file_name):
+    # destination_path = f"{MEDIA_ROOT}/construction"
+    # file_name, _ = svg_file.split('.', maxsplit=1)
+
+    try:
+        cairosvg.svg2png(url=f"{path}/{file_name}.svg", output_width=1000, write_to=f"{path}/{file_name}.png")
+    except Exception:
+        cairosvg.svg2png(
+            url=f"{path}/{file_name}.svg",
+            parent_width=800,
+            parent_height=600,
+            output_width=1000,
+            write_to=f"{path}/{file_name}.png",
+        )
+    # im = Image.open(f"{destination_path}/{file_name}.png").convert("RGB")
+    im = Image.open(f"{path}/{file_name}.png")
+    im.save(
+        f"{path}/{file_name}.webp",
+        format="WebP",
+        lossless=True,
+        quality=90,
+        method=6,
+        minimize_size=True,
+        allow_mixed=True,
+    )
