@@ -229,7 +229,7 @@ def flags_by_region(request, region_slug, subregion_slug=None):
         else:
             countries = region.countries.all()
     else:
-        region = get_object_or_404(Region, slug=region_slug)
+        region = get_object_or_404(Region, slug=region_slug, parent=None)
         if not region.is_published and not request.user.is_superuser:
             raise Http404
         else:
