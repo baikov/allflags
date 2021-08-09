@@ -68,14 +68,11 @@ def after_delete_historical_flag(sender, instance, **kwargs):
 
 @receiver(post_save, sender=MainFlag)
 def on_create_or_update_flag(sender, instance, **kwargs):
-    if kwargs["created"] or instance.dl_imgs:
+    if kwargs["created"]:
         country = Country.objects.get(name=instance.country)
         result = get_flag_img_task.delay(country.iso_code_a2)
         task_id = result.task_id
-        # get_flag_img(country.iso_code_a2)
-        instance.dl_imgs = False
-    # else:
-    #     get_flag_img(instance.iso_code_a2)
+
 
 @receiver(pre_save, sender=MainFlag)
 def convert_construction_svg(sender, instance, **kwargs):
