@@ -528,19 +528,19 @@
             </div>
             {% endif %}
 
-                {% if flag.design_description and flag.construction_image or flag.elements.all|length > 0 %}
+                {% if flag.design_description and flag.construction_image_file or flag.elements.all|length > 0 %}
                 <div class="py-3 col-xs-12 col-sm-12 col-md-8 col-lg-8">
                     {{flag.design_description|safe}}
                 </div>
-                {%elif flag.design_description and not flag.construction_image or flag.elements.all|length == 0 %}
+                {%elif flag.design_description and not flag.construction_image_file or flag.elements.all|length == 0 %}
                 <div class="py-3 col-xs-12 col-sm-12 col-md-12 col-lg-12">
                     {{flag.design_description|safe}}
                 </div>
                 {% endif %}
 
-                {% if flag.construction_image or flag.elements.all|length > 0 %}
+                {% if flag.construction_image_file or flag.elements.all|length > 0 %}
                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                    {% if flag.construction_image %}
+                    {% if flag.construction_image_file %}
                     <h3 class="py-2">Схема флага</h3>
                     <figure class="figure">
                         <picture>
