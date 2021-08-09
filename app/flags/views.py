@@ -113,77 +113,6 @@ class FlagDetailView(DetailView):
         return context
 
 
-def flag_detail(request, country_slug, flag_slug):
-    template_name = "flags/flag-detail.html"
-    flag = get_object_or_404(MainFlag, slug=flag_slug)
-
-    border_countries = []
-    same_colors = []
-    # Get all historical flags
-    historical = HistoricalFlag.objects.filter(country__iso_code_a2=flag.country.iso_code_a2).order_by(
-        "from_year"
-    )
-
-    # Get all border countries
-    neighbours = BorderCountry.objects.filter(country=flag.country)
-    for row in neighbours:
-        border_countries.append(row.border_country)
-
-    # Get all flag colors
-    colors = Color.objects.filter(flags=flag.id)
-
-    # Get flags with colors from same color groups
-    if colors:
-        for row in colors:
-            same_colors.append(row.color_group)
-        same_color_flags = MainFlag.objects.filter(colors__color_group=same_colors[0]).exclude(id=flag.id)
-        for i in range(1, len(colors)):
-            same_color_flags = same_color_flags.filter(colors__color_group=same_colors[i])
-
-    # Get flags of border countries
-    border_flags = MainFlag.objects.filter(country__in=border_countries)
-
-    # Set width and height for Download img block
-    if flag.proportion:
-        height, width = flag.proportion.split(":")
-    else:
-        height, width = 1, 2
-    widths = {
-        # 'w20': {'width': 20, 'height': int(20/int(width)*int(height))},
-        "w40": {"width": 40, "height": int(40 / int(width) * int(height))},
-        "w80": {"width": 80, "height": int(80 / int(width) * int(height))},
-        "w160": {"width": 160, "height": int(160 / int(width) * int(height))},
-        "w320": {"width": 320, "height": int(320 / int(width) * int(height))},
-        "w640": {"width": 640, "height": int(640 / int(width) * int(height))},
-        "w1280": {"width": 1280, "height": int(1280 / int(width) * int(height))},
-        "w2560": {"width": 2560, "height": int(2560 / int(width) * int(height))},
-    }
-    heights = {
-        "h20": {"width": int(20 / int(height) * int(width)), "height": 20},
-        "h24": {"width": int(24 / int(height) * int(width)), "height": 24},
-        "h40": {"width": int(40 / int(height) * int(width)), "height": 40},
-        "h60": {"width": int(60 / int(height) * int(width)), "height": 60},
-        "h80": {"width": int(80 / int(height) * int(width)), "height": 80},
-        "h120": {"width": int(120 / int(height) * int(width)), "height": 120},
-        "h240": {"width": int(240 / int(height) * int(width)), "height": 240},
-    }
-    country = Country.objects.get(id__exact=flag.country.id)
-    # context["currencies"] = Currency.objects.filter(countries=self.object.country.id)
-    context = {
-        "flag": flag,
-        "historical": historical,
-        "neighbours": neighbours,
-        "colors": colors,
-        "same_flags": same_color_flags,
-        "border_flags": border_flags,
-        "widths": widths,
-        "heights": heights,
-        "country": country
-    }
-
-    return render(request, template_name, context)
-
-
 class ColorListView(ListView):
     model = ColorGroup
     template_name = "flags/colors-list.html"
@@ -215,17 +144,6 @@ class RegionListView(ListView):
         if not self.request.user.is_superuser:
             regions = regions.published()
         return regions.order_by("ordering")
-
-
-# def region_list(request):
-#     template_name = "flags/region-list.html"
-#     regions = get_object_or_404(Subregion, slug=slug)
-#     countries = region.countries.all()
-#     flags = MainFlag.objects.filter(country__in=countries)
-
-#     context = {"region": region, "flags": flags}
-
-#     return render(request, template_name, context)
 
 
 def flags_by_region(request, region_slug, subregion_slug=None):
@@ -284,3 +202,92 @@ def flags_with_element(request, slug):
         return render(request, template_name, context)
     else:
         raise Http404
+
+
+# def flag_detail(request, country_slug, flag_slug):
+#     template_name = "flags/flag-detail.html"
+
+#     border_countries = []
+#     same_colors = []
+
+#     if request.user.is_superuser:
+#         flag = get_object_or_404(MainFlag, slug=flag_slug)
+#         neighbours = BorderCountry.objects.filter(country=flag.country)
+#     else:
+#         flag = get_object_or_404(MainFlag, slug=flag_slug, is_index=True, is_published=True)
+#         neighbours = BorderCountry.objects.filter(
+#             country=flag.country, border_country__is_index=True, border_country__is_published=True
+#         )
+
+#     # Get all historical flags
+#     historical = HistoricalFlag.objects.filter(country__iso_code_a2=flag.country.iso_code_a2).order_by(
+#         "from_year"
+#     )
+
+#     # Get all border countries
+#     for row in neighbours:
+#         border_countries.append(row.border_country)
+
+#     # Get all flag colors
+#     colors = Color.objects.filter(flags=flag.id)
+
+#     # Get flags with colors from same color groups
+#     if colors:
+#         for row in colors:
+#             same_colors.append(row.color_group)
+#         same_color_flags = MainFlag.objects.filter(colors__color_group=same_colors[0]).exclude(id=flag.id)
+#         for i in range(1, len(colors)):
+#             same_color_flags = same_color_flags.filter(colors__color_group=same_colors[i])
+
+#     # Get flags of border countries
+#     border_flags = MainFlag.objects.filter(country__in=border_countries)
+
+#     # Set width and height for Download img block
+#     if flag.proportion:
+#         height, width = flag.proportion.split(":")
+#     else:
+#         height, width = 1, 2
+#     widths = {
+#         # 'w20': {'width': 20, 'height': int(20/int(width)*int(height))},
+#         "w40": {"width": 40, "height": int(40 / int(width) * int(height))},
+#         "w80": {"width": 80, "height": int(80 / int(width) * int(height))},
+#         "w160": {"width": 160, "height": int(160 / int(width) * int(height))},
+#         "w320": {"width": 320, "height": int(320 / int(width) * int(height))},
+#         "w640": {"width": 640, "height": int(640 / int(width) * int(height))},
+#         "w1280": {"width": 1280, "height": int(1280 / int(width) * int(height))},
+#         "w2560": {"width": 2560, "height": int(2560 / int(width) * int(height))},
+#     }
+#     heights = {
+#         "h20": {"width": int(20 / int(height) * int(width)), "height": 20},
+#         "h24": {"width": int(24 / int(height) * int(width)), "height": 24},
+#         "h40": {"width": int(40 / int(height) * int(width)), "height": 40},
+#         "h60": {"width": int(60 / int(height) * int(width)), "height": 60},
+#         "h80": {"width": int(80 / int(height) * int(width)), "height": 80},
+#         "h120": {"width": int(120 / int(height) * int(width)), "height": 120},
+#         "h240": {"width": int(240 / int(height) * int(width)), "height": 240},
+#     }
+#     country = Country.objects.get(id__exact=flag.country.id)
+#     # context["currencies"] = Currency.objects.filter(countries=self.object.country.id)
+#     context = {
+#         "flag": flag,
+#         "historical": historical,
+#         "neighbours": neighbours,
+#         "colors": colors,
+#         "same_flags": same_color_flags,
+#         "border_flags": border_flags,
+#         "widths": widths,
+#         "heights": heights,
+#         "country": country
+#     }
+
+#     return render(request, template_name, context)
+
+# def region_list(request):
+#     template_name = "flags/region-list.html"
+#     regions = get_object_or_404(Subregion, slug=slug)
+#     countries = region.countries.all()
+#     flags = MainFlag.objects.filter(country__in=countries)
+
+#     context = {"region": region, "flags": flags}
+
+#     return render(request, template_name, context)
