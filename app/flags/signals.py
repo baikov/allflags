@@ -71,7 +71,7 @@ def on_create_or_update_flag(sender, instance, **kwargs):
     if kwargs["created"]:
         country = Country.objects.get(name=instance.country)
         result = get_flag_img_task.delay(country.iso_code_a2)
-        task_id = result.task_id
+        task_id = result.task_id # noqa F841
 
 
 @receiver(pre_save, sender=MainFlag)
@@ -86,7 +86,7 @@ def convert_construction_svg(sender, instance, **kwargs):
     if instance.dl_imgs:
         # country = Country.objects.get(name=instance.country)
         result = get_flag_img_task.delay(instance.country.iso_code_a2)
-        task_id = result.task_id
+        task_id = result.task_id  # noqa F841
         instance.dl_imgs = False
 
 
