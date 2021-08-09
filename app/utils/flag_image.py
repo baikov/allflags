@@ -68,6 +68,15 @@ def get_flag_img(iso2):
         download_img(url, dest, file_name)
 
 
+def get_construction_img(url, iso2):
+    iso2 = iso2.lower()
+    path = f"{MEDIA_ROOT}/construction"
+    file_name = f"{iso2}-flag-construction"
+    download_img(url, path, f"{file_name}.svg")
+    svg_convert(path, file_name)
+    # return f"construction/{file_name}"
+    return file_name
+
 
 def svg_convert(path, file_name):
     # destination_path = f"{MEDIA_ROOT}/construction"
