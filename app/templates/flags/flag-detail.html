@@ -545,9 +545,9 @@
                     <figure class="figure">
                         <picture>
                             <source type="image/webp"
-                                srcset="{{MEDIA_URL}}/construction/{{country.iso_code_a2}}-flag-construction.webp">
+                                srcset="{{MEDIA_URL}}/construction/{{country.iso_code_a2|lower}}-flag-construction.webp">
 
-                            <img src="{{MEDIA_URL}}/construction/{{country.iso_code_a2}}-flag-construction.png" alt="{{ flag.title }}"
+                            <img src="{{MEDIA_URL}}/construction/{{country.iso_code_a2|lower}}-flag-construction.png" alt="{{ flag.title }}"
                                 title="{{ flag.title }} {{flag.name}} - картинка" class="figure-img img-fluid">
                         </picture>
                         <figcaption class="figure-caption text-right">{{flag.title}}: схема</figcaption>
