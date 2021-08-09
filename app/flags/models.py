@@ -389,38 +389,9 @@ class FlagFact(models.Model):
     text = models.TextField(verbose_name=_("Fact text"), blank=True)
     image = models.ImageField(verbose_name=_("Fact image"), blank=True)
 
+    class Meta:
+        verbose_name = _("Flag's fact")
+        verbose_name_plural = _("Flag's facts")
 
-# class Region(Seo, models.Model):
-#     name = models.CharField(verbose_name=_("Region name"), max_length=250)
-#     description = models.TextField(verbose_name=_("Region description"), blank=True)
-
-#     class Meta:
-#         verbose_name = _("Region")
-#         verbose_name_plural = _("Regions")
-
-#     def __str__(self):
-#         return f"{self.name}"
-
-#     def get_absolute_url(self):
-#         return reverse("flags:region-detail", kwargs={"slug": self.slug})
-
-
-# class Subregion(Seo, models.Model):
-#     name = models.CharField(verbose_name=_("Region name"), max_length=250)
-#     description = models.TextField(verbose_name=_("Region description"), blank=True)
-#     region = models.ForeignKey(Region, on_delete=models.PROTECT, related_name="subregion")
-
-#     class Meta:
-#         verbose_name = _("Subregion")
-#         verbose_name_plural = _("Subregions")
-
-#     def __str__(self):
-#         return f"{self.name} ({self.region})"
-
-#     # def get_absolute_url(self):
-#     #     return reverse('flags:regions', kwargs={'iso_code': self.iso_code})
-
-#     @property
-#     def get_region(self):
-#         """Rreturn name of parent region"""
-#         return self.region
+    def __str__(self):
+        return self.caption
