@@ -1,3 +1,5 @@
+import os
+
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -8,6 +10,7 @@ from app.utils.color import Colorize
 # from slugify import slugify as ss
 # from django.utils.text import slugify
 from app.utils.ru_slugify import custom_slugify
+from config.settings.base import MEDIA_ROOT
 
 
 class Seo(models.Model):
@@ -292,6 +295,17 @@ class FlagElement(Seo, models.Model):
         return self.name
 
 
+def historical_flag_img_file_path(instance, filename):
+    ext = filename.split(".")[-1]
+    path = f"historical-flags/{instance.country.iso_code_a2.lower()}"
+    filename = f"{instance.country.iso_code_a2.lower()}-{instance.from_year}-{instance.to_year}.{ext}"
+
+    if os.path.isfile(os.path.join(MEDIA_ROOT, path, filename)):
+        os.remove(os.path.join(MEDIA_ROOT, path, filename))
+
+    return os.path.join(path, filename)
+
+
 class HistoricalFlag(models.Model):
     """Historical flags model
     Signals:
@@ -304,7 +318,7 @@ class HistoricalFlag(models.Model):
     from_year = models.PositiveSmallIntegerField(verbose_name=_("Adopted year"))
     to_year = models.PositiveSmallIntegerField(verbose_name=_("Ended year"))
     image_url = models.URLField(verbose_name=_("SVG image link"), max_length=300, blank=True)
-    svg_file = models.FileField(verbose_name=_("SVG image"), upload_to="historical-flags/", blank=True)
+    svg_file = models.FileField(verbose_name=_("SVG image"), upload_to=historical_flag_img_file_path, blank=True)
     # png_file = models.FileField(verbose_name=_("PNG image"), upload_to="historical-flags/", blank=True)
     description = models.TextField(verbose_name=_("Hstorical flag description"), blank=True)
 
