@@ -1,8 +1,30 @@
 {% extends "base.html" %}
 
+{% block breadcrumb %}
+<div class="pt-3">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" vocab="https://schema.org/" typeof="BreadcrumbList">
+                <li class="breadcrumb-item" property="itemListElement" typeof="ListItem">
+                    {# <a property="item" typeof="WebPage" href="{% url 'flags:flags-list' %}"> #}
+                    <a property="item" typeof="WebPage" href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}">
+                        <span property="name">Главная</span>
+                    </a>
+                    <meta property="position" content="1">
+                </li>
+                <li class="breadcrumb-item active" aria-current="page" property="itemListElement" typeof="ListItem">
+                    <span property="name">О проекте</span>
+                    <meta property="position" content="2">
+                </li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock breadcrumb %}
+
 {% block content %}
 {# H1 #}
-<div class="pt-5 pb-3">
+<div class="py-3">
   <div class="container">
       <div class="row">
         <div class="py-1 py-md-3 col-12 d-flex justify-content-center">
@@ -31,3 +53,14 @@
     </div>
 </div>
 {% endblock content %}
+
+{# Begin SEO block #}
+    {% block canonical %}{{ request.scheme }}://{{ request.META.HTTP_HOST }}/about/{% endblock canonical %}
+    {% block meta_title %}Информация о проекте AllFlags.ru{% endblock meta_title %}
+
+    {% block meta_description %}
+        AllFlags.ru - популярный сайт о флагах с проверенной и актуальной информацией. Мы стараемся глубоко погружаться в историю флага каждой страны и давать нашим посетителям исчерпывающую информацию.
+    {% endblock meta_description %}
+
+    {% block meta_robots %}noindex, follow{% endblock meta_robots %}
+{# End SEO block #}
