@@ -3,9 +3,15 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6 col-lg-4 d-none d-md-block">
-                   <p class="h4">Частые цвета</p>
+                   <p class="footer_header">Частые цвета флагов</p>
+                   <ul class="list-unstyled">
+                        <li><a href="{% url 'flags:color-detail' 'red' %}">Красный</a></li>
+                        <li><a href="{% url 'flags:color-detail' 'white' %}">Белый</a></li>
+                        <li><a href="{% url 'flags:color-detail' 'green' %}">Зеленый</a></li>
+                    </ul>
                 </div>
                 <div class="col-lg-4 d-none d-lg-block">
+                    <p class="footer_header">Рейтинги и списки</p>
                     <ul class="list-unstyled">
                         <li><a href="#">Рейтинг стран по населению</a></li>
                         <li><a href="#">Список стран по площади</a></li>
@@ -13,10 +19,11 @@
                     </ul>
                 </div>
                 <div class="col-4 col-md-6 col-lg-4 col-xs-12">
+                    <p class="footer_header">Информация</p>
                     <ul class="list-unstyled">
-                        <li><a href="/about/">О проекте</a></li>
-                        <li><a href="/advert/">Реклама</a></li>
-                        <li><a href="/partnership/">Сотрудничество</a></li>
+                        <li><a href="{% url 'about' %}">О проекте</a></li>
+                        <li><a href="{% url 'advert' %}">Реклама</a></li>
+                        <li><a href="{% url 'about-api' %}">API</a></li>
                     </ul>
                 </div>
             </div>
