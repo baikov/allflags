@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block breadcrumb %}
+<div class="pt-3">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" vocab="https://schema.org/" typeof="BreadcrumbList">
+                <li class="breadcrumb-item" property="itemListElement" typeof="ListItem">
+                    {# <a property="item" typeof="WebPage" href="{% url 'flags:flags-list' %}"> #}
+                    <a property="item" typeof="WebPage" href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}">
+                        <span property="name">Главная</span>
+                    </a>
+                    <meta property="position" content="1">
+                </li>
+                <li class="breadcrumb-item active" aria-current="page" property="itemListElement" typeof="ListItem">
+                    <span property="name">API</span>
+                    <meta property="position" content="2">
+                </li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock breadcrumb %}
+
+{% block content %}
+{# H1 #}
+<div class="py-3">
+  <div class="container">
+      <div class="row">
+        <div class="py-1 py-md-3 col-12 d-flex justify-content-center">
+          <h1>Информация по API флагов и стран</h1>
+        </div>
+      </div>
+  </div>
+</div>
+<div class="py-3">
+  <div class="container">
+    <div class="row">
+        <div class="col">
+            <h2>API флагов стран:</h2>
+            <ul>
+                <li>Регион и субрегион</li>
+                <li>Код страны</li>
+                <li>Изображение флага (svg, png, webp, jpg)</li>
+                <li>Дата принятия флага</li>
+                <li>Пропорции</li>
+                <li>Цвета флага (название, hex, rgb, cmyk, Pantone)</li>
+                <li>Количество цветов</li>
+                <li>Элементы на флаге</li>
+                <li>Исторические флаги (изображение, годы, название)</li>
+                <li>Похожие флаги (те же группы цветов)</li>
+                <li>Флаги соседних стран</li>
+            </ul>
+            <h2>API стран:</h2>
+            <ul>
+                <li>Регион и субрегион</li>
+                <li>Код страны ISO 3166-1</li>
+                <li>Полное название (рус+англ)</li>
+                <li>Название страны (рус+англ) (+падежи: и, р, д, в, т, п)</li>
+                <li>Валюта (рус+англ) (название, коды iso, символ)</li>
+                <li>Кол-во населения (год, место в мире)</li>
+                <li>Интернет-домен</li>
+                <li>Телефонный код</li>
+                <li>Площадь территории (суши, воды), протяженность береговой линии</li>
+                <li>Соседние страны (+протяженность границы)</li>
+                <li>Язык (рус+англ)</li>
+                <li>Правительство и форма правления</li>
+                <li>Столица ((рус+англ))</li>
+            </ul>
+            <p>Функционал находится в разработке</p>
+        </div>
+    </div>
+    </div>
+</div>
+{% endblock content %}
+
+{# Begin SEO block #}
+    {% block canonical %}{% url 'advert' %}{% endblock canonical %}
+    {% block meta_title %}API по флагам и странам мира{% endblock meta_title %}
+
+    {% block meta_description %}
+        API флагов стран: изображение, цвета, дата принятия, код страны и др. API стран: обширная информация о стране.
+    {% endblock meta_description %}
+
+    {% block meta_robots %}index, follow{% endblock meta_robots %}
+{# End SEO block #}
