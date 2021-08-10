@@ -3,25 +3,45 @@
 
 {% block breadcrumb %}
 <div class="pt-3">
-  <div class="container">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'flags:flags-list' %}">Главная</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'flags:regions-list' %}">Флаги по регионам</a></li>
-        {% if region.parent %}
-        <li class="breadcrumb-item"><a href="{% url 'flags:region-flags' region.parent.slug %}">{{region.parent}}</a></li>
-        {% endif %}
-        <li class="breadcrumb-item active" aria-current="page">
-          {{region.name}}
-        </li>
-      </ol>
-    </nav>
-  </div>
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" vocab="https://schema.org/" typeof="BreadcrumbList">
+                <li class="breadcrumb-item" property="itemListElement" typeof="ListItem">
+                    {# <a property="item" typeof="WebPage" href="{% url 'flags:flags-list' %}"> #}
+                    <a property="item" typeof="WebPage" href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}">
+                        <span property="name">Главная</span>
+                    </a>
+                    <meta property="position" content="1">
+                </li>
+                <li class="breadcrumb-item" property="itemListElement" typeof="ListItem">
+                    <a property="item" typeof="WebPage" href="{% url 'flags:regions-list' %}">
+                        <span property="name">Флаги по регионам</span>
+                    </a>
+                    <meta property="position" content="2">
+                </li>
+                {% if region.parent %}
+                <li class="breadcrumb-item" property="itemListElement" typeof="ListItem">
+                    <a property="item" typeof="WebPage" href="{% url 'flags:region-flags' region.parent.slug %}">
+                        <span property="name">{{region.parent}}</span>
+                    </a>
+                    <meta property="position" content="3">
+                </li>
+                {% endif %}
+                <li class="breadcrumb-item active" aria-current="page" property="itemListElement" typeof="ListItem">
+                    <span property="name">{{region.name}}</span>
+                    {% if region.parent %}
+                    <meta property="position" content="4">
+                    {% else %}
+                    <meta property="position" content="3">
+                    {% endif %}
+                </li>
+            </ol>
+        </nav>
+    </div>
 </div>
 {% endblock breadcrumb %}
 
 {% block content %}
-
 {# H1 #}
 <div class="pt-5 pb-3">
   <div class="container">

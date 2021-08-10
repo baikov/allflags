@@ -3,17 +3,29 @@
 
 {% block breadcrumb %}
 <div class="pt-3">
-  <div class="container">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'flags:flags-list' %}">Главная</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'flags:colors-list' %}">Цвета флагов мира</a></li>
-        <li class="breadcrumb-item active" aria-current="page">
-          {{group.name}}
-        </li>
-      </ol>
-    </nav>
-  </div>
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" vocab="https://schema.org/" typeof="BreadcrumbList">
+                <li class="breadcrumb-item" property="itemListElement" typeof="ListItem">
+                    {# <a property="item" typeof="WebPage" href="{% url 'flags:flags-list' %}"> #}
+                    <a property="item" typeof="WebPage" href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}">
+                        <span property="name">Главная</span>
+                    </a>
+                    <meta property="position" content="1">
+                </li>
+                <li class="breadcrumb-item" property="itemListElement" typeof="ListItem">
+                  <a property="item" typeof="WebPage"  href="{% url 'flags:colors-list' %}">
+                    <span property="name">Цвета флагов мира</span>
+                  </a>
+                  <meta property="position" content="2">
+                </li>
+                <li class="breadcrumb-item active" aria-current="page" property="itemListElement" typeof="ListItem">
+                    <span property="name">{{group.name}}</span>
+                    <meta property="position" content="3">
+                </li>
+            </ol>
+        </nav>
+    </div>
 </div>
 {% endblock breadcrumb %}
 

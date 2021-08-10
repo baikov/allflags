@@ -20,8 +20,10 @@
 {% endblock content %}
 
 {# Begin SEO block #}
+  {# Canonical #}
+  {% block canonical %}{% url 'flags:flags-list' %}{% endblock canonical %}
   {% block meta_title %}
-  Флаги стран мира - {{flags|length}} шт
+  Флаги стран мира с цветами, элементами и краткой информацией о государстве
   {% endblock meta_title %}
 
   {% block meta_description %}
@@ -31,7 +33,5 @@
 
   {% block meta_keywords %}{% endblock meta_keywords %}
 
-  {% block meta_robots %}
-  index, follow
-  {% endblock meta_robots %}
+  {% block meta_robots %}index, follow{% endblock meta_robots %}
 {# End SEO block #}

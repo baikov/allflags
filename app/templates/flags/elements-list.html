@@ -3,15 +3,29 @@
 
 {% block breadcrumb %}
 <div class="pt-3">
-  <div class="container">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'flags:flags-list' %}">Главная</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'flags:elements-list' %}">Элементы флагов</a></li>
-        <li class="breadcrumb-item active" aria-current="page">{{element.name}}</li>
-      </ol>
-    </nav>
-  </div>
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" vocab="https://schema.org/" typeof="BreadcrumbList">
+                <li class="breadcrumb-item" property="itemListElement" typeof="ListItem">
+                    {# <a property="item" typeof="WebPage" href="{% url 'flags:flags-list' %}"> #}
+                    <a property="item" typeof="WebPage" href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}">
+                        <span property="name">Главная</span>
+                    </a>
+                    <meta property="position" content="1">
+                </li>
+                <li class="breadcrumb-item" property="itemListElement" typeof="ListItem">
+                  <a property="item" typeof="WebPage"  href="{% url 'flags:elements-list' %}">
+                    <span property="name">Элементы флагов</span>
+                  </a>
+                  <meta property="position" content="2">
+                </li>
+                <li class="breadcrumb-item active" aria-current="page" property="itemListElement" typeof="ListItem">
+                    <span property="name">{{element.name}}</span>
+                    <meta property="position" content="3">
+                </li>
+            </ol>
+        </nav>
+    </div>
 </div>
 {% endblock breadcrumb %}
 
@@ -21,11 +35,15 @@
   <div class="container">
     <div class="row">
       <div class="col-12 d-flex justify-content-center">
+      {% if flags %}
         {% if element.seo_h1 %}
           <h1>{{element.seo_h1}}</h1>
           {% else %}
           <h1>{{element.name}} на флагах стран</h1>
         {% endif %}
+      {% else %}
+        <h1>Что изображено на флагах стран мира</h1>
+      {% endif %}
       </div>
     </div>
   </div>
@@ -57,18 +75,35 @@
 {% endblock content %}
 
 {# Begin SEO block #}
-  {% block canonical %}{% if flags %}{% url 'flags:element-detail' element.slug %}
-  {% else %}{% url 'flags:elements-list' %}{% endif %}
+
+  {% block canonical %}
+    {% if flags %}
+      {% url 'flags:element-detail' element.slug %}
+    {% else %}
+      {% url 'flags:elements-list' %}
+    {% endif %}
   {% endblock canonical %}
 
-  {% block meta_title %}{{element.seo_title}}{% endblock meta_title %}
+  {% block meta_title %}
+    {% if flags %}
+      {{element.seo_title}}
+    {% else %}
+      Список всех элементов и объектов на флагах стран мира
+    {% endif %}
+  {% endblock meta_title %}
 
-  {% block meta_description %}{{element.seo_description}}{% endblock meta_description %}
+  {% block meta_description %}
+    {% if flags %}
+      {{element.seo_description}}
+    {% else %}
+      Что изображено на флагах разных стран мира? Какой элемент встречается наиболее часто? Полный список элементов флагов на AllFlags.ru
+    {% endif %}
+  {% endblock meta_description %}
 
-  {% block meta_keywords %}{{element.meta_keywords}}{% endblock meta_keywords %}
+  {% block meta_keywords %}{% endblock meta_keywords %}
 
   {% block meta_robots %}
-  {% if element.is_index %}index,{% else %}noindex,{% endif %}
-  {% if element.is_follow %}follow{% else %}nofollow{% endif %}
+    {% if element.is_index %}index,{% else %}noindex,{% endif %}
+    {% if element.is_follow %}follow{% else %}nofollow{% endif %}
   {% endblock meta_robots %}
 {# End SEO block #}

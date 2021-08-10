@@ -3,14 +3,23 @@
 
 {% block breadcrumb %}
 <div class="pt-3">
-  <div class="container">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'flags:flags-list' %}">Главная</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Цвета флагов мира</li>
-      </ol>
-    </nav>
-  </div>
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" vocab="https://schema.org/" typeof="BreadcrumbList">
+                <li class="breadcrumb-item" property="itemListElement" typeof="ListItem">
+                    {# <a property="item" typeof="WebPage" href="{% url 'flags:flags-list' %}"> #}
+                    <a property="item" typeof="WebPage" href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}">
+                        <span property="name">Главная</span>
+                    </a>
+                    <meta property="position" content="1">
+                </li>
+                <li class="breadcrumb-item active" aria-current="page" property="itemListElement" typeof="ListItem">
+                    <span property="name">Цвета флагов мира</span>
+                    <meta property="position" content="2">
+                </li>
+            </ol>
+        </nav>
+    </div>
 </div>
 {% endblock breadcrumb %}
 
@@ -60,16 +69,16 @@
 
 {# Begin SEO block #}
   {# Canonical #}
-  {# {% block canonical %}{% url 'countries:colors-list' %}{% endblock canonical %} #}
+  {% block canonical %}{% url 'flags:colors-list' %}{% endblock canonical %}
 
   {# Meta title #}
   {% block meta_title %}
-
+    Список цветов на флагах стран - значения цветов на флагах
   {% endblock meta_title %}
 
   {# Meta description #}
   {% block meta_description %}
-
+    Какие цвета используются на флагах стран? Какие цвета встречаются чаще, а какие реже? Список всех цветов и их значения: красный, оранжевый, желтый, зеленый, голубой, синий, фиолетовый, белый, черный.
   {% endblock meta_description %}
 
   {# Meta keywords #}
