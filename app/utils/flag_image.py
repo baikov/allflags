@@ -69,14 +69,14 @@ def get_flag_img(iso2):
         for size in sizes:
             url = f"{cdn}/{size}/{iso2}.{format}"
             dest = f"{save_to_path}/{iso2}/{size}"
-            file_name = f"{iso2}.{format}"
-            download_img(url, dest, file_name)
+            # file_name = f"{iso2}.{format}"
+            download_img(url, dest, iso2)
 
     for format in vector:
         url = f"{cdn}/{iso2}.{format}"
         dest = f"{save_to_path}/{iso2}"
-        file_name = f"{iso2}.{format}"
-        download_img(url, dest, file_name)
+        # file_name = f"{iso2}.{format}"
+        download_img(url, dest, iso2)
 
 
 def get_construction_img(url, iso2):
