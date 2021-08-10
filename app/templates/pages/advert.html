@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block breadcrumb %}
+<div class="pt-3">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" vocab="https://schema.org/" typeof="BreadcrumbList">
+                <li class="breadcrumb-item" property="itemListElement" typeof="ListItem">
+                    {# <a property="item" typeof="WebPage" href="{% url 'flags:flags-list' %}"> #}
+                    <a property="item" typeof="WebPage" href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}">
+                        <span property="name">Главная</span>
+                    </a>
+                    <meta property="position" content="1">
+                </li>
+                <li class="breadcrumb-item active" aria-current="page" property="itemListElement" typeof="ListItem">
+                    <span property="name">Сотрудничество и реклама</span>
+                    <meta property="position" content="2">
+                </li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock breadcrumb %}
+
+{% block content %}
+{# H1 #}
+<div class="py-3">
+  <div class="container">
+      <div class="row">
+        <div class="py-1 py-md-3 col-12 d-flex justify-content-center">
+          <h1>Сотрудничество и реклама</h1>
+        </div>
+      </div>
+  </div>
+</div>
+<div class="py-3">
+  <div class="container">
+    <div class="row">
+        <div class="col">
+            <p>Мы заинтересованы в любом сотрудничестве, спонсорстве, размещении рекламы.</p>
+            <p>Если у Вас возникнут идеи по расширению функционала, или изменению существующего - пишите нам.</p>
+            <p>info@allflags.ru</p>
+        </div>
+    </div>
+    </div>
+</div>
+{% endblock content %}
+
+{# Begin SEO block #}
+    {% block canonical %}{% url 'advert' %}{% endblock canonical %}
+    {% block meta_title %}Реклама на портале AllFlags.ru{% endblock meta_title %}
+
+    {% block meta_description %}
+        Мы заинтересованы в любом сотрудничестве, спонсорстве, размещении рекламы.
+    {% endblock meta_description %}
+
+    {% block meta_robots %}noindex, follow{% endblock meta_robots %}
+{# End SEO block #}
