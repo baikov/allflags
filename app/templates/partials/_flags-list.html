@@ -6,7 +6,7 @@
       {% for flag in flags %}
       <div class="pb-4 col-4 col-md-3 col-lg-2 col-xl-2">
         <div class="flag-card hover-country">
-          {% if flag.country.is_published or request.user.is_superuser %}
+          {% if flag.is_published or request.user.is_superuser %}
           <a href="{% url 'flags:flag-detail' flag.slug %}">
           {% endif %}
             <picture>
@@ -16,13 +16,13 @@
               <img src="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png" alt="{{ flag.title }}"
                 title="{{ flag.title }} {{flag.name}} - картинка" class="image">
             </picture>
-          {% if flag.country.is_published or request.user.is_superuser %}
+          {% if flag.is_published or request.user.is_superuser %}
           </a>
           {% endif %}
 
           <div class="middle">
             <div class="text">
-              {% if flag.country.is_published or request.user.is_superuser %}
+              {% if flag.is_published or request.user.is_superuser %}
               <a href="{% url 'flags:flag-detail' flag.slug %}">
                 {{flag.title}}
               </a>
