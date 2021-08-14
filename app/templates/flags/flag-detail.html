@@ -303,7 +303,7 @@
                     </svg>
                     Список государственных флагов с
                     <a href="{% url 'flags:colors-count' colors.count %}" class="alert-link">
-                        {{colors|length|ru_count:'t'}} цветами
+                        {{colors|length|ru_count:'t'}} {% if colors|length == 1 %}цветом{% else %}цветами{% endif %}
                     </a>
                 </div>
             </div>

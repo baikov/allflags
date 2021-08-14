@@ -20,7 +20,7 @@
                   <meta property="position" content="2">
                 </li>
                 <li class="breadcrumb-item active" aria-current="page" property="itemListElement" typeof="ListItem">
-                    <span property="name">{{color_count}} {% if color_count > 4 %}цветов{% else %}цвета{% endif %}</span>
+                    <span property="name">{{color_count}} {% if color_count == 1 %}цвет{% elif color_count > 4 %}цветов{% else %}цвета{% endif %}</span>
                     <meta property="position" content="3">
                 </li>
             </ol>
@@ -35,12 +35,9 @@
     <div class="container">
       <div class="row">
         <div class="col-12 d-flex justify-content-center">
-          <h1>Флаги стран содержащие
-          {%if color_count > 1 %}
-          {{color_count}} цветов
-          {%else%}
-          {{color_count}} цвет
-          {%endif%}</h1>
+          <h1>Флаги стран содержащие {{color_count}}
+          {% if color_count == 1 %}цвет{% elif color_count > 4 %}цветов{% else %}цвета{% endif %}
+          </h1>
         </div>
       </div>
     </div>
@@ -50,13 +47,20 @@
 {% endblock content %}
 
 {# Begin SEO block #}
-  {% block meta_title %}
+  {# Canonical #}
+  {% block canonical %}{% url 'flags:colors-count' color_count %}{% endblock canonical %}
 
+  {# Meta title #}
+  {% block meta_title %}
+    Флаги стран с
+    {{color_count|ru_count:"t"}}
+    {% if color_count == 1 %}цветом{% else %}цветами{% endif %}
   {% endblock meta_title %}
 
   {# Meta description #}
   {% block meta_description %}
-
+    Список всех государственных флагов с {{color_count|ru_count:"t"}} {% if color_count == 1 %}цветом{% else %}цветами{% endif %}.
+    {{color_count|ru_count:"i"|capfirst}} {% if color_count == 1 %}цвет{% elif color_count > 4 %}цветов{% else %}цвета{% endif %} присутствуют на {{ flags|length }} флагах государств.
   {% endblock meta_description %}
 
   {# Meta keywords #}
