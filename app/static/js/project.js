@@ -98,12 +98,12 @@ $(document).ready(function () {
 
       // store hash
       var hash = this.hash;
-      console.log(hash);
+
       if (hash == "#main") {
         var targetOffset = 0;
       }
       else {
-        var targetOffset = $(hash).offset().top -50;
+        var targetOffset = $(hash).offset().top - 80;
       }
       // animate
       $('html, body').animate({
