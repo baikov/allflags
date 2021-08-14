@@ -90,4 +90,30 @@ $(document).ready(function () {
         autoplay: true,
         autoplaySpeed: 5000,
     });
+
+    $("ul.nav li a[href^='#']").on('click', function(e) {
+
+      // prevent default anchor click behavior
+      e.preventDefault();
+
+      // store hash
+      var hash = this.hash;
+      console.log(hash);
+      if (hash == "#main") {
+        var targetOffset = 0;
+      }
+      else {
+        var targetOffset = $(hash).offset().top -50;
+      }
+      // animate
+      $('html, body').animate({
+          scrollTop: targetOffset
+        }, 1000, function(){
+
+          // when done, add hash to url
+          // (default click behaviour)
+          // window.location.hash = hash;
+        });
+
+   });
 });
