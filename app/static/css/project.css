@@ -8804,8 +8804,17 @@ img.dl-example {
   border: 1px solid #adacac; }
 
 .second-menu {
-  border-bottom: 1px solid #eee;
-  border-top: 1px solid #eee; }
+  top: 71px;
+  border-top: 1px solid #eeeeee;
+  border-bottom: 1px solid #eeeeee; }
+
+.second-menu .nav-link {
+  padding: 8px 8px;
+  padding: 0.5rem 0.5rem;
+  color: rgba(0, 0, 0, 0.5); }
+
+.second-menu .nav-link.active, .second-menu .nav-link:hover {
+  color: rgba(0, 0, 0, 0.9); }
 
 .draft {
   background-color: #eee; }
