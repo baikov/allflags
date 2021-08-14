@@ -21,7 +21,7 @@ def in_km(field):
 def get_img_path(object, size=""):
     object = object.lower()
     if size:
-        return f"{MEDIA_URL}national-flags/{object}/{size}/{object}"
+        return f"{MEDIA_URL}national-flags/{object}/{size}/{object}-{size}"
     else:
         return f"{MEDIA_URL}national-flags/{object}/{object}"
 

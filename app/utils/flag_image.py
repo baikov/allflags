@@ -70,7 +70,7 @@ def get_flag_img(iso2):
             url = f"{cdn}/{size}/{iso2}.{format}"
             dest = f"{save_to_path}/{iso2}/{size}"
             # file_name = f"{iso2}.{format}"
-            download_img(url, dest, iso2)
+            download_img(url, dest, f"{iso2}-{size}")
 
     for format in vector:
         url = f"{cdn}/{iso2}.{format}"
