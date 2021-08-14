@@ -133,7 +133,9 @@ body {
 section.main {
   flex: 1 0 auto;
 }
-
+.nav, .navbar {
+  font-family: 'pfbeausanspro', 'Trebuchet MS', Arial, sans-serif;
+}
 h1,
 h2,
 h3,
@@ -185,7 +187,9 @@ img {
 img.logo {
   width: 150px;
 }
-
+.navbar-brand {
+  padding-right: 3rem;
+}
 .form-control.mr-sm-2.top-search {
   width: 120px;
 }
@@ -204,7 +208,14 @@ img.logo {
 img.main-flag {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
-
+img.dl-example {
+  border: 1px solid #adacac;
+}
+// Second menu
+.second-menu {
+  border-bottom: 1px solid #eee;
+  border-top: 1px solid #eee;
+}
 // Drafts
 .draft {
   background-color: #eee;
