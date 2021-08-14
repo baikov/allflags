@@ -27,14 +27,23 @@
 {% endblock breadcrumb %}
 
 {% block content %}
-{# Main screen #}
-<div class="py-3 py-xl-5 bg-light" id="main">
+{# H1 #}
+<div class="py-3 bg-light">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 d-flex justify-content-center">
+          <h1>{% if flag.seo_h1%}{{flag.seo_h1}}{% else %}{{flag.title}}{%endif%}</h1>
+        </div>
+      </div>
+    </div>
+</div>
+
+{# Main block #}
+<div class="py-3 pb-xl-5 bg-light">
     <div class="container">
         <div class="row">
-            <div class="py-1 py-md-3 col-12 d-flex justify-content-center">
-                <h1>{% if flag.seo_h1%}{{flag.seo_h1}}{% else %}{{flag.title}}{%endif%}</h1>
-            </div>
-            <div class="py-3 col-xs-12 col-sm-12 col-md-12 col-lg-5 d-flex justify-content-center">
+
+            <div class="py-3 col-12 col-lg-5 d-flex justify-content-center">
                 <picture>
                     <source type="image/webp" media="(min-width: 1921px)"
                         srcset="{{country.iso_code_a2|get_img_path:'w1280'}}.webp">
@@ -55,7 +64,7 @@
                         title="{{ flag.title }} {{flag.name}} - картинка" class="main-flag">
                 </picture>
             </div>
-            <div class="py-3 col-xs-12 col-sm-12 col-md-12 col-lg-7">
+            <div class="py-3 col-12 col-lg-7">
                 <p>
                     {% if country.conventional_long_name %}
                         {{ country.conventional_long_name }}
@@ -74,37 +83,37 @@
                 {% if flag.adopted_date %}
                 <p>
                     Современный вариант национального флага {{country.ru_name_rod}} был утвержден
-                    {% language 'ru' %}{{flag.adopted_date|date:"j E Y"}}{% endlanguage %}. До него
-                    в истории страны было примерно {{historical|length}} флагов.
+                    {% language 'ru' %}{{flag.adopted_date|date:"j E Y"}}{% endlanguage %}.
                 </p>
-                {% endif %}
-                {% if colors %}
-                <p>
-                    {{colors|length|ru_count|capfirst}} основных цвета флага:
-                    {%if colors|length > 1 %}
-                        {% for color in colors %}
-                            {% if forloop.last %}и {% endif %}
-                            {% if not forloop.first and not forloop.last %}, {% endif %}
-                            {{color.color_group|lower}}
-                        {% endfor %}
-                    {%else%}
-                        {{colors.0.color_group|lower}}
-                    {%endif%}.
-                </p>
-                {% else %}
-                <p>Цвета флага не выбраны</p>
-                {% endif %}
-
-                <p>
-                    Флаг имеет пропорции {{flag.proportion}}.
-                </p>
-                {% if flag.adopted_date %}
                 {% now "Y" as current_year %}
                 <p>
                    В {{ current_year }} году флагу исполняется {{age}} лет.
                 </p>
                 {% endif %}
+                {% if historical|length > 0 %}
+                <p>
+                    За всю историю существования страны флаг менялся около {{historical|length}} раз.
+                </p>
+                {% endif %}
 
+                {% if colors %}
+                <p>
+                    {% if colors|length == 1 %}
+                        Единственный цвет флага: {{colors.0.color_group|lower}}.
+                    {% else %}
+                        {{colors|length|ru_count|capfirst}} основных {% if color_count > 4 %}цветов{% else %}цвета{% endif %} флага:
+                        {% for color in colors %}{% if not forloop.first %}, {% endif %}{{color.color_group|lower}}{% endfor %}.
+                    {% endif %}
+                </p>
+                {% else %}
+                <p>Цвета флага не выбраны</p>
+                {% endif %}
+
+                {% if flag.proportion %}
+                <p>
+                    Флаг имеет пропорции {{flag.proportion}}.
+                </p>
+                {% endif %}
 
             </div>
             <div class="col-12">
@@ -119,49 +128,53 @@
 </div>
 
 {# Second menu for flag detail #}
-<!--<div class="py-3 py-xl-3 sticky-top bg-white" style="top:70px">-->
-<div class="py-3 py-xl-3 sticky-top bg-light second-menu d-none d-lg-block">
+<div class="sticky-top bg-light second-menu d-none d-lg-block">
     <div class="container">
-        <ul class="nav" id="navbar-scroll">
-            {% if colors or flag.design_description %}
-            <li class="nav-item">
-                <a class="nav-link" href="#colors">Цвета флага</a>
-            </li>
-            {% endif %}
-            {% if same_flags %}
-            <li class="nav-item">
-                <a class="nav-link" href="#same-colors">Похожие флаги</a>
-            </li>
-            {% endif %}
-            {% if historical|length > 0 or flag.history_text %}
-            <li class="nav-item">
-                <a class="nav-link" href="#history">История</a>
-            </li>
-            {% endif %}
-            {% if flag.facts.all|length > 0 %}
-            <li class="nav-item">
-                <a class="nav-link" href="#facts">Факты</a>
-            </li>
-            {% endif %}
+            <ul class="nav align-items-baseline" id="navbar-scroll">
+                <li class="nav-item">
+                    <a class="nav-link" href="#main">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-caret-up-square" viewBox="0 0 16 16">
+                            <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                            <path d="M3.544 10.705A.5.5 0 0 0 4 11h8a.5.5 0 0 0 .374-.832l-4-4.5a.5.5 0 0 0-.748 0l-4 4.5a.5.5 0 0 0-.082.537z"/>
+                        </svg>
+                    </a>
+                </li>
+                {% if colors or flag.design_description %}
+                <li class="nav-item">
+                    <a class="nav-link" href="#colors">Цвета флага</a>
+                </li>
+                {% endif %}
+                {% if same_flags %}
+                <li class="nav-item">
+                    <a class="nav-link" href="#same-colors">Похожие флаги</a>
+                </li>
+                {% endif %}
+                {% if historical|length > 0 or flag.history_text %}
+                <li class="nav-item">
+                    <a class="nav-link" href="#history">История</a>
+                </li>
+                {% endif %}
+                {% if flag.facts.all|length > 0 %}
+                <li class="nav-item">
+                    <a class="nav-link" href="#facts">Факты</a>
+                </li>
+                {% endif %}
 
-            <li class="nav-item">
-                <a class="nav-link" href="#downloads">Скачать</a>
-            </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#downloads">Скачать</a>
+                </li>
 
-            {% if country.is_published %}
-            <li class="nav-item">
-                <a class="nav-link" href="#country">О стране</a>
-            </li>
-            {% endif %}
-            {% if border_flags|length > 0 %}
-            <li class="nav-item">
-                <a class="nav-link" href="#border-flags">Флаги соседей</a>
-            </li>
-            {% endif %}
-            <li class="nav-item">
-                <a class="nav-link" href="#main">Наверх</a>
-            </li>
-        </ul>
+                {% if country.is_published %}
+                <li class="nav-item">
+                    <a class="nav-link" href="#country">О стране</a>
+                </li>
+                {% endif %}
+                {% if border_flags|length > 0 %}
+                <li class="nav-item">
+                    <a class="nav-link" href="#border-flags">Флаги соседей</a>
+                </li>
+                {% endif %}
+            </ul>
     </div>
 </div>
 
@@ -349,8 +362,103 @@
 </div>
 {% endif %}
 
+{# Same color flags v2 #}
+{% if same_flags|length > 0 %}
+<div class="bg-light" id="same-colors">
+    {# H2 #}
+    {% include "partials/_h2.html" with h2="Флаги с похожими цветами" %}
+    {# Flags list part #}
+    {% include "partials/_flags-list.html" with flags=same_flags %}
+</div>
+{% endif %}
+
+{# Historical flags and history text v3#}
+{% if historical|length > 0 or flag.history_text %}
+<div class="bg-white" id="history">
+    {# H2 #}
+    {% include "partials/_h2.html" with h2="Исторические флаги "|add:country.ru_name_rod|add:" по годам" %}
+    {# Content slider #}
+    <div class="py-3 py-xl-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-3 col-md-2">
+                    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                        {% for h_flag in historical %}
+                        <a class="nav-link{% if forloop.first %} active{% endif %}"
+                            id="v-pills-{{ h_flag.id }}-tab"
+                            data-toggle="pill"
+                            href="#v-pills-{{ h_flag.id }}"
+                            role="tab"
+                            aria-controls="v-pills-{{ h_flag.id }}"
+                            aria-selected="true">
+                            {{ h_flag.from_year }}-{{ h_flag.to_year }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-9 col-md-10">
+                    <div class="tab-content" id="v-pills-tabContent">
+                        {% for h_flag in historical %}
+                        <div class="tab-pane fade{% if forloop.first %} show active{% endif %}"
+                            id="v-pills-{{ h_flag.id }}"
+                            role="tabpanel"
+                            aria-labelledby="v-pills-{{ h_flag.id }}-tab">
+                            <h3>{{h_flag.title}}</h3>
+                            <picture>
+                                <source type="image/webp" srcset="{{MEDIA_URL}}/historical-flags/{{h_flag.country.iso_code_a2|lower}}/{{h_flag.country.iso_code_a2|lower}}-{{h_flag.from_year}}-{{h_flag.to_year}}.webp">
+
+                                <img src="{{MEDIA_URL}}/historical-flags/{{h_flag.country.iso_code_a2|lower}}/{{h_flag.country.iso_code_a2|lower}}-{{h_flag.from_year}}-{{h_flag.to_year}}.png"
+                                    alt="{{ h_flag.title }} {{h_flag.from_year}}-{{h_flag.to_year}}"
+                                    title="{{ h_flag.title }} {{h_flag.from_year}}-{{h_flag.to_year}} - картинка"
+                                    class="float-left mb-3 mr-3 main-flag"
+                                    width="300px">
+                            </picture>
+                            {{h_flag.description|safe}}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{# Flag facts v2 #}
+{% if flag.facts.all|length > 0 %}
+<div class="bg-light" id="facts">
+    {# H2 #}
+    {% include "partials/_h2.html" with h2="Интересные факты о флаге "|add:country.ru_name_rod %}
+    <div class="py-3 pt-xl-4 pb-xl-5">
+        <div class="container">
+            <div class="" itemscope itemtype="https://schema.org/FAQPage">
+                <div class="accordion" id="FAQ">
+                    {% for fact in flag.facts.all %}
+                    <div class="card" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                        <div class="card-header" id="heading{{fact.id}}">
+                            <h3 class="mb-0">
+                                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{{fact.id}}" aria-expanded="true" aria-controls="collapse{{fact.id}}">
+                                    <span itemprop="name">{{fact.caption}}</span>
+                                </button>
+                            </h3>
+                        </div>
+
+                        <div id="collapse{{fact.id}}" class="collapse" aria-labelledby="heading{{fact.id}}" data-parent="#FAQ">
+                            <div class="card-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                                <span itemprop="text">{{fact.text|safe}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 {# Downloads v2 #}
-<div class="py-3 py-xl-5 bg-light" id="downloads">
+<div class="py-3 py-xl-5 bg-white" id="downloads">
     <div class="container">
         <h2 class="py-3">Скачать флаг {{country.ru_name_rod}} в форматах png, jpg, webp, svg, eps, ai, pdf</h2>
         <div class="row">
@@ -616,101 +724,6 @@
     </div>
 </div>
 
-{# Same color flags v2 #}
-{% if same_flags|length > 0 %}
-<div class="bg-white" id="same-colors">
-    {# H2 #}
-    {% include "partials/_h2.html" with h2="Флаги с похожими цветами" %}
-    {# Flags list part #}
-    {% include "partials/_flags-list.html" with flags=same_flags %}
-</div>
-{% endif %}
-
-{# Historical flags and history text v3#}
-{% if historical|length > 0 or flag.history_text %}
-<div class="bg-light" id="history">
-    {# H2 #}
-    {% include "partials/_h2.html" with h2="Исторические флаги "|add:country.ru_name_rod|add:" по годам" %}
-    {# Content slider #}
-    <div class="py-3 py-xl-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-3 col-md-2">
-                    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                        {% for h_flag in historical %}
-                        <a class="nav-link{% if forloop.first %} active{% endif %}"
-                            id="v-pills-{{ h_flag.id }}-tab"
-                            data-toggle="pill"
-                            href="#v-pills-{{ h_flag.id }}"
-                            role="tab"
-                            aria-controls="v-pills-{{ h_flag.id }}"
-                            aria-selected="true">
-                            {{ h_flag.from_year }}-{{ h_flag.to_year }}
-                        </a>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="col-9 col-md-10">
-                    <div class="tab-content" id="v-pills-tabContent">
-                        {% for h_flag in historical %}
-                        <div class="tab-pane fade{% if forloop.first %} show active{% endif %}"
-                            id="v-pills-{{ h_flag.id }}"
-                            role="tabpanel"
-                            aria-labelledby="v-pills-{{ h_flag.id }}-tab">
-                            <h3>{{h_flag.title}}</h3>
-                            <picture>
-                                <source type="image/webp" srcset="{{MEDIA_URL}}/historical-flags/{{h_flag.country.iso_code_a2|lower}}/{{h_flag.country.iso_code_a2|lower}}-{{h_flag.from_year}}-{{h_flag.to_year}}.webp">
-
-                                <img src="{{MEDIA_URL}}/historical-flags/{{h_flag.country.iso_code_a2|lower}}/{{h_flag.country.iso_code_a2|lower}}-{{h_flag.from_year}}-{{h_flag.to_year}}.png"
-                                    alt="{{ h_flag.title }} {{h_flag.from_year}}-{{h_flag.to_year}}"
-                                    title="{{ h_flag.title }} {{h_flag.from_year}}-{{h_flag.to_year}} - картинка"
-                                    class="float-left mb-3 mr-3 main-flag"
-                                    width="300px">
-                            </picture>
-                            {{h_flag.description|safe}}
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endif %}
-
-{# Flag facts v2 #}
-{% if flag.facts.all|length > 0 %}
-<div class="bg-white" id="facts">
-    {# H2 #}
-    {% include "partials/_h2.html" with h2="Интересные факты о флаге "|add:country.ru_name_rod %}
-    <div class="py-3 pt-xl-4 pb-xl-5">
-        <div class="container">
-            <div class="" itemscope itemtype="https://schema.org/FAQPage">
-                <div class="accordion" id="FAQ">
-                    {% for fact in flag.facts.all %}
-                    <div class="card" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                        <div class="card-header" id="heading{{fact.id}}">
-                            <h3 class="mb-0">
-                                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{{fact.id}}" aria-expanded="true" aria-controls="collapse{{fact.id}}">
-                                    <span itemprop="name">{{fact.caption}}</span>
-                                </button>
-                            </h3>
-                        </div>
-
-                        <div id="collapse{{fact.id}}" class="collapse" aria-labelledby="heading{{fact.id}}" data-parent="#FAQ">
-                            <div class="card-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                                <span itemprop="text">{{fact.text|safe}}</span>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endif %}
-
 {# About country v2 #}
 {% if country.is_published %}
 <div class="py-3 py-xl-5 bg-light" id="country">
@@ -793,7 +806,7 @@
 {% endif %}
 
 {# Map v2 #}
-<div class="py-3 py-xl-5">
+<div class="py-3 py-xl-5 bg-white">
     <div class="container">
         <div class="row">
             <div class="col-12 col-md-4">
