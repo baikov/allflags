@@ -1,5 +1,3 @@
-import os
-
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -10,7 +8,8 @@ from app.utils.color import Colorize
 # from slugify import slugify as ss
 # from django.utils.text import slugify
 from app.utils.ru_slugify import custom_slugify
-from config.settings.base import MEDIA_ROOT
+
+from .services import historical_flag_img_file_path  # img_path_by_flag_type
 
 
 class Seo(models.Model):
@@ -57,11 +56,7 @@ class Currency(models.Model):
 
     def save(self, *args, **kwargs):
         self.iso_code = self.iso_code.upper()
-        # self.slug = self.iso_code_a2.lower()
         super(Currency, self).save(*args, **kwargs)
-
-    # def get_absolute_url(self):
-    #     return reverse('flags:currencies', kwargs={'iso_code': self.iso_code})
 
 
 class Region(Seo, models.Model):
@@ -88,13 +83,7 @@ class Region(Seo, models.Model):
     @property
     def get_parent(self):
         """Rreturn name of parent region"""
-        return self.parent
-
-    # def get_absolute_url(self):
-    #     if self.parent:
-    #         return '/%s/%s/' % (self.parent.slug, self.slug)
-    #     else:
-    #         return '/%s/' % (self.slug)
+        return self.parent.name
 
     def get_absolute_url(self):
         if self.parent:
@@ -115,7 +104,6 @@ class Country(Seo, models.Model):
     local_short_name = models.CharField(verbose_name=_("Short local name"), max_length=250, blank=True)
     ru_capital_name = models.CharField(verbose_name=_("Capital name"), max_length=600, blank=True)
     en_capital_name = models.CharField(verbose_name="Столица на английском", max_length=600, blank=True)
-    # subregion = models.ForeignKey(Subregion, on_delete=models.PROTECT, related_name="countries")
     region = models.ForeignKey(Region, on_delete=models.PROTECT, related_name="countries", blank=True, null=True)
     border_countries = models.ManyToManyField(
         "self",
@@ -287,7 +275,6 @@ class FlagElement(Seo, models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            # self.slug = custom_slugify(FlagElement, self.name)
             self.slug = custom_slugify(self.name)
         super(FlagElement, self).save(*args, **kwargs)
 
@@ -295,21 +282,11 @@ class FlagElement(Seo, models.Model):
         return self.name
 
 
-def historical_flag_img_file_path(instance, filename):
-    ext = filename.split(".")[-1]
-    path = f"historical-flags/{instance.country.iso_code_a2.lower()}"
-    filename = f"{instance.country.iso_code_a2.lower()}-{instance.from_year}-{instance.to_year}.{ext}"
-
-    if os.path.isfile(os.path.join(MEDIA_ROOT, path, filename)):
-        os.remove(os.path.join(MEDIA_ROOT, path, filename))
-
-    return os.path.join(path, filename)
-
-
 class HistoricalFlag(models.Model):
     """Historical flags model
     Signals:
-        pre_save: Download svg image from link in image_url field fnd save file in svg_file field
+        pre_save: Download svg image from link in image_url field and save file in svg_file field
+        post_save: Converting uploaded or downloaded svg file into png and webp
         post_delete: Remove file in svg_file field
     """
 
