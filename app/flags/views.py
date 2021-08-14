@@ -111,7 +111,8 @@ class FlagDetailView(DetailView):
         }
         context["country"] = Country.objects.get(id__exact=self.object.country.id)
         # context["currencies"] = Currency.objects.filter(countries=self.object.country.id)
-        context["age"] = int(datetime.now().strftime("%Y")) - int(flag.adopted_date.strftime("%Y"))
+        if flag.adopted_date:
+            context["age"] = int(datetime.now().strftime("%Y")) - int(flag.adopted_date.strftime("%Y"))
 
         return context
 
