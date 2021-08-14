@@ -386,3 +386,40 @@ class FlagFact(models.Model):
 
     def __str__(self):
         return self.caption
+
+
+# class Image(models.Model):
+#     img_dl_link = models.URLField(verbose_name=_("Image URL"), max_length=300, blank=True)
+#     image = models.FileField(
+#         verbose_name=_("Image"), upload_to=img_path_by_flag_type, help_text="png, jpg, svg"
+#     )
+#     webp = models.FileField(
+#         verbose_name=_("Image"), upload_to=img_path_by_flag_type, help_text="webp"
+#     )
+#     caption = models.CharField(verbose_name=_("Caption"), max_length=250, blank=True)
+#     alt = models.CharField(verbose_name=_("Alt text"), max_length=250, blank=True)
+#     ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
+
+#     class Meta:
+#         abstract = True
+
+# # Actualy, we can create one universal model for all Images with ContentType and multiple FK, but not now ))
+# # https://stackoverflow.com/questions/881792/how-to-use-dynamic-foreignkey-in-django
+
+
+# class MainFlagImage(Image):
+#     flag = models.ForeignKey("MainFlag", verbose_name=_("Flag"), on_delete=models.CASCADE, related_name="images")
+
+#     class Meta:
+#         verbose_name = _("Main flag image")
+#         verbose_name_plural = _("Main flag images")
+
+
+# class HistoricalFlagImage(Image):
+#     flag = models.ForeignKey(
+#         "HistoricalFlag", verbose_name=_("Historical flag"), on_delete=models.CASCADE, related_name="images"
+#     )
+
+#     class Meta:
+#         verbose_name = _("Historical flag image")
+#         verbose_name_plural = _("Historical flag images")
