@@ -1,0 +1,41 @@
+{# Historical flags and history text v2#}
+{% if historical|length > 0 or flag.history_text %}
+<div class="py-3 py-xl-5">
+    <div class="container">
+        {% if historical|length > 0 %}
+        <h2 class="py-3">Исторические флаги {{country.ru_name_rod}} по годам</h2>
+        <div class="history-carousel-hor">
+            {% for h_flag in historical %}
+
+            <div class="card mb-3">
+                <div class="row no-gutters">
+                    <div class="col-md-4">
+                        <picture>
+                            <source type="image/webp"
+                                srcset="{{MEDIA_URL}}/historical-flags/{{h_flag.country.iso_code_a2|lower}}/{{h_flag.country.iso_code_a2|lower}}-{{h_flag.from_year}}-{{h_flag.to_year}}.webp">
+
+                            <img src="{{MEDIA_URL}}/historical-flags/{{h_flag.country.iso_code_a2|lower}}/{{h_flag.country.iso_code_a2|lower}}-{{h_flag.from_year}}-{{h_flag.to_year}}.png" alt="{{ h_flag.title }} {{h_flag.from_year}}-{{h_flag.to_year}}"
+                                title="{{ h_flag.title }} {{h_flag.from_year}}-{{h_flag.to_year}} - картинка" class="figure-img img-fluid">
+                        </picture>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h3 class="card-title">{{h_flag.from_year}}-{{h_flag.to_year}} {{h_flag.title}}</h3>
+                            <p class="card-text">{{h_flag.description}}</p>
+                            <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if flag.history_text %}
+        <div class="row">
+            {{flag.history_text|safe}}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
