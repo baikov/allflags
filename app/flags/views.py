@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db.models import Count
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render
@@ -109,6 +111,7 @@ class FlagDetailView(DetailView):
         }
         context["country"] = Country.objects.get(id__exact=self.object.country.id)
         # context["currencies"] = Currency.objects.filter(countries=self.object.country.id)
+        context["age"] = int(datetime.now().strftime("%Y")) - int(flag.adopted_date.strftime("%Y"))
 
         return context
 
