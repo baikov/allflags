@@ -1,10 +1,10 @@
 {% load i18n my_filter %}
-<div class="py-3">
+<div class="py-3 py-xl-4">
   <div class="container">
     <div class="row">
 
       {% for flag in flags %}
-      <div class="pb-4 col-4 col-md-3 col-lg-2 col-xl-2">
+      <div class="pb-4 col-6 col-md-3 col-lg-2 col-xl-2">
         <div class="flag-card hover-country">
           {% if flag.is_published or request.user.is_superuser %}
           <a href="{% url 'flags:flag-detail' flag.slug %}">
