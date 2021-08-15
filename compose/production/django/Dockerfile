@@ -45,8 +45,8 @@ ENV BUILD_ENV ${BUILD_ENVIRONMENT}
 
 WORKDIR ${APP_HOME}
 
-RUN addgroup --system --uid 1000 django \
-  && adduser --system --gid 1000 --ingroup django django
+RUN addgroup --system django \
+  && adduser --system --ingroup django django
 
 
 # Install required system dependencies

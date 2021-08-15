@@ -3,7 +3,7 @@ version: '3.9'
 volumes:
   production_postgres_data: {}
   production_postgres_data_backups: {}
-  # new_prod_media: {}
+  new_prod_media: {}
   # prod_media:
   #   external: true
   #   name: prod_media
@@ -47,8 +47,8 @@ services:
 
     volumes:
       # - prod_media:/app/app/media:z
-      # - new_prod_media:/app/app/media:z
-      - ./app/media:/app/app/media:z
+      - new_prod_media:/app/app/media:z
+      # - ./app/media:/app/app/media:z
 
   postgres:
     build:
@@ -126,8 +126,8 @@ services:
     container_name: prod_media_nginx
     volumes:
       # - prod_media:/usr/share/nginx/media:z
-      # - new_prod_media:/usr/share/nginx/media
-      - ./app/media:/usr/share/nginx/media
+      - new_prod_media:/usr/share/nginx/media
+      # - ./app/media:/usr/share/nginx/media
       - ./compose/production/nginx:/etc/nginx/conf.d
       # - ./log/nginx:/var/log/nginx
     expose:
