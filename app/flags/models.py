@@ -223,6 +223,7 @@ class Color(models.Model):
     cmyk = ArrayField(models.SmallIntegerField(), blank=True, size=4, verbose_name=_("CMYK"))
     hsl = ArrayField(models.SmallIntegerField(), blank=True, size=3, verbose_name=_("HSL"))
     pantone = models.CharField(verbose_name=_("Pantone"), max_length=100, blank=True)
+    meaning = models.TextField(verbose_name=_("Color meaning"), blank=True)
 
     class Meta:
         verbose_name = _("Color")

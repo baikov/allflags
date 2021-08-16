@@ -257,7 +257,7 @@ class ColorAdmin(admin.ModelAdmin):
         (
             None,
             {
-                "fields": ["color_group", "flag", "order", "hex", "rgb", "cmyk", "hsl", "pantone"],
+                "fields": ["color_group", "flag", "order", "meaning", "hex", "rgb", "cmyk", "hsl", "pantone"],
             },
         )
     ]
@@ -296,7 +296,7 @@ class FlagEmojiInline(admin.TabularInline):
 class ColorInline(admin.TabularInline):
     model = Color
     extra = 3
-    fields = ("color_group", "order", "hex", "rgb", "cmyk", "hsl", "pantone")
+    fields = ("color_group", "order", "hex", "rgb", "pantone", "meaning")
 
 
 class FlagFactInline(admin.TabularInline):
