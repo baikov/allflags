@@ -216,7 +216,8 @@ class Color(models.Model):
     color_group = models.ForeignKey(
         ColorGroup, verbose_name=_("Color group"), on_delete=models.PROTECT, related_name="colors"
     )
-    color_meaning = models.TextField(verbose_name=_("Color meaning"), blank=True)
+    flag = models.ForeignKey("MainFlag", verbose_name=_("Flag"), on_delete=models.CASCADE, related_name="colors_set")
+    order = models.PositiveSmallIntegerField(verbose_name=_("Order"), default=500)
     hex = models.CharField(verbose_name=_("HEX"), max_length=7, unique=True, blank=True)
     rgb = ArrayField(models.SmallIntegerField(), blank=True, size=3, verbose_name=_("RGB"))
     cmyk = ArrayField(models.SmallIntegerField(), blank=True, size=4, verbose_name=_("CMYK"))
@@ -398,7 +399,7 @@ class FlagFact(models.Model):
 #     )
 #     caption = models.CharField(verbose_name=_("Caption"), max_length=250, blank=True)
 #     alt = models.CharField(verbose_name=_("Alt text"), max_length=250, blank=True)
-#     ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
+#     order = models.PositiveSmallIntegerField(verbose_name=_("Order"), default=500)
 
 #     class Meta:
 #         abstract = True

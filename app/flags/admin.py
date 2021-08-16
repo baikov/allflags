@@ -248,18 +248,19 @@ class ColorGroupAdmin(admin.ModelAdmin):
 
 class ColorAdmin(admin.ModelAdmin):
     # list_display = ('color_group', 'hex', 'rgb', 'cmyk', 'get_flags')
-    list_display = ("color_group", "color_html", "hex", "rgb", "cmyk", "get_flags")
-    search_fields = ["color_group", "hex", "rgb"]
-    # list_filter = ['color_group']
-    # inlines = [FlagInline]
+    list_display = ("color_group", "flag", "color_html", "hex", "rgb", "cmyk")
+    search_fields = ["color_group__name", "hex", "rgb", "flag__country__name"]
+    raw_id_fields = ("flag",)
+    # list_filter = ['flag']
 
-    # def get_flags(self, obj):
-    #     # return obj.flags.first()
-    #     flags = obj.flags.all().values('title')
-    #     flags_list = []
-    #     for flag in flags:
-    #         flags_list.append(flag["title"])
-    #     return flags_list
+    fieldsets = [
+        (
+            None,
+            {
+                "fields": ["color_group", "flag", "order", "hex", "rgb", "cmyk", "hsl", "pantone"],
+            },
+        )
+    ]
 
     def color_html(self, obj):
         return format_html(f'<div style="background-color:#{obj.hex};width:90%;height:1rem;"></div>')
@@ -290,6 +291,12 @@ class FlagEmojiInline(admin.TabularInline):
     model = FlagEmoji
     extra = 1
     fields = ("unicode", "slug")
+
+
+class ColorInline(admin.TabularInline):
+    model = Color
+    extra = 3
+    fields = ("color_group", "order", "hex", "rgb", "cmyk", "hsl", "pantone")
 
 
 class FlagFactInline(admin.TabularInline):
@@ -327,7 +334,7 @@ class MainFlagAdmin(admin.ModelAdmin):
     raw_id_fields = ("country",)
     readonly_fields = ["updated_date", "created_date"]
     filter_horizontal = ("colors", "elements")
-    inlines = (FlagEmojiInline, FlagFactInline)
+    inlines = (ColorInline, FlagEmojiInline, FlagFactInline)
     fieldsets = [
         (
             None,
@@ -338,9 +345,7 @@ class MainFlagAdmin(admin.ModelAdmin):
                     "slug",
                     "name",
                     "adopted_date",
-                    # "flag_day",
                     "proportion",
-                    "colors",
                     "short_description",
                     ("construction_image", "construction_image_url", "construction_image_file"),
                     "design_description",
