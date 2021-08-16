@@ -59,7 +59,8 @@ class FlagDetailView(DetailView):
         context["neighbours"] = neighbours
 
         # Get all flag colors
-        colors = Color.objects.filter(flags=self.object.id)
+        # colors = Color.objects.filter(flags=self.object.id)
+        colors = Color.objects.filter(flag=self.object.id).order_by("order")
         context["colors"] = colors
 
         # Get colors adjective
@@ -75,9 +76,11 @@ class FlagDetailView(DetailView):
         if colors:
             for row in colors:
                 same_colors.append(row.color_group)
-            same_color_flags = MainFlag.objects.filter(colors__color_group=same_colors[0]).exclude(id=self.object.id)
+            same_color_flags = MainFlag.objects.filter(
+                colors_set__color_group=same_colors[0]
+            ).exclude(id=self.object.id)
             for i in range(1, len(colors)):
-                same_color_flags = same_color_flags.filter(colors__color_group=same_colors[i])
+                same_color_flags = same_color_flags.filter(colors_set__color_group=same_colors[i])
             context["same_flags"] = same_color_flags
 
         # Get flags of border countries
@@ -175,7 +178,7 @@ def flags_by_region(request, region_slug, subregion_slug=None):
 
 def colors_count(request, color_count):
     template_name = "flags/colors-count.html"
-    flags = MainFlag.objects.annotate(num_colors=Count("colors")).filter(num_colors=color_count)
+    flags = MainFlag.objects.annotate(num_colors=Count("colors_set")).filter(num_colors=color_count)
     context = {"flags": flags, "color_count": color_count}
     if flags:
         return render(request, template_name, context)
