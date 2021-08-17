@@ -125,6 +125,16 @@ class ColorListView(ListView):
     model = ColorGroup
     template_name = "flags/colors-list.html"
     context_object_name = "colors"
+    # ordering = ['colors']
+
+    def get_queryset(self):
+        qs = ColorGroup.objects.published().annotate(num_colors=Count("colors")).order_by("-num_colors")
+        return qs
+
+    def get_ordering(self):
+        ordering = self.request.GET.get('ordering', '-date_created')
+        # validate ordering here
+        return ordering
 
 
 class ColorDetailView(DetailView):
