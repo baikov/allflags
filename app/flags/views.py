@@ -145,7 +145,7 @@ class ColorDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         colors = Color.objects.filter(color_group=self.object.id)
-        flags = MainFlag.objects.filter(colors__in=colors)
+        flags = MainFlag.objects.filter(colors_set__in=colors)
 
         context["flags"] = flags
         context["colors"] = colors
