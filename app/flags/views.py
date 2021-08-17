@@ -189,7 +189,10 @@ def flags_by_region(request, region_slug, subregion_slug=None):
 
 def colors_count(request, color_count):
     template_name = "flags/colors-count.html"
-    flags = MainFlag.objects.annotate(num_colors=Count("colors_set")).filter(num_colors=color_count)
+    # flags = MainFlag.objects.annotate(num_colors=Count("colors_set")).filter(num_colors=color_count)
+    main_colors = Color.objects.filter(is_main=True)
+    flags = MainFlag.objects.filter(colors_set__in=main_colors)
+    flags = flags.annotate(num_colors=Count("colors_set")).filter(num_colors=color_count)
     context = {"flags": flags, "color_count": color_count}
     if flags:
         return render(request, template_name, context)
