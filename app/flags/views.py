@@ -60,8 +60,9 @@ class FlagDetailView(DetailView):
 
         # Get all flag colors
         # colors = Color.objects.filter(flags=self.object.id)
-        colors = Color.objects.filter(flag=self.object.id).order_by("order")
+        colors = Color.objects.filter(flag=self.object.id, is_main=True).order_by("ordering")
         context["colors"] = colors
+        context["comp_colors"] = Color.objects.filter(flag=self.object.id, is_main=False)
 
         # Get colors adjective
         adj = ""
