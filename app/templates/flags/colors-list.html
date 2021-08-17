@@ -50,7 +50,7 @@
             <div class="colors">
               {% for color in group.colors.all %}
               <div class="color-square" id="btn-tooltip" style="background-color:#{{ color.hex }}" data-toggle="tooltip"
-                data-placement="top" title="#{{ color.hex }}"></div>
+                data-placement="top" title="{{ color.flag.country.name }}: #{{ color.hex }}"></div>
               {% endfor %}
             </div>
 

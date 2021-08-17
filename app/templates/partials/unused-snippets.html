@@ -1,3 +1,42 @@
+
+{# Colors meaning v2 in FAQ accordeon #}
+{% if colors.0.meaning %}
+<div class="card" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+    <div class="card-header" id="heading-meaning">
+        <h3 class="mb-0">
+            <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse-meaning" aria-expanded="true" aria-controls="collapse-meaning">
+                <span itemprop="name">Что означают цвета флага {{country.ru_name_rod}}</span>
+            </button>
+        </h3>
+    </div>
+
+    <div id="collapse-meaning" class="collapse" aria-labelledby="heading-meaning" data-parent="#FAQ">
+        <div class="card-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <span itemprop="text">
+                <ul class="list-unstyled">
+                {% for color in colors %}
+                    <li><strong>{{color.color_group.name}}:</strong> {{color.meaning}}</li>
+                {% endfor %}
+                </ul>
+            </span>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{# Flag elements v1 #}
+{% if flag.elements.all|length > 0 %}
+    <div class="card border-primary mb-3">
+        <div class="card-body text-primary">
+            <h3 class="text-dark text-center">Элементы флага</h3>
+            {% for elem in flag.elements.all %}
+            <a href="{% url 'flags:element-detail' elem.slug %}"
+                class="btn btn-outline-primary mb-2">{{elem.name}}</a>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
 {# Historical flags and history text v2#}
 {% if historical|length > 0 or flag.history_text %}
 <div class="py-3 py-xl-5">

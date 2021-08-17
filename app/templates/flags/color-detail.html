@@ -50,11 +50,22 @@
 {% include "partials/_flags-list.html" with flags=flags %}
 
 {# Color group colorgroup_meanings #}
-{% if group.colorgroup_meanings %}
-<div class="py-3 bg-light">
+{% if group.description %}
+<div class="py-3 py-xl-5 bg-light">
   <div class="container">
     <div class="row">
-      {{ group.colorgroup_meanings }}
+      <div class="col-12">
+        {{ group.description|safe }}
+      </div>
+
+      <div class="py-3 col-12">
+      <h2 class="py-3">{{group.name}} цвет и его значения на флагах стран</h2>
+        <ul>
+        {% for color in group.colors.all %}
+          <li><strong>{{color.flag.title}}:</strong> {{color.meaning}}</li>
+        {% endfor %}
+        </ul>
+      </div>
     </div>
   </div>
 </div>

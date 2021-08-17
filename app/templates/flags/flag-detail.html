@@ -41,7 +41,7 @@
 {# Main block #}
 <div class="py-3 pb-xl-5 bg-light">
     <div class="container">
-        <div class="row">
+        <div class="row d-flex align-items-center">
 
             <div class="py-3 col-12 col-lg-5 d-flex justify-content-center">
                 <picture>
@@ -81,13 +81,11 @@
                 {% endif %}
 
                 {% if flag.adopted_date %}
+                {% now "Y" as current_year %}
                 <p>
                     Современный вариант национального флага {{country.ru_name_rod}} был утвержден
                     {% language 'ru' %}{{flag.adopted_date|date:"j E Y"}}{% endlanguage %}.
-                </p>
-                {% now "Y" as current_year %}
-                <p>
-                   В {{ current_year }} году флагу исполняется {{age}} лет.
+                    В {{ current_year }} году флагу исполняется {{age}} лет.
                 </p>
                 {% endif %}
                 {% if historical|length > 0 %}
@@ -108,13 +106,25 @@
                 {% else %}
                 <p>Цвета флага не выбраны</p>
                 {% endif %}
+                {% if comp_colors %}
+                <p>
+                    Дополнительные цвета на флаге: {% for color in comp_colors %}{{color.color_group|lower}}{% endfor %}
+                </p>
+                {% endif %}
 
                 {% if flag.proportion %}
                 <p>
                     Флаг имеет пропорции {{flag.proportion}}.
                 </p>
                 {% endif %}
-
+                {% if flag.elements %}
+                <p>Элементы флага:
+                    {% for elem in flag.elements.all %}
+                    <!--<a href="{% url 'flags:element-detail' elem.slug %}" class="btn btn-outline-primary mb-2">{{elem.name}}</a>-->
+                    <a href="{% url 'flags:element-detail' elem.slug %}" class="badge badge-primary">{{elem.name}}</a>
+                    {% endfor %}
+                </p>
+                {% endif %}
             </div>
             <div class="col-12">
                 {% if flag.short_description %}
@@ -186,7 +196,9 @@
 
     <div class="py-3 pt-xl-4 pb-xl-5">
         <div class="container">
+
             <div class="row">
+                {# Colors tables #}
                 {% if colors %}
                 <div class="py-3 col-12">
                     <div class="row">
@@ -280,7 +292,6 @@
                                 </table>
                             </div>
                         {% endfor %}
-
                     </div>
                 </div>
 
@@ -302,19 +313,28 @@
                 </div>
                 {% endif %}
 
-                {% if flag.design_description and flag.construction_image_file or flag.elements.all|length > 0 %}
-                <div class="py-3 col-xs-12 col-sm-12 col-md-8 col-lg-8">
-                    {{flag.design_description|safe}}
-                </div>
-                {%elif flag.design_description and not flag.construction_image_file or flag.elements.all|length == 0 %}
-                <div class="py-3 col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                    {{flag.design_description|safe}}
+            </div>
+            <div class="row">
+                {# Colors meaning #}
+                {% if colors.0.meaning %}
+                <div class="col-12">
+                    <h3>Наиболее популярные значения цветов</h3>
+                    <ul class="list-unstyled">
+                    {% for color in colors %}
+                        <li><strong>{{color.color_group.name}}:</strong> {{color.meaning}}</li>
+                    {% endfor %}
+                    </ul>
                 </div>
                 {% endif %}
 
-                {% if flag.construction_image_file or flag.elements.all|length > 0 %}
-                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                    {% if flag.construction_image_file %}
+                {% if flag.design_description %}
+                <div class="py-3 col-12 {% if flag.construction_image_file %}col-md-8 col-lg-8{%endif%}">
+                    {{flag.design_description|safe}}
+
+                </div>
+
+                {% if flag.construction_image_file %}
+                <div class="col-12 col-md-4">
                     <h3 class="py-2">Схема флага</h3>
                     <figure class="figure">
                         <picture>
@@ -326,30 +346,10 @@
                         </picture>
                         <figcaption class="figure-caption text-right">{{flag.title}}: схема</figcaption>
                     </figure>
-                    {% endif %}
-
-                    {% if flag.elements.all|length > 0 %}
-                    <div class="card border-primary mb-3">
-                        <div class="card-body text-primary">
-                            <h3 class="text-dark text-center">Элементы флага</h3>
-                            {% for elem in flag.elements.all %}
-                            <a href="{% url 'flags:element-detail' elem.slug %}"
-                                class="btn btn-outline-primary mb-2">{{elem.name}}</a>
-                            {# <a href="{% url 'flags:element-detail' elem.slug %}" class="badge badge-primary mb-2">{{elem.name}}</a> #}
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    {# {% if flag.elements.all|length > 0 %} #}
-                    {# <h3 class="py-2">Элементы флага</h3> #}
-                    {# {% for elem in flag.elements.all %} #}
-                    {# <a href="{% url 'flags:element-detail' elem.slug %}" class="btn btn-outline-primary mb-2">{{elem.name}}</a> #}
-                    {# {% endfor %} #}
-                    {# {% endif %} #}
                 </div>
                 {% endif %}
-
+                    {# Flag elements v1 was here#}
+                {% endif %}
             </div>
         </div>
     </div>
@@ -427,6 +427,7 @@
         <div class="container">
             <div class="" itemscope itemtype="https://schema.org/FAQPage">
                 <div class="accordion" id="FAQ">
+                    {# Colors meaning v2 was here#}
                     {% for fact in flag.facts.all %}
                     <div class="card" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
                         <div class="card-header" id="heading{{fact.id}}">
