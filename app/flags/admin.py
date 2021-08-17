@@ -257,7 +257,17 @@ class ColorAdmin(admin.ModelAdmin):
         (
             None,
             {
-                "fields": ["color_group", "flag", "order", "meaning", "hex", "rgb", "cmyk", "hsl", "pantone"],
+                "fields": [
+                    "color_group",
+                    "flag",
+                    ("is_main", "ordering"),
+                    "meaning",
+                    "hex",
+                    "rgb",
+                    "cmyk",
+                    "hsl",
+                    "pantone"
+                ],
             },
         )
     ]
@@ -296,7 +306,7 @@ class FlagEmojiInline(admin.TabularInline):
 class ColorInline(admin.TabularInline):
     model = Color
     extra = 3
-    fields = ("color_group", "order", "hex", "rgb", "pantone", "meaning")
+    fields = ("is_main", "color_group", "ordering", "hex", "rgb", "pantone")
 
 
 class FlagFactInline(admin.TabularInline):
@@ -402,8 +412,8 @@ class HistoricalFlagAdmin(admin.ModelAdmin):
 
 class FlagFactAdmin(admin.ModelAdmin):
     list_display = ("flag", "caption", "label")
-    search_fields = ["flag__name", "caption", "label"]
-    list_filter = ["flag__name"]
+    search_fields = ["flag__country__name", "caption", "label"]
+    # list_filter = ["flag__title"]
     raw_id_fields = ("flag",)
     fieldsets = [
         (None, {"fields": ["flag", "caption", "label", "text", "image"]}),
