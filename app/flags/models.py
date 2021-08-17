@@ -200,6 +200,8 @@ class ColorGroup(Seo, models.Model):
     description = models.TextField(verbose_name=_("Color description"), blank=True)
     colorgroup_meanings = models.TextField(verbose_name=_("Colorgroup meanings"), blank=True)
 
+    objects = PublishedQuerySet.as_manager()
+
     class Meta:
         verbose_name = _("Color group")
         verbose_name_plural = _("Color groups")
@@ -217,13 +219,14 @@ class Color(models.Model):
         ColorGroup, verbose_name=_("Color group"), on_delete=models.PROTECT, related_name="colors"
     )
     flag = models.ForeignKey("MainFlag", verbose_name=_("Flag"), on_delete=models.CASCADE, related_name="colors_set")
-    order = models.PositiveSmallIntegerField(verbose_name=_("Order"), default=500)
-    hex = models.CharField(verbose_name=_("HEX"), max_length=7, unique=True, blank=True)
+    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
+    hex = models.CharField(verbose_name=_("HEX"), max_length=7, blank=True)
     rgb = ArrayField(models.SmallIntegerField(), blank=True, size=3, verbose_name=_("RGB"))
     cmyk = ArrayField(models.SmallIntegerField(), blank=True, size=4, verbose_name=_("CMYK"))
     hsl = ArrayField(models.SmallIntegerField(), blank=True, size=3, verbose_name=_("HSL"))
     pantone = models.CharField(verbose_name=_("Pantone"), max_length=100, blank=True)
     meaning = models.TextField(verbose_name=_("Color meaning"), blank=True)
+    is_main = models.BooleanField(verbose_name=_("One of main colors"), default=True)
 
     class Meta:
         verbose_name = _("Color")
@@ -400,7 +403,7 @@ class FlagFact(models.Model):
 #     )
 #     caption = models.CharField(verbose_name=_("Caption"), max_length=250, blank=True)
 #     alt = models.CharField(verbose_name=_("Alt text"), max_length=250, blank=True)
-#     order = models.PositiveSmallIntegerField(verbose_name=_("Order"), default=500)
+#     ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
 
 #     class Meta:
 #         abstract = True
