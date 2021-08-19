@@ -35,6 +35,8 @@ function pathsConfig(appName) {
       `${vendorsRoot}/popper.js/dist/umd/popper.js`,
       `${vendorsRoot}/bootstrap/dist/js/bootstrap.js`,
       `${vendorsRoot}/clipboard/dist/clipboard.js`,
+      `${this.app}/static/vendors/js/svg-pan-zoom.min.js`,
+      `${this.app}/static/vendors/js/svgMap.min.js`,
     ],
     app: this.app,
     templates: `${this.app}/templates`,
