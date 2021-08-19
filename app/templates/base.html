@@ -27,7 +27,8 @@
   <!--<link href="https://cdn.jsdelivr.net/gh/StephanWagner/svgMap@v2.0.3/dist/svgMap.min.css" rel="stylesheet">-->
   {% compress css %}
   <!-- This file stores project-specific CSS -->
-  <link href="{% static 'css/project.css' %}" rel="stylesheet">{% endcompress %}
+  <link href="{% static 'css/project.css' %}" rel="stylesheet">
+  {% endcompress %}
   {% endblock %}
   <!-- Le javascript ================================================== -->
   {# Placed at the top of the document so pages load faster with defer #}
@@ -40,11 +41,12 @@
 
   <!-- Vendor dependencies bundled as one file-->
 
-  {% compress js %}<script defer src="{% static 'js/vendors.min.js' %}"></script>
+  {% compress js %}
+  <script defer src="{% static 'js/vendors.min.js' %}"></script>
   <!--<script defer src="{% static 'js/slick.min.js' %}"></script>-->
   <!-- place project specific Javascript in this file -->
-  <script defer src="{% static 'js/project.js' %}"></script>{% endcompress %}
-
+  <script defer src="{% static 'js/project.js' %}"></script>
+  {% endcompress %}
   {% endblock javascript %}
   {% block json-ld %}{% endblock json-ld %}
 
