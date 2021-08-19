@@ -118,6 +118,7 @@ class Country(Seo, models.Model):
     official_language = models.CharField(verbose_name=_("Official language"), max_length=50, blank=True)
     internet_tld = models.CharField(verbose_name=_("Internet domain"), max_length=250, blank=True)
     phone_code = models.CharField(verbose_name=_("Phone code"), max_length=250, blank=True)
+    map_iframe = models.CharField(verbose_name=_("Map iframe"), max_length=600, blank=True)
 
     en_long_form = models.CharField(verbose_name=_("Official long name (en)"), max_length=500, blank=True)
     en_short_form = models.CharField(verbose_name=_("Short name (en)"), max_length=250, blank=True)
