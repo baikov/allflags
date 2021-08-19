@@ -136,6 +136,7 @@ class CountryAdmin(admin.ModelAdmin):
                     "official_language",
                     "phone_code",
                     "internet_tld",
+                    "map_iframe",
                 ]
             },
         ),
@@ -305,7 +306,7 @@ class FlagEmojiInline(admin.TabularInline):
 
 class ColorInline(admin.TabularInline):
     model = Color
-    extra = 3
+    extra = 1
     fields = ("is_main", "color_group", "ordering", "hex", "rgb", "pantone")
 
 
