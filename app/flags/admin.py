@@ -136,7 +136,7 @@ class CountryAdmin(admin.ModelAdmin):
                     "official_language",
                     "phone_code",
                     "internet_tld",
-                    "map_iframe",
+                    # "map_iframe",
                 ]
             },
         ),
