@@ -24,7 +24,7 @@
   {% block css %}
 
   <!-- Your stuff: Third-party CSS libraries go here -->
-  <!--<link href="https://cdn.jsdelivr.net/gh/StephanWagner/svgMap@v2.0.3/dist/svgMap.min.css" rel="stylesheet">-->
+  <link href="{% static 'css/svgMap.min.css' %}" rel="stylesheet">
   {% compress css %}
   <!-- This file stores project-specific CSS -->
   <link href="{% static 'css/project.css' %}" rel="stylesheet">
@@ -34,8 +34,10 @@
   {# Placed at the top of the document so pages load faster with defer #}
   {% block javascript %}
 
+  {% compress js %}
   <!--<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/StephanWagner/svgMap@v2.0.3/dist/svgMap.min.js"></script>-->
+  {% endcompress %}
 
   <!-- place project specific Javascript in this file -->
 
