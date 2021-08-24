@@ -265,3 +265,29 @@ def convert(file_name: str, resize: int = 0) -> tuple:
     return (f"{name}{ext}", f"{name}.webp")
 
 
+def resize(file: str, iso2: str = "", sizes: tuple = (600, 300)) -> None:
+    # path = "/".join(file.split("/")[:-1])
+    file_name, *_, ext = file.split("/")[-1].split(".")
+    # file_name, ext = os.path.splitext(file.split("/")[-1])
+
+    im = Image.open(file).convert("RGB")
+
+    for width in sizes:
+        if im.width > width:
+            height = int(width * im.height / im.width)
+            img = im.resize((width, height), Image.ANTIALIAS)
+
+            resized_path = f"{MEDIA_ROOT}/historical-flags/resized/{iso2}/{width}"
+            Path(resized_path).mkdir(parents=True, exist_ok=True)
+            img.save(
+                f"{resized_path}/{file_name}.{ext}",
+                optimize=True,  # minimize file size for PNG, JPG
+                # lossless=True,  # use lossless compression WebP
+                method=6,  # Quality/speed trade-off (0=fast, 6=slower-better) WebP
+                quality=70,  # The image quality PNG, JPG, WebP
+                minimize_size=True,  # If true, minimize the output size (slow)
+                allow_mixed=True,  # use mixed compression mode
+                format="jpeg" if ext == "jpg" else ext,
+            )
+
+
