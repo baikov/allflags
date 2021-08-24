@@ -136,3 +136,12 @@ def svg_convert(file_name: str) -> None:
         minimize_size=True,
         allow_mixed=True,
     )
+
+
+def get_h_flag_img(url, country_iso2):
+    iso2 = country_iso2.lower()
+    path = f"{MEDIA_ROOT}/historical-flags/{iso2}"
+    saved_file = download_img(url, path)
+    return convert(f"{path}/{saved_file}")
+
+
