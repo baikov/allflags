@@ -300,8 +300,8 @@ class HistoricalFlag(models.Model):
     title = models.CharField(verbose_name=_("Title"), max_length=150, blank=True)
     from_year = models.PositiveSmallIntegerField(verbose_name=_("Adopted year"))
     to_year = models.PositiveSmallIntegerField(verbose_name=_("Ended year"))
-    image_url = models.URLField(verbose_name=_("SVG image link"), max_length=300, blank=True)
-    svg_file = models.FileField(verbose_name=_("SVG image"), upload_to=historical_flag_img_file_path, blank=True)
+    # image_url = models.URLField(verbose_name=_("SVG image link"), max_length=300, blank=True)
+    # svg_file = models.FileField(verbose_name=_("SVG image"), upload_to=historical_flag_img_file_path, blank=True)
     # png_file = models.FileField(verbose_name=_("PNG image"), upload_to="historical-flags/", blank=True)
     description = models.TextField(verbose_name=_("Hstorical flag description"), blank=True)
 
@@ -392,6 +392,39 @@ class FlagFact(models.Model):
 
     def __str__(self):
         return self.caption
+
+
+class HistoricalFlagImage(models.Model):
+    """The set of images for historical flag.
+    1) Download image from img_link url
+    2) Convert to png/jpg
+    3) Resize
+    4) Save to media/historical-flag/{iso2}/
+
+    Signals:
+        pre_save:
+    """
+    flag = models.ForeignKey(
+        HistoricalFlag, verbose_name=_("Historical flag"), on_delete=models.CASCADE, related_name="images"
+    )
+    img_link = models.URLField(verbose_name=_("Image URL"), max_length=600, blank=True)
+    image = models.FileField(
+        verbose_name=_("Image"), upload_to=img_path_by_flag_type, help_text="png, jpg, svg", blank=True
+    )
+    webp = models.FileField(
+        verbose_name=_("WebP"), upload_to=img_path_by_flag_type, help_text="webp", blank=True
+    )
+    caption = models.CharField(verbose_name=_("Caption"), max_length=250, blank=True)
+    alt = models.CharField(verbose_name=_("Alt text"), max_length=250, blank=True)
+    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
+
+    class Meta:
+        verbose_name = _("Historical flag image")
+        verbose_name_plural = _("Historical flag images")
+
+    def clean(self):
+        if not self.img_link and not self.image:
+            raise ValidationError({"Warn": "Одно из полей должно быть заполнено"})
 
 
 # class Image(models.Model):
