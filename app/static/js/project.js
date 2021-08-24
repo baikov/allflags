@@ -83,13 +83,6 @@ $(document).ready(function () {
     //         // instead of a settings object
     //       ]
     // });
-    // $('.history-carousel-hor').slick({
-    //     dots: true,
-    //     slidesToShow: 1,
-    //     slidesToScroll: 1,
-    //     autoplay: true,
-    //     autoplaySpeed: 5000,
-    // });
 
     $("ul.nav li a[href^='#']").on('click', function(e) {
 

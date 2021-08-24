@@ -218,6 +218,17 @@ img.logo {
 img.main-flag {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
+img.h-flag {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  max-height: 250px;
+}
+.historical-img{
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+  max-width: 300px;
+}
 img.dl-example {
   border: 1px solid #adacac;
 }
