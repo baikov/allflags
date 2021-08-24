@@ -12,9 +12,16 @@ def delete_img(file):
     os.remove(file)
 
 
-def download_img(url: str, path: str, file_name: str) -> str:
-    *_, ext = url.split("/")[-1].split(".")
-    file = f"{path}/{file_name}.{ext}"
+def download_img(url: str, path: str, file_name: str = "") -> str:
+    # *_, ext = url.split("/")[-1].split(".")
+    _, file = os.path.split(url)
+    name, ext = os.path.splitext(file)
+
+    if file_name:
+        file = f"{path}/{file_name}{ext}"
+    else:
+        file_name = name.replace("%", "")
+        file = f"{path}/{file_name}{ext}"
     Path(path).mkdir(parents=True, exist_ok=True)
     headers = {
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -26,7 +33,7 @@ def download_img(url: str, path: str, file_name: str) -> str:
     if r.status_code == 200:
         with open(file, "wb") as f:
             f.write(r.content)
-        return f"{file_name}.{ext}"
+        return f"{file_name}{ext}"
     else:
         return "status-code-not-200.png"
 
