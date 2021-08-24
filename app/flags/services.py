@@ -14,12 +14,12 @@ def img_path_by_flag_type(instance, filename) -> str:
         str: path for saving uploaded file
     """
     iso2 = instance.flag.country.iso_code_a2.lower()
+    # folder = f"historical-flags/{iso2}"
     if str(instance._meta.verbose_name) == "Main flag image":
         folder = f"national-flags/{iso2}"
     elif str(instance._meta.verbose_name) == "Historical flag image":
         folder = f"historical-flags/{iso2}"
-
-    return f"{folder}/{filename}"
+    return os.path.join(folder, filename)
 
 
 def historical_flag_img_file_path(instance, filename):
