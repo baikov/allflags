@@ -10,10 +10,8 @@
   <meta name="description" content="{% block meta_description %}{% endblock %}" />
   {% endspaceless %}
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="author" content="Baikov">
   <meta name="robots" content="{% block meta_robots %}{% endblock %}" />
   <link rel="canonical" href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{% block canonical %}{% endblock %}">
-
   <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
   <!--[if lt IE 9]>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -42,7 +40,7 @@
   {% endcompress %}
   {% endblock javascript %}
   {% block json-ld %}{% endblock json-ld %}
-
+  {% include 'partials/_yandex-metrics.html' %}
 </head>
 
 <body>
