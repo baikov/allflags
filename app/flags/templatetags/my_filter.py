@@ -58,3 +58,10 @@ def adjective(object, case="i"):
         return dictionary[str(object).lower()][case]
     else:
         return "Государственный"
+
+
+@register.filter()
+def resize(object, size="600"):
+    name = object.path.split("/")[-1]
+    iso2 = object.path.split("/")[-2]
+    return f"{MEDIA_URL}historical-flags/resized/{iso2}/{size}/{name}"
