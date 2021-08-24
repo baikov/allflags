@@ -1,17 +1,24 @@
 import logging
-import os
 
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
-from app.utils.flag_image import (
+from app.utils.flag_image import (  # get_historical_flag_img, svg_convert
+    convert,
     get_construction_img,
-    get_historical_flag_img,
-    svg_convert,
+    get_h_flag_img,
+    remove_historical_flag_img,
+    resize,
 )
 from app.utils.ru_slugify import custom_slugify
 
-from .models import BorderCountry, Country, HistoricalFlag, MainFlag
+from .models import (
+    BorderCountry,
+    Country,
+    HistoricalFlag,
+    HistoricalFlagImage,
+    MainFlag,
+)
 from .tasks import get_flag_img_task
 
 logger = logging.getLogger(__name__)
@@ -56,11 +63,7 @@ def before_create_historical_flag(sender, instance, **kwargs):
         sender (HistoricalFlag): Model
         instance (object): has image_url as models.URLField and svg_image as models.FileField
     """
-    if instance.image_url and not instance.svg_file:
-        file = get_historical_flag_img(
-            instance.image_url, instance.from_year, instance.to_year, instance.country.iso_code_a2
-        )
-        instance.svg_file = file
+    pass
 
 
 @receiver(post_save, sender=HistoricalFlag)
@@ -68,15 +71,12 @@ def after_create_historical_flag(sender, instance, **kwargs):
     """
     Converting uploaded or downloaded svg file into png and webp
     """
-    if instance.svg_file:
-        svg_convert(instance.svg_file.path)
+    pass
 
 
 @receiver(post_delete, sender=HistoricalFlag)
 def after_delete_historical_flag(sender, instance, **kwargs):
-    if instance.svg_file:
-        if os.path.isfile(instance.svg_file.path):
-            os.remove(instance.svg_file.path)
+    pass
 
 
 @receiver(pre_save, sender=MainFlag)
