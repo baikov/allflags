@@ -9,7 +9,7 @@ from app.utils.color import Colorize
 # from django.utils.text import slugify
 from app.utils.ru_slugify import custom_slugify
 
-from .services import historical_flag_img_file_path  # img_path_by_flag_type
+from .services import img_path_by_flag_type  # historical_flag_img_file_path
 
 
 class Seo(models.Model):
@@ -339,11 +339,11 @@ class MainFlag(Seo, models.Model):
     )
     # flag_day = models.DateField(verbose_name=_("Flag day"), blank=True, null=True)
 
-    construction_image_url = models.URLField(verbose_name=_("Construction SVG image link"), max_length=600, blank=True)
-    construction_image_file = models.FileField(
-        verbose_name=_("Construction SVG image"), upload_to="construction/", blank=True
+    construction_image_url = models.URLField(verbose_name=_("Construction image link"), max_length=600, blank=True)
+    construction_image = models.FileField(
+        verbose_name=_("Construction image"), upload_to="construction/", blank=True
     )
-    construction_image = models.ImageField(verbose_name=_("Construction image"), upload_to="construction/", blank=True)
+    construction_webp = models.ImageField(verbose_name=_("WebP"), upload_to="construction/", blank=True)
     design_description = models.TextField(verbose_name=_("Design description"), blank=True)
     history_text = models.TextField(verbose_name=_("Flag history"), blank=True)
     dl_imgs = models.BooleanField(verbose_name=_("Download flag images"), default=False)
