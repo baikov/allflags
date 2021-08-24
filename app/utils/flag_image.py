@@ -102,13 +102,13 @@ def svg_convert(file_name: str) -> None:
 
     if ext == "svg":
         try:
-            cairosvg.svg2png(url=f"{path}/{file_name}.svg", output_width=1000, write_to=f"{path}/{file_name}.png")
+            cairosvg.svg2png(url=f"{path}/{file_name}.svg", output_width=600, write_to=f"{path}/{file_name}.png")
         except Exception:
             cairosvg.svg2png(
                 url=f"{path}/{file_name}.svg",
                 parent_width=800,
                 parent_height=600,
-                output_width=1000,
+                output_width=600,
                 write_to=f"{path}/{file_name}.png",
             )
     # im = Image.open(f"{destination_path}/{file_name}.png").convert("RGB")
