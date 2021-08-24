@@ -90,11 +90,8 @@ def get_construction_img(url, iso2):
     iso2 = iso2.lower()
     path = os.path.join(MEDIA_ROOT, "construction")
     file_name = f"{iso2}-flag-construction"
-
     saved_file = download_img(url, path, file_name)
-    # svg_convert(path, file_name)
-    # return f"construction/{file_name}"
-    return f"construction/{saved_file}"
+    return convert(f"{path}/{saved_file}", resize=300)
 
 
 def svg_convert(file_name: str) -> None:
