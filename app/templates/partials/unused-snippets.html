@@ -1,3 +1,26 @@
+{# Carousel #}
+<div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+    <div class="carousel-inner">
+    {% for img in h_flag.images.all %}
+        <div class="carousel-item{% if forloop.first %} active{% endif %}">
+            <picture>
+                <source type="image/webp" srcset="{{img.webp|resize:'300'}}">
+
+                <img src="{{img.image|resize:'300'}}" alt="{{ img.alt }}"
+                    title="img.caption" class="d-block w-100 main-flag">
+            </picture>
+        </div>
+    {% endfor %}
+    </div>
+    <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+    </a>
+</div>
 
 {# Colors meaning v2 in FAQ accordeon #}
 {% if colors.0.meaning %}
