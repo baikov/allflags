@@ -291,3 +291,15 @@ def resize(file: str, iso2: str = "", sizes: tuple = (600, 300)) -> None:
             )
 
 
+def remove_historical_flag_img(file_name: str) -> None:
+    path, file = os.path.split(file_name)
+    name, ext = os.path.splitext(file)
+    iso2 = path.split("/")[-1]
+    resized_path = f"{MEDIA_ROOT}/historical-flags/resized/{iso2}"
+    if os.path.isfile(file_name):
+        os.remove(file_name)
+
+    for parent, dirnames, filenames in os.walk(resized_path):
+        for fn in filenames:
+            if fn == file:
+                os.remove(os.path.join(parent, fn))
