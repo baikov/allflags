@@ -137,6 +137,38 @@ def create_country_flag(sender, instance, **kwargs):
             flag.save()
 
 
+@receiver(pre_save, sender=HistoricalFlagImage)
+def historical_image_save(sender, instance, **kwargs):
+    if instance.img_link:
+        main, webp = get_h_flag_img(
+            instance.img_link, instance.flag.country.iso_code_a2
+        )
+        instance.image = f"historical-flags/{instance.flag.country.iso_code_a2.lower()}/{main}"
+        instance.webp = f"historical-flags/{instance.flag.country.iso_code_a2.lower()}/{webp}"
+
+
+@receiver(post_save, sender=HistoricalFlagImage)
+def resize_image(sender, instance, **kwargs):
+    iso2 = instance.flag.country.iso_code_a2.lower()
+    if instance.image:
+        resize(instance.image.path, iso2, sizes=(600, 300))
+    if instance.webp:
+        resize(instance.webp.path, iso2, sizes=(600, 300))
+    if instance.image and kwargs["created"]:
+        main, webp = convert(instance.image.path)
+        instance.image = f"historical-flags/{instance.flag.country.iso_code_a2.lower()}/{main}"
+        instance.webp = f"historical-flags/{instance.flag.country.iso_code_a2.lower()}/{webp}"
+        instance.save()
+
+
+@receiver(post_delete, sender=HistoricalFlagImage)
+def delete_image(sender, instance, **kwargs):
+    if instance.image:
+        remove_historical_flag_img(instance.image.path)
+    if instance.webp:
+        remove_historical_flag_img(instance.webp.path)
+
+
 """
 @receiver(m2m_changed, sender=BorderCountry)
 def m2m_test(sender, instance, **kwargs):
