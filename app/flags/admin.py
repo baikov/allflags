@@ -19,6 +19,7 @@ from .models import (  # Region,; Subregion,
     FlagEmoji,
     FlagFact,
     HistoricalFlag,
+    HistoricalFlagImage,
     MainFlag,
     Region,
 )
@@ -316,6 +317,12 @@ class FlagFactInline(admin.TabularInline):
     fields = ("caption", "text")
 
 
+class HistoricalFlagImageInline(admin.TabularInline):
+    model = HistoricalFlagImage
+    extra = 1
+    fields = ("ordering", "img_link", "image", "caption", "alt")
+
+
 class FlagEmojiAdmin(admin.ModelAdmin):
     # prepopulated_fields = {"slug": ("name",)}
     list_display = ("unicode", "flag")
@@ -343,7 +350,7 @@ class MainFlagAdmin(admin.ModelAdmin):
     search_fields = ["title", "country__name"]
     list_filter = ["colors__color_group"]
     raw_id_fields = ("country",)
-    readonly_fields = ["updated_date", "created_date"]
+    readonly_fields = ["updated_date", "created_date", "construction_webp"]
     filter_horizontal = ("colors", "elements")
     inlines = (ColorInline, FlagEmojiInline, FlagFactInline)
     fieldsets = [
@@ -358,7 +365,7 @@ class MainFlagAdmin(admin.ModelAdmin):
                     "adopted_date",
                     "proportion",
                     "short_description",
-                    ("construction_image", "construction_image_url", "construction_image_file"),
+                    ("construction_image_url", "construction_image", "construction_webp"),
                     "design_description",
                     "history_text",
                 ]
@@ -406,8 +413,9 @@ class HistoricalFlagAdmin(admin.ModelAdmin):
     search_fields = ["title", "from_year", "country__name"]
     list_filter = ["country__name"]
     raw_id_fields = ("country",)
+    inlines = (HistoricalFlagImageInline,)
     fieldsets = [
-        (None, {"fields": ["country", "title", "image_url", "svg_file", ("from_year", "to_year"), "description"]}),
+        (None, {"fields": ["country", "title", ("from_year", "to_year"), "description"]}),
     ]
 
 
@@ -457,6 +465,17 @@ class RegionAdmin(admin.ModelAdmin):
     ]
 
 
+class HistoricalFlagImageAdmin(admin.ModelAdmin):
+    list_display = ("flag", "image", "ordering", "alt")
+    search_fields = ["flag__country__name"]
+    # list_filter = ["country__name"]
+    readonly_fields = ['webp']
+    raw_id_fields = ("flag",)
+    fieldsets = [
+        (None, {"fields": ["flag", "img_link", ("image", "webp"), "ordering", ("caption", "alt")]}),
+    ]
+
+
 admin.site.register(Currency, CurrencyAdmin)
 admin.site.register(Region, RegionAdmin)
 admin.site.register(Country, CountryAdmin)
@@ -468,6 +487,7 @@ admin.site.register(FlagEmoji, FlagEmojiAdmin)
 admin.site.register(HistoricalFlag, HistoricalFlagAdmin)
 admin.site.register(FlagFact, FlagFactAdmin)
 admin.site.register(BorderCountry, BorderCountryAdmin)
+admin.site.register(HistoricalFlagImage, HistoricalFlagImageAdmin)
 
 # admin.site.register(Region, RegionAdmin)
 # admin.site.register(Subregion, SubregionAdmin)
