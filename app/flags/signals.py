@@ -81,12 +81,14 @@ def after_delete_historical_flag(sender, instance, **kwargs):
 
 @receiver(pre_save, sender=MainFlag)
 def befor_mainflag_save(sender, instance, **kwargs):
-    if instance.construction_image_url and not instance.construction_image_file:
-        file = get_construction_img(
+    if instance.construction_image_url and not instance.construction_image:
+        main, webp = get_construction_img(
             instance.construction_image_url, instance.country.iso_code_a2
         )
-        # instance.construction_image_file = f"{file}.svg"
-        instance.construction_image_file = file
+        instance.construction_image = f"construction/{main}"
+        instance.construction_webp = f"construction/{webp}"
+    if not instance.construction_image:
+        instance.construction_webp = ""
 
     if instance.dl_imgs:
         # country = Country.objects.get(name=instance.country)
@@ -102,9 +104,11 @@ def after_create_or_update_flag(sender, instance, **kwargs):
         result = get_flag_img_task.delay(country.iso_code_a2)
         task_id = result.task_id # noqa F841
 
-    if instance.construction_image_file:
-        svg_convert(instance.construction_image_file.path)
-        # instance.construction_image = f"{}.png"
+    if instance.construction_image and not instance.construction_image_url and not instance.construction_webp:
+        main, webp = convert(instance.construction_image.path, resize=300)
+        instance.construction_image = f"construction/{main}"
+        instance.construction_webp = f"construction/{webp}"
+        instance.save()
 
 
 @receiver(post_save, sender=Country)
