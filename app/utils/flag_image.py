@@ -145,3 +145,123 @@ def get_h_flag_img(url, country_iso2):
     return convert(f"{path}/{saved_file}")
 
 
+def convert(file_name: str, resize: int = 0) -> tuple:
+    # path = "/".join(file_name.split("/")[:-1])
+    # file_name, *_, ext = file_name.split("/")[-1].split(".")
+    path, file = os.path.split(file_name)
+    name, ext = os.path.splitext(file)
+
+    ext = ext.lower()
+
+    if ext == ".svg":
+        out = resize if resize != 0 else 2400
+        try:
+            cairosvg.svg2png(url=f"{path}/{name}.svg", output_width=out, write_to=f"{path}/{name}.png")
+            im = Image.open(f"{path}/{name}.png")
+            if im.mode not in ('L', 'RGB'):
+                im.convert("RGB")
+
+            if resize != 0:
+                height = int(resize * im.height / im.width)
+                im = im.resize((resize, height), Image.ANTIALIAS)
+
+            im.save(
+                f"{path}/{name}.jpg",
+                format="jpeg",
+                lossless=True,
+                quality=90,
+                method=6,
+                minimize_size=True,
+                allow_mixed=True,
+            )
+            os.remove(f"{path}/{name}.svg")
+        except Exception as e:
+            print(f"Error {e}")
+
+    elif ext == ".jpg" or ext == ".jpeg":
+        if resize != 0:
+            im = Image.open(f"{path}/{name}{ext}")
+            if im.mode not in ('L', 'RGB'):
+                im.convert("RGB")
+            height = int(resize * im.height / im.width)
+            im = im.resize((resize, height), Image.ANTIALIAS)
+            im.save(
+                f"{path}/{name}.jpg",
+                format="jpeg",
+                lossless=True,
+                quality=90,
+                method=6,
+                minimize_size=True,
+                allow_mixed=True,
+            )
+
+        im = Image.open(f"{path}/{name}{ext}")
+        if im.mode not in ('L', 'RGB'):
+            im.convert("RGB")
+        im.save(
+            f"{path}/{name}.png",
+            format="png",
+            lossless=True,
+            quality=90,
+            method=6,
+            minimize_size=True,
+            allow_mixed=True,
+        )
+    elif ext == ".png":
+        if resize != 0:
+            im = Image.open(f"{path}/{name}{ext}")
+            if im.mode not in ('L', 'RGB'):
+                im.convert("RGB")
+            height = int(resize * im.height / im.width)
+            im = im.resize((resize, height), Image.ANTIALIAS)
+            im.save(
+                f"{path}/{name}.png",
+                format="png",
+                lossless=True,
+                quality=90,
+                method=6,
+                minimize_size=True,
+                allow_mixed=True,
+            )
+
+        im = Image.open(f"{path}/{name}{ext}").convert("RGB")
+        if im.mode not in ('L', 'RGB'):
+            im.convert("RGB")
+        im.save(
+            f"{path}/{name}.jpg",
+            format="jpeg",
+            lossless=True,
+            quality=90,
+            method=6,
+            minimize_size=True,
+            allow_mixed=True,
+        )
+    else:
+        print(f"Wrong ext: {ext}")
+
+    try:
+        jpg_size = os.path.getsize(f"{path}/{name}.jpg")
+        png_size = os.path.getsize(f"{path}/{name}.png")
+
+        if jpg_size < png_size:
+            os.remove(f"{path}/{name}.png")
+            ext = ".jpg"
+        else:
+            os.remove(f"{path}/{name}.jpg")
+            ext = ".png"
+    except Exception as e:
+        print(e)
+
+    im = Image.open(f"{path}/{name}{ext}")
+    im.save(
+        f"{path}/{name}.webp",
+        format="WebP",
+        # lossless=True,
+        quality=70,
+        method=6,
+        minimize_size=True,
+        allow_mixed=True,
+    )
+    return (f"{name}{ext}", f"{name}.webp")
+
+
