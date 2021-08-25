@@ -298,9 +298,10 @@ class HistoricalFlag(models.Model):
 
     country = models.ForeignKey(Country, verbose_name=_("Country"), on_delete=models.CASCADE, related_name="h_flags")
     title = models.CharField(verbose_name=_("Title"), max_length=150, blank=True)
-    from_year = models.PositiveSmallIntegerField(verbose_name=_("Adopted year"))
-    to_year = models.PositiveSmallIntegerField(verbose_name=_("Ended year"), blank=True)
+    from_year = models.CharField(verbose_name=_("Adopted year"))
+    to_year = models.CharField(verbose_name=_("Ended year"), blank=True)
     description = models.TextField(verbose_name=_("Hstorical flag description"), blank=True)
+    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
 
     class Meta:
         verbose_name = _("Historical flag")
