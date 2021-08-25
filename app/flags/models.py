@@ -299,10 +299,7 @@ class HistoricalFlag(models.Model):
     country = models.ForeignKey(Country, verbose_name=_("Country"), on_delete=models.CASCADE, related_name="h_flags")
     title = models.CharField(verbose_name=_("Title"), max_length=150, blank=True)
     from_year = models.PositiveSmallIntegerField(verbose_name=_("Adopted year"))
-    to_year = models.PositiveSmallIntegerField(verbose_name=_("Ended year"))
-    # image_url = models.URLField(verbose_name=_("SVG image link"), max_length=300, blank=True)
-    # svg_file = models.FileField(verbose_name=_("SVG image"), upload_to=historical_flag_img_file_path, blank=True)
-    # png_file = models.FileField(verbose_name=_("PNG image"), upload_to="historical-flags/", blank=True)
+    to_year = models.PositiveSmallIntegerField(verbose_name=_("Ended year"), blank=True)
     description = models.TextField(verbose_name=_("Hstorical flag description"), blank=True)
 
     class Meta:
