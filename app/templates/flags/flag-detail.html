@@ -383,7 +383,7 @@
                             role="tab"
                             aria-controls="v-pills-{{ h_flag.id }}"
                             aria-selected="true">
-                            {{ h_flag.from_year }} - {% if h_flag.to_year %}{{ h_flag.to_year }}{% else %}???{% endif %}
+                            {% if h_flag.from_year %}{{ h_flag.from_year }}{% else %}???{% endif %} - {% if h_flag.to_year %}{{ h_flag.to_year }}{% else %}???{% endif %}
                         </a>
                         {% endfor %}
                     </div>
