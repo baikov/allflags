@@ -419,6 +419,7 @@ class HistoricalFlagImage(models.Model):
     class Meta:
         verbose_name = _("Historical flag image")
         verbose_name_plural = _("Historical flag images")
+        ordering = ('ordering',)
 
     def clean(self):
         if not self.img_link and not self.image:
