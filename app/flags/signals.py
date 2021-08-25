@@ -12,10 +12,9 @@ from app.utils.flag_image import (  # get_historical_flag_img, svg_convert
 )
 from app.utils.ru_slugify import custom_slugify
 
-from .models import (
+from .models import (  # HistoricalFlag
     BorderCountry,
     Country,
-    HistoricalFlag,
     HistoricalFlagImage,
     MainFlag,
 )
@@ -53,30 +52,6 @@ def delete_neighbour(sender, instance, **kwargs):
         logger.warning("Neighbour deleted")
     except BorderCountry.DoesNotExist:
         return
-
-
-@receiver(pre_save, sender=HistoricalFlag)
-def before_create_historical_flag(sender, instance, **kwargs):
-    """Download svg image from link in image_url field and save file in svg_file field
-
-    Args:
-        sender (HistoricalFlag): Model
-        instance (object): has image_url as models.URLField and svg_image as models.FileField
-    """
-    pass
-
-
-@receiver(post_save, sender=HistoricalFlag)
-def after_create_historical_flag(sender, instance, **kwargs):
-    """
-    Converting uploaded or downloaded svg file into png and webp
-    """
-    pass
-
-
-@receiver(post_delete, sender=HistoricalFlag)
-def after_delete_historical_flag(sender, instance, **kwargs):
-    pass
 
 
 @receiver(pre_save, sender=MainFlag)
@@ -139,6 +114,9 @@ def create_country_flag(sender, instance, **kwargs):
 
 @receiver(pre_save, sender=HistoricalFlagImage)
 def historical_image_save(sender, instance, **kwargs):
+    """
+    Download img from url and convert it to png/jpg and webp
+    """
     if instance.img_link:
         main, webp = get_h_flag_img(
             instance.img_link, instance.flag.country.iso_code_a2
