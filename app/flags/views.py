@@ -50,7 +50,7 @@ class FlagDetailView(DetailView):
         # Get all historical flags
         context["historical"] = HistoricalFlag.objects.filter(
             country__iso_code_a2=self.object.country.iso_code_a2
-        ).order_by("from_year")
+        ).order_by("ordering")
 
         # Get all border countries
         neighbours = BorderCountry.objects.filter(country=self.object.country)
