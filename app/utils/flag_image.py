@@ -279,9 +279,9 @@ def resize(file: str, iso2: str = "", sizes: tuple = (600, 300)) -> None:
 
         if im.width > width:
             height = int(width * im.height / im.width)
-            img = im.resize((width, height), Image.ANTIALIAS)
+            im = im.resize((width, height), Image.ANTIALIAS)
 
-        img.save(
+        im.save(
             f"{resized_path}/{file_name}.{ext}",
             optimize=True,  # minimize file size for PNG, JPG
             # lossless=True,  # use lossless compression WebP
