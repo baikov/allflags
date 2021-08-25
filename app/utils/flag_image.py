@@ -16,6 +16,7 @@ def download_img(url: str, path: str, file_name: str = "") -> str:
     # *_, ext = url.split("/")[-1].split(".")
     _, file = os.path.split(url)
     name, ext = os.path.splitext(file)
+    ext = ext.lower()
 
     if file_name:
         file = f"{path}/{file_name}{ext}"
