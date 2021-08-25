@@ -1,10 +1,12 @@
 import os
 from pathlib import Path
+from urllib.parse import unquote
 
 import cairosvg
 import requests
 from PIL import Image
 
+from app.utils.ru_slugify import custom_slugify
 from config.settings.base import MEDIA_ROOT
 
 
@@ -13,15 +15,14 @@ def delete_img(file):
 
 
 def download_img(url: str, path: str, file_name: str = "") -> str:
-    # *_, ext = url.split("/")[-1].split(".")
-    _, file = os.path.split(url)
+    _, file = os.path.split(unquote(url))
     name, ext = os.path.splitext(file)
     ext = ext.lower()
 
     if file_name:
         file = f"{path}/{file_name}{ext}"
     else:
-        file_name = name.replace("%", "")
+        file_name = custom_slugify(name)
         file = f"{path}/{file_name}{ext}"
     Path(path).mkdir(parents=True, exist_ok=True)
     headers = {
