@@ -409,13 +409,14 @@ class MainFlagAdmin(admin.ModelAdmin):
 
 
 class HistoricalFlagAdmin(admin.ModelAdmin):
-    list_display = ("from_year", "to_year", "country", "title")
+    list_display = ("from_year", "to_year", "country", "title", "ordering")
     search_fields = ["title", "from_year", "country__name"]
     list_filter = ["country__name"]
     raw_id_fields = ("country",)
+    list_editable = ("ordering",)
     inlines = (HistoricalFlagImageInline,)
     fieldsets = [
-        (None, {"fields": ["country", "title", ("from_year", "to_year"), "description"]}),
+        (None, {"fields": ["country", "title", ("from_year", "to_year"), "ordering", "description"]}),
     ]
 
 
