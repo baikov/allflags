@@ -2,6 +2,7 @@ import logging
 
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
+from urllib.parse import unquote
 
 from app.utils.flag_image import (  # get_historical_flag_img, svg_convert
     convert,
@@ -117,12 +118,13 @@ def historical_image_save(sender, instance, **kwargs):
     """
     Download img from url and convert it to png/jpg and webp
     """
-    if instance.img_link:
+    if instance.img_link and not instance.image:
         main, webp = get_h_flag_img(
             instance.img_link, instance.flag.country.iso_code_a2
         )
         instance.image = f"historical-flags/{instance.flag.country.iso_code_a2.lower()}/{main}"
         instance.webp = f"historical-flags/{instance.flag.country.iso_code_a2.lower()}/{webp}"
+        instance.img_link = unquote(instance.img_link)
 
 
 @receiver(post_save, sender=HistoricalFlagImage)
