@@ -399,6 +399,7 @@ class HistoricalFlag(models.Model):
     class Meta:
         verbose_name = _("Historical flag")
         verbose_name_plural = _("Historical flags")
+        ordering = ("ordering",)
 
     def __str__(self):
         return f"{self.from_year}-{self.to_year} {self.title}"

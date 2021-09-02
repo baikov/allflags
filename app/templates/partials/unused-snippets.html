@@ -14,22 +14,6 @@
 	<meta itemprop="height" content="{{img.image.height}}px">
 </picture>
 
-
-
-{# Historical flag images v2 #}
-{% for img in h_flag.pictures.all %}
-<figure class="figure historical-img">
-    <picture>
-        <source type="image/webp"
-                srcset="{{img.webp|media_resize:'sm'}}">
-        <source type="{{img.source_type}}"
-                srcset="{{img.image|media_resize:'sm'}}">
-        <img src="{{img.image.url}}" alt="{{ img.caption }}">
-    </picture>
-    <figcaption class="figure-caption text-center">{{img.caption}}</figcaption>
-</figure>
-{% endfor %}
-
 {# Historical flag images v1 #}
 {% for img in h_flag.images.all %}
     {% if img.image and img.webp %}
