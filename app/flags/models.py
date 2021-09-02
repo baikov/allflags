@@ -1,6 +1,8 @@
 import os
 import urllib
 
+from ckeditor.fields import RichTextField
+from ckeditor_uploader.fields import RichTextUploadingField
 from django.contrib.contenttypes import fields
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import ArrayField
@@ -159,7 +161,7 @@ class Region(Seo, models.Model):
         null=True,
     )
     name = models.CharField(verbose_name=_("Region name"), max_length=250)
-    description = models.TextField(verbose_name=_("Region description"), blank=True)
+    description = RichTextField(verbose_name=_("Region description"), blank=True)
 
     objects = PublishedQuerySet.as_manager()
 
@@ -288,8 +290,8 @@ class ColorGroup(Seo, models.Model):
     # ru_name_tvo = models.CharField(verbose_name=_("Name (tvo)"), max_length=50, blank=True)
     # ru_name_pre = models.CharField(verbose_name=_("Name (pre)"), max_length=50, blank=True)
     short_name = models.CharField(verbose_name=_("Short name"), max_length=50)
-    description = models.TextField(verbose_name=_("Color description"), blank=True)
-    colorgroup_meanings = models.TextField(verbose_name=_("Colorgroup meanings"), blank=True)
+    description = RichTextField(verbose_name=_("Color description"), blank=True)
+    colorgroup_meanings = RichTextField(verbose_name=_("Colorgroup meanings"), blank=True)
 
     objects = PublishedQuerySet.as_manager()
 
@@ -363,7 +365,7 @@ class Color(models.Model):
 
 class FlagElement(Seo, models.Model):
     name = models.CharField(verbose_name=_("Name"), max_length=250)
-    description = models.TextField(verbose_name=_("Description"), blank=True)
+    description = RichTextField(verbose_name=_("Description"), blank=True)
 
     class Meta:
         verbose_name = _("Flag element")
@@ -390,7 +392,7 @@ class HistoricalFlag(models.Model):
     title = models.CharField(verbose_name=_("Title"), max_length=150, blank=True)
     from_year = models.CharField(verbose_name=_("Adopted year"), max_length=50, blank=True)
     to_year = models.CharField(verbose_name=_("Ended year"), max_length=50, blank=True)
-    description = models.TextField(verbose_name=_("Hstorical flag description"), blank=True)
+    description = RichTextField(verbose_name=_("Hstorical flag description"), blank=True)
     ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
     pictures = fields.GenericRelation(Picture)
 
@@ -453,9 +455,9 @@ class MainFlag(Seo, models.Model):
         format='webp',
         options={'quality': 70, 'method': 6, 'minimize_size': True, 'allow_mixed': True},
     )
-    construction_webp = models.ImageField(verbose_name=_("WebP"), upload_to="construction/", blank=True)
-    design_description = models.TextField(verbose_name=_("Design description"), blank=True)
-    history_text = models.TextField(verbose_name=_("Flag history"), blank=True)
+
+    design_description = RichTextUploadingField(verbose_name=_("Design description"), blank=True)
+    history_text = RichTextField(verbose_name=_("Flag history"), blank=True)
     dl_imgs = models.BooleanField(verbose_name=_("Download flag images"), default=False)
 
     objects = PublishedQuerySet.as_manager()
@@ -508,7 +510,7 @@ class FlagFact(models.Model):
     flag = models.ForeignKey(MainFlag, verbose_name=_("Flag"), on_delete=models.CASCADE, related_name="facts")
     caption = models.CharField(verbose_name=_("Fact caption"), max_length=250, blank=True)
     label = models.CharField(verbose_name=_("Fact label"), max_length=50, blank=True)
-    text = models.TextField(verbose_name=_("Fact text"), blank=True)
+    text = RichTextUploadingField(verbose_name=_("Fact text"), blank=True)
     image = models.ImageField(verbose_name=_("Fact image"), blank=True)
 
     class Meta:
