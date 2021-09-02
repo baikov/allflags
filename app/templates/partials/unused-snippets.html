@@ -95,6 +95,16 @@
 </div>
 {% endif %}
 
+{# Flag elements v2 #}
+{% if flag.elements %}
+<p>Элементы флага:
+    {% for elem in flag.elements.all %}
+    <!--<a href="{% url 'flags:element-detail' elem.slug %}" class="btn btn-outline-primary mb-2">{{elem.name}}</a>-->
+    <a href="{% url 'flags:element-detail' elem.slug %}" class="badge badge-primary">{{elem.name}}</a>
+    {% endfor %}
+</p>
+{% endif %}
+
 {# Flag elements v1 #}
 {% if flag.elements.all|length > 0 %}
     <div class="card border-primary mb-3">

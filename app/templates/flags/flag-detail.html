@@ -117,14 +117,7 @@
                     Флаг имеет пропорции {{flag.proportion}}.
                 </p>
                 {% endif %}
-                {% if flag.elements %}
-                <p>Элементы флага:
-                    {% for elem in flag.elements.all %}
-                    <!--<a href="{% url 'flags:element-detail' elem.slug %}" class="btn btn-outline-primary mb-2">{{elem.name}}</a>-->
-                    <a href="{% url 'flags:element-detail' elem.slug %}" class="badge badge-primary">{{elem.name}}</a>
-                    {% endfor %}
-                </p>
-                {% endif %}
+                {# Flag elements v2 here #}
             </div>
             <div class="col-12">
                 {% if flag.short_description %}
