@@ -353,7 +353,9 @@ class MainFlagAdmin(admin.ModelAdmin):
     search_fields = ["title", "country__name"]
     list_filter = ["colors__color_group"]
     raw_id_fields = ("country",)
-    readonly_fields = ["updated_date", "created_date", "construction_webp"]
+    readonly_fields = [
+        "updated_date", "created_date", "construction_webp", "construction_image_small", "construction_webp_small"
+    ]
     filter_horizontal = ("colors", "elements")
     inlines = (ColorInline, FlagEmojiInline, FlagFactInline)
     fieldsets = [
@@ -368,7 +370,7 @@ class MainFlagAdmin(admin.ModelAdmin):
                     "adopted_date",
                     "proportion",
                     "short_description",
-                    ("construction_image_url", "construction_image", "construction_webp"),
+                    ("construction_url", "construction_image"),
                     "design_description",
                     "history_text",
                 ]
@@ -395,6 +397,15 @@ class MainFlagAdmin(admin.ModelAdmin):
                     "is_index",
                     "is_follow",
                     "dl_imgs",
+                ],
+            },
+        ),
+        (
+            _("Pictures"),
+            {
+                "classes": ("collapse", "wide"),
+                "fields": [
+                    "construction_webp", "construction_image_small", "construction_webp_small"
                 ],
             },
         ),

@@ -1,15 +1,23 @@
+import os
+import urllib
+
+from django.contrib.contenttypes import fields
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Q
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from imagekit.models import ImageSpecField, ProcessedImageField
+from imagekit.processors import ResizeToFit
 
 from app.utils.color import Colorize
 # from slugify import slugify as ss
 # from django.utils.text import slugify
 from app.utils.ru_slugify import custom_slugify
 
-from .services import img_path_by_flag_type  # historical_flag_img_file_path
+# from .services import img_path_by_flag_type  # historical_flag_img_file_path
 
 
 class Seo(models.Model):
@@ -420,9 +428,30 @@ class MainFlag(Seo, models.Model):
     )
     # flag_day = models.DateField(verbose_name=_("Flag day"), blank=True, null=True)
 
-    construction_image_url = models.URLField(verbose_name=_("Construction image link"), max_length=600, blank=True)
-    construction_image = models.FileField(
-        verbose_name=_("Construction image"), upload_to="construction/", blank=True
+    construction_url = models.URLField(verbose_name=_("Image URL"), max_length=500, blank=True)
+    construction_image = ProcessedImageField(
+        upload_to='construction',
+        processors=[ResizeToFit(600)],
+        options={'quality': 80, 'minimize_size': True, 'allow_mixed': True},
+        blank=True
+    )
+    construction_webp = ImageSpecField(
+        source='construction_image',
+        processors=[ResizeToFit(600)],
+        format='webp',
+        options={'quality': 70, 'method': 6, 'minimize_size': True, 'allow_mixed': True},
+    )
+    construction_image_small = ImageSpecField(
+        source='construction_image',
+        processors=[ResizeToFit(300)],
+        format='jpeg',
+        options={'quality': 60, 'minimize_size': True, 'allow_mixed': True}
+    )
+    construction_webp_small = ImageSpecField(
+        source='construction_image',
+        processors=[ResizeToFit(300)],
+        format='webp',
+        options={'quality': 70, 'method': 6, 'minimize_size': True, 'allow_mixed': True},
     )
     construction_webp = models.ImageField(verbose_name=_("WebP"), upload_to="construction/", blank=True)
     design_description = models.TextField(verbose_name=_("Design description"), blank=True)
@@ -455,6 +484,21 @@ class MainFlag(Seo, models.Model):
 
     def __str__(self):
         return self.title
+
+    def clean(self):
+        if self.construction_url:
+            try:
+                urllib.request.urlopen(self.construction_url)
+            except Exception as e:
+                raise ValidationError({'construction_url': e})
+
+    def construction_source_type(self, *args, **kwargs):
+        _, ext = os.path.splitext(self.construction_image.name)
+        ext = ext.lower()
+        if ext == ".jpg" or ext == ".jpeg":
+            return "image/jpeg"
+        elif ext == ".png":
+            return "image/png"
 
     def get_absolute_url(self):
         return reverse("flags:flag-detail", kwargs={"slug": self.slug})
