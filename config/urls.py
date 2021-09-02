@@ -38,7 +38,6 @@ urlpatterns = [
     path("", include("app.flags.urls", namespace="flags")),
     path('sitemap.xml', views.index, {'sitemaps': sitemaps}),
     path("sitemap-<section>.xml", views.sitemap, {"sitemaps": sitemaps}, name="django.contrib.sitemaps.views.sitemap"),
-    re_path(r'^imagefit/', include('imagefit.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
