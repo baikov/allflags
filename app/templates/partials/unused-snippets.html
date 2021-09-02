@@ -1,3 +1,51 @@
+
+{# Schema.org ImageObject #}
+<picture itemscope itemtype="http://schema.org/ImageObject">
+    <meta itemprop="name" content="{{img.alt}}">
+    <source type="image/webp" srcset="{{img.webp_md.url}}, {{img.webp.url}} 2x" media="(min-width: 601px)">
+    <source type="{{img.get_type}}" srcset="{{img.image_md.url}}, {{img.image.url}} 2x" media="(min-width: 601px)">
+
+    <source type="image/webp" srcset="{{img.webp_xs.url}}, {{img.webp_md.url}} 2x" media="(max-width: 601px)">
+    <source type="{{img.get_type}}" srcset="{{img.image_xs.url}}, {{img.image_md.url}} 2x" media="(max-width: 601px)">
+
+    <img itemprop="contentUrl" src="{{img.image.url}}" alt="{{img.alt}}" title="{{img.caption}}" class="main-flag" width="{{img.image.width}}" height="{{img.image.height}}">
+    <meta itemprop="description" content="{{img.caption}}">
+    <meta itemprop="width" content="{{img.image.width}}px">
+	<meta itemprop="height" content="{{img.image.height}}px">
+</picture>
+
+
+
+{# Historical flag images v2 #}
+{% for img in h_flag.pictures.all %}
+<figure class="figure historical-img">
+    <picture>
+        <source type="image/webp"
+                srcset="{{img.webp|media_resize:'sm'}}">
+        <source type="{{img.source_type}}"
+                srcset="{{img.image|media_resize:'sm'}}">
+        <img src="{{img.image.url}}" alt="{{ img.caption }}">
+    </picture>
+    <figcaption class="figure-caption text-center">{{img.caption}}</figcaption>
+</figure>
+{% endfor %}
+
+{# Historical flag images v1 #}
+{% for img in h_flag.images.all %}
+    {% if img.image and img.webp %}
+    <figure class="figure historical-img">
+        <picture>
+            <source type="image/webp" srcset="{{img.webp|resize:'300'}}">
+            <img src="{{img.image|resize:'300'}}" alt="{{img.alt}}"
+                title="{{img.alt}}" class="mb-3 mr-3 h-flag">
+        </picture>
+        {% if img.caption %}
+        <figcaption class="figure-caption text-center">{{img.caption}}</figcaption>
+        {% endif %}
+    </figure>
+    {% endif %}
+{% endfor %}
+
 {# Carousel #}
 <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
     <div class="carousel-inner">

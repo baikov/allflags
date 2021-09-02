@@ -315,17 +315,6 @@
 
             </div>
             <div class="row">
-                {# Colors meaning #}
-                {% if colors.0.meaning %}
-                <div class="col-12">
-                    <h3>Наиболее популярные значения цветов</h3>
-                    <ul class="list-unstyled">
-                    {% for color in colors %}
-                        <li><strong>{{color.color_group.name}}:</strong> {{color.meaning}}</li>
-                    {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
 
                 {% if flag.design_description %}
                 <div class="py-3 col-12 {% if flag.construction_image %}col-md-8 col-lg-8{%endif%}">
@@ -336,17 +325,50 @@
                 {% if flag.construction_image and flag.construction_webp %}
                 <div class="col-12 col-md-4">
                     <h3 class="py-2">Схема флага</h3>
+
                     <figure class="figure">
-                        <picture>
-                            <source type="image/webp" srcset="{% get_media_prefix %}{{flag.construction_webp.name}}">
-                            <img src="{{flag.construction_image.url}}" alt="Схема флага {{country.ru_name_rod}}"
-                                title="Схема флага {{country.ru_name_rod}}" class="figure-img img-fluid">
+                        <picture itemscope itemtype="http://schema.org/ImageObject">
+                            <meta itemprop="name" content="{{flag.title}}">
+                            <meta itemprop="description" content="Схема флага {{country.ru_name_rod}}">
+                            <meta itemprop="width" content="{{flag.construction_image.width}}px">
+                            <meta itemprop="height" content="{{flag.construction_image.height}}px">
+
+                            <source type="image/webp" srcset="{{flag.construction_webp_small.url}}, {{flag.construction_webp.url}} 2x">
+                            <source type="{{flag.construction_source_type}}" srcset="{{lag.construction_image_small.url}}, {{flag.construction_image.url}} 2x">
+
+                            <img itemprop="contentUrl" src="{{flag.construction_image.url}}" alt="Схема флага {{country.ru_name_rod}}" title="Схема флага {{country.ru_name_rod}}" class="figure-img img-fluid" width="{{flag.construction_image.width}}" height="{{flag.construction_image.height}}">
                         </picture>
-                        <figcaption class="figure-caption text-center">{{flag.title}}: схема</figcaption>
+                        <figcaption class="figure-caption pt-2 text-center">{{flag.title}}: схема</figcaption>
                     </figure>
                 </div>
                 {% endif %}
                     {# Flag elements v1 was here#}
+                {% endif %}
+
+                {# Colors meaning #}
+                {% if colors.0.meaning %}
+                <div class="col-12 {%if flag.elements.all%}col-md-7 col-lg-7{%endif%}">
+                    <h3>Наиболее популярные значения цветов</h3>
+                    <ul class="list-unstyled">
+                    {% for color in colors %}
+                        <li><strong>{{color.color_group.name}}:</strong> {{color.meaning}}</li>
+                    {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                {% if flag.elements.all|length > 0 %}
+                <div class="col-12 {%if colors.0.meaning%}col-md-5 col-lg-5{%endif%}">
+                    <div class="card border-primary mb-3">
+                        <div class="card-body text-primary">
+                            <h3 class="text-dark text-center">Элементы флага</h3>
+                            {% for elem in flag.elements.all %}
+                            <a href="{% url 'flags:element-detail' elem.slug %}"
+                                class="btn btn-outline-primary mb-2">{{elem.name}}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
                 {% endif %}
             </div>
         </div>
@@ -395,29 +417,41 @@
                             id="v-pills-{{ h_flag.id }}"
                             role="tabpanel"
                             aria-labelledby="v-pills-{{ h_flag.id }}-tab">
-                            <div class="row">
+                            <div class="row justify-content-center">
                                 <h3 class="pb-2 col-12 d-flex justify-content-center">{{h_flag.title}}</h3>
-                                {% if h_flag.images.all %}
-                                <div class="col-12 d-flex justify-content-around">
-                                {% for img in h_flag.images.all %}
-                                    {% if img.image and img.webp %}
-                                    <figure class="figure historical-img">
-                                        <picture>
-                                            <source type="image/webp" srcset="{{img.webp|resize:'300'}}">
-                                            <img src="{{img.image|resize:'300'}}" alt="{{img.alt}}"
-                                                title="{{img.alt}}" class="mb-3 mr-3 h-flag">
+
+                                {# Historical flag images v4 #}
+                                {% if h_flag.pictures.all %}
+                                {% for img in h_flag.pictures.all %}
+                                <div class="pb-4 col-6 col-md-4 col-lg-3">
+                                    <figure class="figure w-100">
+                                        <div class="historical-img">
+                                        <picture itemscope itemtype="http://schema.org/ImageObject">
+                                            <meta itemprop="name" content="{{img.alt}}">
+                                            <meta itemprop="description" content="{{img.caption}}">
+                                            <meta itemprop="width" content="{{img.image.width}}px">
+                                            <meta itemprop="height" content="{{img.image.height}}px">
+
+                                            <source type="image/webp" srcset="{{img.webp_md.url}}, {{img.webp.url}} 2x" media="(min-width: 601px)">
+                                            <source type="{{img.source_type}}" srcset="{{img.image_md.url}}, {{img.image.url}} 2x" media="(min-width: 601px)">
+
+                                            <source type="image/webp" srcset="{{img.webp_xs.url}}, {{img.webp_md.url}} 2x" media="(max-width: 601px)">
+                                            <source type="{{img.source_type}}" srcset="{{img.image_xs.url}}, {{img.image_md.url}} 2x" media="(max-width: 601px)">
+
+                                            <img itemprop="contentUrl" src="{{img.image.url}}" alt="{{img.alt}}" title="{{img.caption}}" class="image" width="{{img.image.width}}" height="{{img.image.height}}">
+
                                         </picture>
-                                        {% if img.caption %}
-                                        <figcaption class="figure-caption text-center">{{img.caption}}</figcaption>
-                                        {% endif %}
+                                        </div>
+                                        <figcaption class="figure-caption pt-2 text-center">{{img.caption}}</figcaption>
                                     </figure>
-                                    {% endif %}
+                                </div>
                                 {% endfor %}
-                                </div>
                                 {% endif %}
+
                                 <div class="col-12">
-                                {{h_flag.description|safe}}
+                                    {{h_flag.description|safe}}
                                 </div>
+
                             </div>
                         </div>
                         {% endfor %}
