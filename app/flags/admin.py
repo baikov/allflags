@@ -1,15 +1,18 @@
 import tablib
+from django import forms
 from django.contrib import admin
+from django.contrib.contenttypes.admin import GenericTabularInline
 from django.db import models
 from django.forms import TextInput
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
+from imagekit.admin import AdminThumbnail
 from import_export import resources
 # from import_export.admin import ImportExportModelAdmin
 from import_export.admin import ImportExportMixin
 from import_export.formats import base_formats
 
-from .models import (  # Region,; Subregion,
+from .models import (  # Region, Subregion,; HistoricalFlagImage,
     BorderCountry,
     Color,
     ColorGroup,
@@ -19,8 +22,8 @@ from .models import (  # Region,; Subregion,
     FlagEmoji,
     FlagFact,
     HistoricalFlag,
-    HistoricalFlagImage,
     MainFlag,
+    Picture,
     Region,
 )
 
@@ -317,10 +320,10 @@ class FlagFactInline(admin.TabularInline):
     fields = ("caption", "text")
 
 
-class HistoricalFlagImageInline(admin.TabularInline):
-    model = HistoricalFlagImage
-    extra = 1
-    fields = ("ordering", "img_link", "image", "caption", "alt")
+# class HistoricalFlagImageInline(admin.TabularInline):
+#     model = HistoricalFlagImage
+#     extra = 1
+#     fields = ("ordering", "img_link", "image", "caption", "alt")
 
 
 class FlagEmojiAdmin(admin.ModelAdmin):
@@ -408,13 +411,43 @@ class MainFlagAdmin(admin.ModelAdmin):
     }
 
 
+class PictureAdmin(admin.ModelAdmin):
+    list_display = ("id", "thumbnail", "alt", "image", "ordering")
+    readonly_fields = ["webp", "image_md", "webp_md", "image_xs", "webp_xs", "thumb"]
+    search_fields = ["alt", "caption"]
+    list_filter = ["content_type"]
+    list_editable = ("ordering",)
+    thumbnail = AdminThumbnail(image_field='thumb')
+    fieldsets = [
+        (None, {"fields": [("content_type", "object_id"), "url", "image", "ordering", ("caption", "alt")]}),
+        (_("Readonly"), {
+            "classes": ("collapse", "wide", "extrapretty"),
+            "fields": ["webp", "image_md", "webp_md", "image_xs", "webp_xs", "thumb"]
+        }),
+    ]
+
+
+class PictureAdminInline(GenericTabularInline):
+    model = Picture
+    extra = 0
+    fields = ("ordering", "url", "image", ("caption", "alt"))
+
+
+class PictureAdminForm(forms.ModelForm):
+    class Meta:
+        model = Picture
+        fields = '__all__'  # Keep all fields
+
+
 class HistoricalFlagAdmin(admin.ModelAdmin):
+    form = PictureAdminForm
     list_display = ("from_year", "to_year", "country", "title", "ordering")
     search_fields = ["title", "from_year", "country__name"]
     list_filter = ["country__name"]
     raw_id_fields = ("country",)
     list_editable = ("ordering",)
-    inlines = (HistoricalFlagImageInline,)
+    # inlines = (PictureAdminInline, HistoricalFlagImageInline)
+    inlines = (PictureAdminInline,)
     fieldsets = [
         (None, {"fields": ["country", "title", ("from_year", "to_year"), "ordering", "description"]}),
     ]
@@ -466,15 +499,15 @@ class RegionAdmin(admin.ModelAdmin):
     ]
 
 
-class HistoricalFlagImageAdmin(admin.ModelAdmin):
-    list_display = ("flag", "image", "ordering", "alt")
-    search_fields = ["flag__country__name"]
-    # list_filter = ["country__name"]
-    readonly_fields = ['webp']
-    raw_id_fields = ("flag",)
-    fieldsets = [
-        (None, {"fields": ["flag", "img_link", ("image", "webp"), "ordering", ("caption", "alt")]}),
-    ]
+# class HistoricalFlagImageAdmin(admin.ModelAdmin):
+#     list_display = ("flag", "image", "ordering", "alt")
+#     search_fields = ["flag__country__name"]
+#     # list_filter = ["country__name"]
+#     readonly_fields = ['webp']
+#     raw_id_fields = ("flag",)
+#     fieldsets = [
+#         (None, {"fields": ["flag", "img_link", ("image", "webp"), "ordering", ("caption", "alt")]}),
+#     ]
 
 
 admin.site.register(Currency, CurrencyAdmin)
@@ -488,8 +521,9 @@ admin.site.register(FlagEmoji, FlagEmojiAdmin)
 admin.site.register(HistoricalFlag, HistoricalFlagAdmin)
 admin.site.register(FlagFact, FlagFactAdmin)
 admin.site.register(BorderCountry, BorderCountryAdmin)
-admin.site.register(HistoricalFlagImage, HistoricalFlagImageAdmin)
+admin.site.register(Picture, PictureAdmin)
 
+# admin.site.register(HistoricalFlagImage, HistoricalFlagImageAdmin)
 # admin.site.register(Region, RegionAdmin)
 # admin.site.register(Subregion, SubregionAdmin)
 

@@ -30,6 +30,88 @@ class Seo(models.Model):
         abstract = True
 
 
+CONTENT_TYPE_CHOICES = (
+    Q(app_label='flags', model='mainflag') | Q(app_label='flags', model='historicalflag')
+)
+
+
+class Picture(models.Model):
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, limit_choices_to=CONTENT_TYPE_CHOICES)
+    object_id = models.PositiveIntegerField()
+    content_object = fields.GenericForeignKey('content_type', 'object_id')
+    caption = models.CharField(verbose_name=_("Caption/title"), max_length=300, blank=True)
+    alt = models.CharField(verbose_name=_("Name/alt"), max_length=200, blank=True)
+    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
+    url = models.URLField(verbose_name=_("Image URL"), max_length=500, blank=True)
+    image = ProcessedImageField(
+        upload_to='pictures',
+        processors=[ResizeToFit(1200)],
+        options={'quality': 80, 'minimize_size': True, 'allow_mixed': True},
+        blank=True
+    )
+    webp = ImageSpecField(
+        source='image',
+        processors=[ResizeToFit(1200)],
+        format='webp',
+        options={'quality': 70, 'method': 6, 'minimize_size': True, 'allow_mixed': True},
+    )
+    image_md = ImageSpecField(
+        source='image',
+        processors=[ResizeToFit(600)],
+        format='jpeg',
+        options={'quality': 60, 'minimize_size': True, 'allow_mixed': True}
+    )
+    webp_md = ImageSpecField(
+        source='image',
+        processors=[ResizeToFit(600)],
+        format='webp',
+        options={'quality': 70, 'method': 6, 'minimize_size': True, 'allow_mixed': True},
+    )
+    image_xs = ImageSpecField(
+        source='image',
+        processors=[ResizeToFit(300)],
+        format='jpeg',
+        options={'quality': 60, 'minimize_size': True, 'allow_mixed': True}
+    )
+    webp_xs = ImageSpecField(
+        source='image',
+        processors=[ResizeToFit(300)],
+        format='webp',
+        options={'quality': 70, 'method': 6, 'minimize_size': True, 'allow_mixed': True},
+    )
+    thumb = ImageSpecField(
+        source='image',
+        processors=[ResizeToFit(100)],
+        format='jpeg',
+        options={'quality': 60, 'minimize_size': True, 'allow_mixed': True}
+    )
+
+    class Meta:
+        verbose_name = "Picture"
+        verbose_name_plural = "Pictures"
+        ordering = ('ordering',)
+
+    def save(self, *args, **kwargs):
+        if self.url:
+            self.full_clean()
+        super(Picture, self).save(*args, **kwargs)
+
+    def clean(self):
+        if self.url:
+            try:
+                urllib.request.urlopen(self.url)
+            except Exception as e:
+                raise ValidationError({'url': e})
+
+    def source_type(self, *args, **kwargs):
+        _, ext = os.path.splitext(self.image.name)
+        ext = ext.lower()
+        if ext == ".jpg" or ext == ".jpeg":
+            return "image/jpeg"
+        elif ext == ".png":
+            return "image/png"
+
+
 class PublishedQuerySet(models.QuerySet):
     """Return only published elements"""
 
@@ -302,6 +384,7 @@ class HistoricalFlag(models.Model):
     to_year = models.CharField(verbose_name=_("Ended year"), max_length=50, blank=True)
     description = models.TextField(verbose_name=_("Hstorical flag description"), blank=True)
     ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
+    pictures = fields.GenericRelation(Picture)
 
     class Meta:
         verbose_name = _("Historical flag")
@@ -392,38 +475,38 @@ class FlagFact(models.Model):
         return self.caption
 
 
-class HistoricalFlagImage(models.Model):
-    """The set of images for historical flag.
-    1) Download image from img_link url
-    2) Convert to png/jpg
-    3) Resize
-    4) Save to media/historical-flag/{iso2}/
+# class HistoricalFlagImage(models.Model):
+#     """The set of images for historical flag.
+#     1) Download image from img_link url
+#     2) Convert to png/jpg
+#     3) Resize
+#     4) Save to media/historical-flag/{iso2}/
 
-    Signals:
-        pre_save:
-    """
-    flag = models.ForeignKey(
-        HistoricalFlag, verbose_name=_("Historical flag"), on_delete=models.CASCADE, related_name="images"
-    )
-    img_link = models.URLField(verbose_name=_("Image URL"), max_length=600, blank=True)
-    image = models.FileField(
-        verbose_name=_("Image"), upload_to=img_path_by_flag_type, help_text="png, jpg, svg", blank=True
-    )
-    webp = models.FileField(
-        verbose_name=_("WebP"), upload_to=img_path_by_flag_type, help_text="webp", blank=True
-    )
-    caption = models.CharField(verbose_name=_("Caption"), max_length=250, blank=True)
-    alt = models.CharField(verbose_name=_("Alt text"), max_length=250, blank=True)
-    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
+#     Signals:
+#         pre_save:
+#     """
+#     flag = models.ForeignKey(
+#         HistoricalFlag, verbose_name=_("Historical flag"), on_delete=models.CASCADE, related_name="images"
+#     )
+#     img_link = models.URLField(verbose_name=_("Image URL"), max_length=600, blank=True)
+#     image = models.FileField(
+#         verbose_name=_("Image"), upload_to=img_path_by_flag_type, help_text="png, jpg, svg", blank=True
+#     )
+#     webp = models.FileField(
+#         verbose_name=_("WebP"), upload_to=img_path_by_flag_type, help_text="webp", blank=True
+#     )
+#     caption = models.CharField(verbose_name=_("Caption"), max_length=250, blank=True)
+#     alt = models.CharField(verbose_name=_("Alt text"), max_length=250, blank=True)
+#     ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
 
-    class Meta:
-        verbose_name = _("Historical flag image")
-        verbose_name_plural = _("Historical flag images")
-        ordering = ('ordering',)
+#     class Meta:
+#         verbose_name = _("Historical flag image")
+#         verbose_name_plural = _("Historical flag images")
+#         ordering = ('ordering',)
 
-    def clean(self):
-        if not self.img_link and not self.image:
-            raise ValidationError({"Warn": "Одно из полей должно быть заполнено"})
+#     def clean(self):
+#         if not self.img_link and not self.image:
+#             raise ValidationError({"Warn": "Одно из полей должно быть заполнено"})
 
 
 # class Image(models.Model):
