@@ -78,6 +78,9 @@ THIRD_PARTY_APPS = [
     "rest_framework.authtoken",
     "corsheaders",
     "import_export",
+    "imagekit",
+    "ckeditor",
+    "ckeditor_uploader",
 ]
 
 LOCAL_APPS = [
@@ -312,3 +315,49 @@ REST_FRAMEWORK = {
 CORS_URLS_REGEX = r"^/api/.*$"
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+IMAGEKIT_DEFAULT_CACHEFILE_STRATEGY = 'imagekit.cachefiles.strategies.Optimistic'
+
+# FILE_UPLOAD_HANDLERS = (
+#     'images.uploadhandler.CompressImageUploadHandler',
+# )
+
+CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_IMAGE_BACKEND = 'pillow'
+
+CUSTOM_TOOLBAR = [
+    {
+        "name": "document",
+        "items": [
+            # "Styles", "Underline", "Strike",
+            "Source", "ShowBlocks", "Format", "Bold", "Italic", "-",
+            "NumberedList", "BulletedList", "-",
+            "TextColor", "BGColor", "-",
+            "JustifyLeft", "JustifyCenter", "JustifyRight", "JustifyBlock", "-",
+            "Maximize",
+        ],
+    },
+    {
+        "name": "widgets",
+        "items": [
+            # "CodeSnippet",
+            "Undo", "Redo", "-",
+            "Outdent", "Indent", "-",
+            "Link", "Unlink", "-",
+            "Image", "Table", "Blockquote", "SpecialChar", "-",
+        ],
+    },
+]
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': CUSTOM_TOOLBAR,
+        "skin": "moono-lisa",
+        "toolbarGroups": None,
+        "extraPlugins": ",".join(["image2"]),
+        # "extraPlugins": ",".join(["image2", "codesnippet"]),
+        "removePlugins": ",".join(["image"]),
+        # "codeSnippet_theme": "xcode",
+        'customConfig': '/static/vendors/js/ckeditor_config.js',
+    }
+}

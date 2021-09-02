@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.sitemaps import views
-from django.urls import include, path
+from django.urls import include, path, re_path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
 from rest_framework.authtoken.views import obtain_auth_token
@@ -38,6 +38,8 @@ urlpatterns = [
     path("", include("app.flags.urls", namespace="flags")),
     path('sitemap.xml', views.index, {'sitemaps': sitemaps}),
     path("sitemap-<section>.xml", views.sitemap, {"sitemaps": sitemaps}, name="django.contrib.sitemaps.views.sitemap"),
+    re_path(r'^imagefit/', include('imagefit.urls')),
+    path('ckeditor/', include('ckeditor_uploader.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # API URLS
