@@ -55,7 +55,7 @@
 {% endblock content %}
 
 {# Begin SEO block #}
-    {% block canonical %}{{ request.scheme }}://{{ request.META.HTTP_HOST }}/about/{% endblock canonical %}
+    {% block canonical %}{% url 'about' %}{% endblock canonical %}
     {% block meta_title %}Информация о проекте AllFlags.ru{% endblock meta_title %}
 
     {% block meta_description %}
