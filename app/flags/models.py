@@ -513,13 +513,24 @@ class FlagFact(models.Model):
     label = models.CharField(verbose_name=_("Fact label"), max_length=50, blank=True)
     text = RichTextUploadingField(verbose_name=_("Fact text"), blank=True)
     image = models.ImageField(verbose_name=_("Fact image"), blank=True)
+    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=10)
 
     class Meta:
         verbose_name = _("Flag's fact")
         verbose_name_plural = _("Flag's facts")
+        ordering = ("ordering",)
 
     def __str__(self):
         return self.caption
+
+    def save(self, *args, **kwargs):
+        if self.id is None:
+            last_fact = FlagFact.objects.filter(flag=self.flag).last()
+            # except FlagFact.DoesNotExist:
+            if last_fact:
+                self.ordering = last_fact.ordering + 10
+
+        super(FlagFact, self).save(*args, **kwargs)
 
 
 # class HistoricalFlagImage(models.Model):
