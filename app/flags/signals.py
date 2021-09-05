@@ -39,9 +39,12 @@ def if_image_updated(sender, instance, **kwargs):
             old_image = Picture.objects.get(pk=instance.pk)
         except Picture.DoesNotExist:
             return
-        if old_image.image.url != instance.image.url:
+        if old_image.image and instance.image and old_image.image.url != instance.image.url:
             path, file_name = os.path.split(old_image.webp.path)
-            shutil.rmtree(path)
+            try:
+                shutil.rmtree(path)
+            except Exception:
+                return
             old_image.image.delete(save=False)
 
 
@@ -59,7 +62,10 @@ def download_and_save_image(sender, instance, **kwargs):
 def delete_image(sender, instance, **kwargs):
     if instance.image:
         path, file_name = os.path.split(instance.webp.path)
-        shutil.rmtree(path)
+        try:
+            shutil.rmtree(path)
+        except Exception:
+            return
         instance.image.delete(False)
         get_cache().clear()  # Actualy doesn't work
 
@@ -109,7 +115,7 @@ def download_construction_image(sender, instance, **kwargs):
             old = MainFlag.objects.get(pk=instance.pk)
         except MainFlag.DoesNotExist:
             return
-        if old.construction_image and old.construction_image.url != instance.construction_image.url:
+        if old.construction_image and instance.construction_image and old.construction_image.url != instance.construction_image.url:
             path, file_name = os.path.split(old.construction_webp.path)
             try:
                 shutil.rmtree(path)
