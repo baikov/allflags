@@ -1,13 +1,13 @@
 from django.urls import path
 
-from .views import (  # flag_detail,
+from .views import (  # FlagDetailView,
     ColorDetailView,
     ColorListView,
-    FlagDetailView,
     FlagElementListView,
     FlagListView,
     RegionListView,
     colors_count,
+    flag_detail,
     flags_by_region,
     flags_with_element,
 )
@@ -15,7 +15,8 @@ from .views import (  # flag_detail,
 app_name = "flags"
 urlpatterns = [
     path("", FlagListView.as_view(), name="flags-list"),
-    path("countries/<slug:slug>/", FlagDetailView.as_view(), name="flag-detail"),
+    # path("countries/<slug:slug>/", FlagDetailView.as_view(), name="flag-detail"),
+    path("countries/<slug:flag_slug>/", flag_detail, name="flag-detail"),
     # By regions
     path("regions/", RegionListView.as_view(), name="regions-list"),
     path("regions/<slug:region_slug>/", flags_by_region, name="region-flags"),
