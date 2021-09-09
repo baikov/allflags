@@ -29,11 +29,22 @@
               {% for region in regions_menu %}
 
               {% if region.subregions.all %}
-              <li class="dropdown-submenu"><a class="dropdown-item dropdown-toggle" href="{% url 'flags:region-flags' region.slug %}">{{region.name}}</a>
+              <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle" href="{% url 'flags:region-flags' region.slug %}">
+                  {{region.name}}
+                </a>
 
                 <ul class="dropdown-menu">
-                  {% for subregion in region.subregions.all %}
-                  <li><a class="dropdown-item" href="{% url 'flags:subregion-flags' region.slug subregion.slug %}">{{subregion.name}} ({{subregion.countries.all|length}})</a></li>
+                  {% for subregion in subregions %}
+                    {% if subregion.parent == region %}
+
+                    <li>
+                      <a class="dropdown-item" href="{% url 'flags:subregion-flags' region.slug subregion.slug %}">
+                        {{subregion.name}} ({{subregion.countries_count}})
+                      </a>
+                    </li>
+
+                    {% endif %}
                   {% endfor %}
                 </ul>
               </li>
