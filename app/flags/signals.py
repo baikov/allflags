@@ -14,20 +14,10 @@ from app.flags.models import (  # HistoricalFlag; HistoricalFlagImage,
     MainFlag,
     Picture,
 )
-from app.flags.services import download_image
-# from app.utils.flag_image import (  # get_historical_flag_img, svg_convert
-#     convert,
-#     get_construction_img,
-#     # get_h_flag_img,
-#     # remove_historical_flag_img,
-#     # resize,
-# )
+from app.utils.pictures_utils import download_image
 from app.utils.ru_slugify import custom_slugify
 
 from .tasks import get_flag_img_task
-
-# from urllib.parse import unquote
-
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +45,13 @@ def download_and_save_image(sender, instance, **kwargs):
         if type(result) is SimpleUploadedFile:
             instance.image = download_image(instance.url)
         else:
-            raise ValidationError({'url': f"Some problem with cairosvg convert: {result}"})
+            raise ValidationError({"url": f"Some problem with cairosvg convert: {result}"})
+
+
+@receiver(pre_save, sender=Picture)
+def download_and_save_image2(sender, instance, **kwargs):
+    if instance.url and not instance.image:
+        pass
 
 
 @receiver(post_delete, sender=Picture)
@@ -68,6 +64,8 @@ def delete_image(sender, instance, **kwargs):
             return
         instance.image.delete(False)
         get_cache().clear()  # Actualy doesn't work
+    if instance.svg:
+        instance.svg.delete(False)
 
 
 @receiver(post_save, sender=BorderCountry)
@@ -108,14 +106,18 @@ def download_construction_image(sender, instance, **kwargs):
         if type(result) is SimpleUploadedFile:
             instance.construction_image = result
         else:
-            raise ValidationError({'construction_url': f"Some problem with cairosvg convert: {result}"})
+            raise ValidationError({"construction_url": f"Some problem with cairosvg convert: {result}"})
 
     if instance.pk:
         try:
             old = MainFlag.objects.get(pk=instance.pk)
         except MainFlag.DoesNotExist:
             return
-        if old.construction_image and instance.construction_image and old.construction_image.url != instance.construction_image.url:
+        if (
+            old.construction_image
+            and instance.construction_image
+            and old.construction_image.url != instance.construction_image.url
+        ):
             path, file_name = os.path.split(old.construction_webp.path)
             try:
                 shutil.rmtree(path)
@@ -138,7 +140,7 @@ def after_create_or_update_flag(sender, instance, **kwargs):
     if kwargs["created"]:
         country = Country.objects.get(name=instance.country)
         result = get_flag_img_task.delay(country.iso_code_a2)
-        task_id = result.task_id # noqa F841
+        task_id = result.task_id  # noqa F841
 
     # if instance.construction_image and not instance.construction_image_url and not instance.construction_webp:
     #     main, webp = convert(instance.construction_image.path, resize=300)
@@ -154,9 +156,9 @@ def create_country_flag(sender, instance, **kwargs):
 
         if instance.ru_name_rod:
 
-            slug = custom_slugify(f'Флаг {instance.ru_name_rod}')
+            slug = custom_slugify(f"Флаг {instance.ru_name_rod}")
         else:
-            slug = custom_slugify(f'Флаг {instance.name}')
+            slug = custom_slugify(f"Флаг {instance.name}")
         # if instance.en_short_form:
         #     slug = slugify(f'flag of {instance.en_short_form}')
         # else:
@@ -167,7 +169,7 @@ def create_country_flag(sender, instance, **kwargs):
         except MainFlag.DoesNotExist:
             flag = MainFlag(
                 country=instance,
-                title=f'Флаг {instance.ru_name_rod}',
+                title=f"Флаг {instance.ru_name_rod}",
                 slug=slug,
             )
             flag.save()
