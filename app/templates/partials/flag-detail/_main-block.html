@@ -1,0 +1,91 @@
+<div class="row d-flex align-items-center">
+
+    <div class="py-3 col-12 col-lg-5 d-flex justify-content-center">
+        <picture>
+            <source type="image/webp" media="(min-width: 1921px)"
+                srcset="{{country.iso_code_a2|get_img_path:'w1280'}}.webp">
+            <source type="image/png" media="(min-width: 1921px)"
+                srcset="{{country.iso_code_a2|get_img_path:'w1280'}}.png">
+
+            <source type="image/webp" media="(min-width: 1281px) and (max-width: 1920px)"
+                srcset="{{country.iso_code_a2|get_img_path:'w640'}}.webp">
+            <source type="image/png" media="(min-width: 1281px) and (max-width: 1920px)"
+                srcset="{{country.iso_code_a2|get_img_path:'w640'}}.png">
+
+            <source type="image/webp" media="(max-width: 460px)"
+                srcset="{{country.iso_code_a2|get_img_path:'w320'}}.webp">
+            <source type="image/png" media="(max-width: 460px)"
+                srcset="{{country.iso_code_a2|get_img_path:'w320'}}.png">
+
+            <img src="{{country.iso_code_a2|get_img_path:'w640'}}.png" alt="{{ flag.title }}"
+                title="{{ flag.title }} {{flag.name}} - картинка" class="main-flag">
+        </picture>
+    </div>
+    <div class="py-3 col-12 col-lg-7">
+        <p>
+            {% if country.conventional_long_name %}
+                {{ country.conventional_long_name }}
+            {% else %}
+                {{country.name}}
+            {% endif %} - государство, расположенное в регионе {{country.region}},
+            столицей которого является город {{country.ru_capital_name}}.
+        </p>
+
+        {% if country.ru_motto %}
+        <p>
+            Девиз {{country.ru_name_rod}}: "{{country.motto}}", что переводится как "{{country.ru_motto}}".
+        </p>
+        {% endif %}
+
+        {% if flag.adopted_date %}
+        {% now "Y" as current_year %}
+        <p>
+            Современный вариант национального флага {{country.ru_name_rod}} был утвержден
+            {% language 'ru' %}{{flag.adopted_date|date:"j E Y"}}{% endlanguage %}.
+            В {{ current_year }} году флагу исполняется {{age}} лет.
+        </p>
+        {% endif %}
+        {% if historical|length > 0 %}
+        <p>
+            За всю историю существования страны флаг менялся около {{historical|length}} раз.
+        </p>
+        {% endif %}
+
+        {% if colors %}
+        <p>
+            {% if colors|length == 1 %}
+                Единственный цвет флага: {{colors.0.color_group|lower}}.
+            {% else %}
+                {{colors|length|ru_count|capfirst}} основных {% if color_count > 4 %}цветов{% else %}цвета{% endif %} флага:
+                {% for color in colors %}{% if not forloop.first %}, {% endif %}{{color.color_group|lower}}{% endfor %}.
+            {% endif %}
+        </p>
+        {% else %}
+        <p>Цвета флага не выбраны</p>
+        {% endif %}
+        {% if comp_colors %}
+        <p>
+            Дополнительные цвета на флаге: {% for color in comp_colors %}{{color.color_group|lower}}{% endfor %}
+        </p>
+        {% endif %}
+
+        {% if flag.proportion %}
+        <p>
+            Флаг имеет пропорции {{flag.proportion}}.
+        </p>
+        {% endif %}
+        {% if flag.emoji %}
+        <p>
+            Флаг имеет пропорции {{flag.proportion}}.
+        </p>
+        {% endif %}
+        {# Flag elements v2 here #}
+    </div>
+    <div class="col-12">
+        {% if flag.short_description %}
+        <p>
+            {{flag.short_description|safe}}
+        </p>
+        {% endif %}
+    </div>
+</div>

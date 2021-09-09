@@ -1,3 +1,12 @@
+{# Complementary colors v1 #}
+{% if complementary_colors.exists %}
+<div class="col-12">
+<h3>Второстепенные цвета на флаге</h3>
+    {% for color in complementary_colors %}
+        <div style="width:30px;height:30px;background-color:#{{color.hex}}"></div> {{color.color_group}}
+    {% endfor %}
+</div>
+{% endif %}
 
 {# Schema.org ImageObject #}
 <picture itemscope itemtype="http://schema.org/ImageObject">
