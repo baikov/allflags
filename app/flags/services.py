@@ -1,86 +1,67 @@
-import io
-import os
-import re
-import urllib
+from datetime import date, datetime
 
-import cairosvg
-from defusedxml.common import EntitiesForbidden
-from django.core.files.uploadedfile import SimpleUploadedFile
-from PIL import Image
+from django.db.models.query import QuerySet
+from django.shortcuts import get_object_or_404
 
-from config.settings.base import MEDIA_ROOT
+from .models import BorderCountry, HistoricalFlag, MainFlag
+
+# from config.settings.base import MEDIA_ROOT
 
 
-def download_image(url: str) -> SimpleUploadedFile:
-    path, file_name = os.path.split(url)
-    name, ext = os.path.splitext(file_name)
-    ext = ext.lower()
-
-    file = io.BytesIO(urllib.request.urlopen(url).read())
-
-    if ext == ".svg":
-        new = io.BytesIO()
-        try:
-            cairosvg.svg2png(file_obj=file, output_width=800, write_to=new)
-        except EntitiesForbidden:
-            rgx_list = [r"<!ENTITY .*?>", r"xmlns=.*?;\"", r"xmlns:xlink=.*?;\""]
-            file.seek(0)
-            file_str = file.read().decode("UTF-8")
-            for rgx_match in rgx_list:
-                file_str = re.sub(rgx_match, "", file_str)
-            file = io.BytesIO(file_str.encode("UTF-8"))
-            cairosvg.svg2png(file_obj=file, output_width=800, write_to=new)
-        except Exception as e:
-            return e
-        new.seek(0)
-        file = new
-        ext = ".png"
-
-    img = Image.open(file)
-    format = img.format
-    width, height = img.size
-    width, height = scale_dimensions(width, height, longest_side=800)
-    img = img.resize((width, height), Image.ANTIALIAS)
-    img.save(file, format=format)
-    file.seek(0)
-    return SimpleUploadedFile(f"{name}{ext}", file.read())
-
-
-def scale_dimensions(width: int, height: int, longest_side: int) -> tuple:
-    ratio = width / height
-    if ratio > 1:
-        return longest_side, int(longest_side / ratio)
-    # Portrait
+# ORM queries for flag detail
+def get_flag_or_404(request, flag_slug: str) -> MainFlag:
+    if request.user.is_superuser:
+        flag = get_object_or_404(
+            MainFlag.objects.select_related("country", "country__region").prefetch_related("elements", "facts"),
+            slug=flag_slug,
+        )
     else:
-        return int(longest_side * ratio), longest_side
+        flag = get_object_or_404(
+            MainFlag.objects.select_related("country", "country__region").prefetch_related("elements", "facts"),
+            slug=flag_slug,
+            is_index=True,
+            is_published=True,
+        )
+
+    return flag
 
 
-def img_path_by_flag_type(instance, filename) -> str:
-    """Determines the path depending on the calling model. Uses in property upload_to of FileField.
-
-    Args:
-        instance (): instanse of callable model (MainFlag or HistoricalFlag)
-        filename (str): name of the uploading file
-
-    Returns:
-        str: path for saving uploaded file
-    """
-    iso2 = instance.flag.country.iso_code_a2.lower()
-    # folder = f"historical-flags/{iso2}"
-    if str(instance._meta.verbose_name) == "Main flag image":
-        folder = f"national-flags/{iso2}"
-    elif str(instance._meta.verbose_name) == "Historical flag image":
-        folder = f"historical-flags/{iso2}"
-    return os.path.join(folder, filename)
+def get_emoji(iso2: str) -> str:
+    OFFSET = ord("🇦") - ord("A")
+    return chr(ord(iso2[0]) + OFFSET) + chr(ord(iso2[1]) + OFFSET)
 
 
-def historical_flag_img_file_path(instance, filename):
-    ext = filename.split(".")[-1]
-    iso2 = instance.country.iso_code_a2.lower()
-    path = f"historical-flags/{iso2}"
-    filename = f"{iso2}-{instance.from_year}-{instance.to_year}.{ext}"
+def get_historical_flags(iso2: str) -> QuerySet:
 
-    if os.path.isfile(os.path.join(MEDIA_ROOT, path, filename)):
-        os.remove(os.path.join(MEDIA_ROOT, path, filename))
+    return HistoricalFlag.objects.prefetch_related("pictures").filter(country__iso_code_a2=iso2)
 
-    return os.path.join(path, filename)
+
+def get_neighbours(country_id: int) -> QuerySet:
+    return (
+        BorderCountry.objects
+        .select_related("border_country")
+        .filter(country__id=country_id)
+        # .prefetch_related("")
+    )
+
+
+def get_neighbours_flags(neighbours_id: list[int]) -> QuerySet:
+    return (
+        MainFlag.objects.select_related("country")
+        .filter(country__id__in=neighbours_id)
+    )
+
+
+def get_flags_with_same_colors(flag_id: int, same_color_groups: list) -> QuerySet:
+    return (
+        MainFlag.objects.select_related("country")
+        .filter(colors_set__color_group__slug__in=same_color_groups)
+        .exclude(id=flag_id).distinct()
+    )
+
+
+def get_flag_age(adopted_date: date) -> int:
+    if adopted_date:
+        return int(datetime.now().strftime("%Y")) - int(adopted_date.strftime("%Y"))
+    else:
+        return 0
