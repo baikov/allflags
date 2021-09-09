@@ -16,6 +16,15 @@ from .models import (  # Region,; Subregion,; Currency,
     MainFlag,
     Region,
 )
+from .services import (
+    get_emoji,
+    get_flag_age,
+    get_flag_or_404,
+    get_flags_with_same_colors,
+    get_historical_flags,
+    get_neighbours,
+    get_neighbours_flags,
+)
 
 
 class FlagListView(ListView):
@@ -77,9 +86,9 @@ class FlagDetailView(DetailView):
         if colors:
             for row in colors:
                 same_colors.append(row.color_group)
-            same_color_flags = MainFlag.objects.filter(
-                colors_set__color_group=same_colors[0]
-            ).exclude(id=self.object.id)
+            same_color_flags = MainFlag.objects.filter(colors_set__color_group=same_colors[0]).exclude(
+                id=self.object.id
+            )
             for i in range(1, len(colors)):
                 same_color_flags = same_color_flags.filter(colors_set__color_group=same_colors[i])
             context["same_flags"] = same_color_flags
@@ -132,7 +141,7 @@ class ColorListView(ListView):
         return qs
 
     def get_ordering(self):
-        ordering = self.request.GET.get('ordering', '-date_created')
+        ordering = self.request.GET.get("ordering", "-date_created")
         # validate ordering here
         return ordering
 
@@ -225,83 +234,44 @@ def flags_with_element(request, slug):
         raise Http404
 
 
-# def flag_detail(request, country_slug, flag_slug):
-#     template_name = "flags/flag-detail.html"
+def flag_detail(request, flag_slug):
+    template_name = "flags/flag-detail.html"
 
-#     border_countries = []
-#     same_colors = []
+    flag = get_flag_or_404(request, flag_slug)
+    neighbours = get_neighbours(flag.country.id)
+    border_flags = get_neighbours_flags(neighbours.values("border_country__id"))
+    main_colors = flag.colors_set.select_related("color_group").filter(is_main=True)
+    # complementary_colors = flag.colors_set.select_related("color_group").filter(is_main=False)
+    historical = get_historical_flags(flag.country.iso_code_a2)
+    same_color_groups = flag.colors_set.values("color_group__slug")
+    same_color_flags = get_flags_with_same_colors(flag.id, same_color_groups)
+    emoji = get_emoji(flag.country.iso_code_a2)
+    age = get_flag_age(flag.adopted_date)
 
-#     if request.user.is_superuser:
-#         flag = get_object_or_404(MainFlag, slug=flag_slug)
-#         neighbours = BorderCountry.objects.filter(country=flag.country)
-#     else:
-#         flag = get_object_or_404(MainFlag, slug=flag_slug, is_index=True, is_published=True)
-#         neighbours = BorderCountry.objects.filter(
-#             country=flag.country, border_country__is_index=True, border_country__is_published=True
-#         )
+    # adj = ""
+    # if len(colors) > 1:
+    #     for i in range(len(colors) - 1):
+    #         adj += str(colors[i].color_group.short_name).lower()
+    #         adj += "-"
+    #     adj += str(colors[len(colors) - 1].color_group.name).lower()
 
-#     # Get all historical flags
-#     historical = HistoricalFlag.objects.filter(country__iso_code_a2=flag.country.iso_code_a2).order_by(
-#         "from_year"
-#     )
+    context = {
+        "flag": flag,
+        "historical": historical,
+        "neighbours": neighbours,
+        "colors": main_colors,
+        # "complementary_colors": complementary_colors,
+        "same_flags": same_color_flags,
+        "border_flags": border_flags,
+        "emoji": emoji,
+        # "widths": widths,
+        # "heights": heights,
+        "age": age,
+        # "colors_adj": adj,
+    }
 
-#     # Get all border countries
-#     for row in neighbours:
-#         border_countries.append(row.border_country)
+    return render(request, template_name, context)
 
-#     # Get all flag colors
-#     colors = Color.objects.filter(flags=flag.id)
-
-#     # Get flags with colors from same color groups
-#     if colors:
-#         for row in colors:
-#             same_colors.append(row.color_group)
-#         same_color_flags = MainFlag.objects.filter(colors__color_group=same_colors[0]).exclude(id=flag.id)
-#         for i in range(1, len(colors)):
-#             same_color_flags = same_color_flags.filter(colors__color_group=same_colors[i])
-
-#     # Get flags of border countries
-#     border_flags = MainFlag.objects.filter(country__in=border_countries)
-
-#     # Set width and height for Download img block
-#     if flag.proportion:
-#         height, width = flag.proportion.split(":")
-#     else:
-#         height, width = 1, 2
-#     widths = {
-#         # 'w20': {'width': 20, 'height': int(20/int(width)*int(height))},
-#         "w40": {"width": 40, "height": int(40 / int(width) * int(height))},
-#         "w80": {"width": 80, "height": int(80 / int(width) * int(height))},
-#         "w160": {"width": 160, "height": int(160 / int(width) * int(height))},
-#         "w320": {"width": 320, "height": int(320 / int(width) * int(height))},
-#         "w640": {"width": 640, "height": int(640 / int(width) * int(height))},
-#         "w1280": {"width": 1280, "height": int(1280 / int(width) * int(height))},
-#         "w2560": {"width": 2560, "height": int(2560 / int(width) * int(height))},
-#     }
-#     heights = {
-#         "h20": {"width": int(20 / int(height) * int(width)), "height": 20},
-#         "h24": {"width": int(24 / int(height) * int(width)), "height": 24},
-#         "h40": {"width": int(40 / int(height) * int(width)), "height": 40},
-#         "h60": {"width": int(60 / int(height) * int(width)), "height": 60},
-#         "h80": {"width": int(80 / int(height) * int(width)), "height": 80},
-#         "h120": {"width": int(120 / int(height) * int(width)), "height": 120},
-#         "h240": {"width": int(240 / int(height) * int(width)), "height": 240},
-#     }
-#     country = Country.objects.get(id__exact=flag.country.id)
-#     # context["currencies"] = Currency.objects.filter(countries=self.object.country.id)
-#     context = {
-#         "flag": flag,
-#         "historical": historical,
-#         "neighbours": neighbours,
-#         "colors": colors,
-#         "same_flags": same_color_flags,
-#         "border_flags": border_flags,
-#         "widths": widths,
-#         "heights": heights,
-#         "country": country
-#     }
-
-#     return render(request, template_name, context)
 
 # def region_list(request):
 #     template_name = "flags/region-list.html"
