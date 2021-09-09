@@ -10,14 +10,13 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb" vocab="https://schema.org/" typeof="BreadcrumbList">
                 <li class="breadcrumb-item" property="itemListElement" typeof="ListItem">
-                    {# <a property="item" typeof="WebPage" href="{% url 'flags:flags-list' %}"> #}
                     <a property="item" typeof="WebPage" href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}">
                         <span property="name">Главная</span>
                     </a>
                     <meta property="position" content="1">
                 </li>
                 <li class="breadcrumb-item active" aria-current="page" property="itemListElement" typeof="ListItem">
-                    <span property="name">Государственный флаг {{country.ru_name_rod}} {{flag.emoji.first.unicode}}</span>
+                    <span property="name">Государственный флаг {{flag.country.ru_name_rod}} {{emoji}}</span>
                     <meta property="position" content="2">
                 </li>
             </ol>
@@ -46,44 +45,44 @@
             <div class="py-3 col-12 col-lg-5 d-flex justify-content-center">
                 <picture>
                     <source type="image/webp" media="(min-width: 1921px)"
-                        srcset="{{country.iso_code_a2|get_img_path:'w1280'}}.webp">
+                        srcset="{{flag.country.iso_code_a2|get_img_path:'w1280'}}.webp">
                     <source type="image/png" media="(min-width: 1921px)"
-                        srcset="{{country.iso_code_a2|get_img_path:'w1280'}}.png">
+                        srcset="{{flag.country.iso_code_a2|get_img_path:'w1280'}}.png">
 
                     <source type="image/webp" media="(min-width: 1281px) and (max-width: 1920px)"
-                        srcset="{{country.iso_code_a2|get_img_path:'w640'}}.webp">
+                        srcset="{{flag.country.iso_code_a2|get_img_path:'w640'}}.webp">
                     <source type="image/png" media="(min-width: 1281px) and (max-width: 1920px)"
-                        srcset="{{country.iso_code_a2|get_img_path:'w640'}}.png">
+                        srcset="{{flag.country.iso_code_a2|get_img_path:'w640'}}.png">
 
                     <source type="image/webp" media="(max-width: 460px)"
-                        srcset="{{country.iso_code_a2|get_img_path:'w320'}}.webp">
+                        srcset="{{flag.country.iso_code_a2|get_img_path:'w320'}}.webp">
                     <source type="image/png" media="(max-width: 460px)"
-                        srcset="{{country.iso_code_a2|get_img_path:'w320'}}.png">
+                        srcset="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png">
 
-                    <img src="{{country.iso_code_a2|get_img_path:'w640'}}.png" alt="{{ flag.title }}"
+                    <img src="{{flag.country.iso_code_a2|get_img_path:'w640'}}.png" alt="{{ flag.title }}"
                         title="{{ flag.title }} {{flag.name}} - картинка" class="main-flag">
                 </picture>
             </div>
             <div class="py-3 col-12 col-lg-7">
                 <p>
-                    {% if country.conventional_long_name %}
-                        {{ country.conventional_long_name }}
+                    {% if flag.country.conventional_long_name %}
+                        {{ flag.country.conventional_long_name }}
                     {% else %}
-                        {{country.name}}
-                    {% endif %} - государство, расположенное в регионе {{country.region}},
-                    столицей которого является город {{country.ru_capital_name}}.
+                        {{flag.country.name}}
+                    {% endif %} - государство, расположенное в регионе {{flag.country.region}},
+                    столицей которого является город {{flag.country.ru_capital_name}}.
                 </p>
 
-                {% if country.ru_motto %}
+                {% if flag.country.ru_motto %}
                 <p>
-                    Девиз {{country.ru_name_rod}}: "{{country.motto}}", что переводится как "{{country.ru_motto}}".
+                    Девиз {{flag.country.ru_name_rod}}: "{{flag.country.motto}}", что переводится как "{{flag.country.ru_motto}}".
                 </p>
                 {% endif %}
 
                 {% if flag.adopted_date %}
                 {% now "Y" as current_year %}
                 <p>
-                    Современный вариант национального флага {{country.ru_name_rod}} был утвержден
+                    Современный вариант национального флага {{flag.country.ru_name_rod}} был утвержден
                     {% language 'ru' %}{{flag.adopted_date|date:"j E Y"}}{% endlanguage %}.
                     В {{ current_year }} году флагу исполняется {{age}} лет.
                 </p>
@@ -114,7 +113,12 @@
 
                 {% if flag.proportion %}
                 <p>
-                    Флаг имеет пропорции {{flag.proportion}}.
+                    Флаг имеет пропорции {{flag.proportion}}
+                </p>
+                {% endif %}
+                {% if emoji %}
+                <p>
+                    Emoji: {{emoji}}
                 </p>
                 {% endif %}
                 {# Flag elements v2 here #}
@@ -152,12 +156,12 @@
                     <a class="nav-link" href="#same-colors">Похожие флаги</a>
                 </li>
                 {% endif %}
-                {% if historical|length > 0 or flag.history_text %}
+                {% if historical.exists or flag.history_text %}
                 <li class="nav-item">
                     <a class="nav-link" href="#history">История</a>
                 </li>
                 {% endif %}
-                {% if flag.facts.all|length > 0 %}
+                {% if flag.facts.exists %}
                 <li class="nav-item">
                     <a class="nav-link" href="#facts">Факты</a>
                 </li>
@@ -167,12 +171,12 @@
                     <a class="nav-link" href="#downloads">Скачать</a>
                 </li>
 
-                {% if country.is_published %}
+                {% if flag.country.is_published %}
                 <li class="nav-item">
                     <a class="nav-link" href="#country">О стране</a>
                 </li>
                 {% endif %}
-                {% if border_flags|length > 0 %}
+                {% if neighbours.exists %}
                 <li class="nav-item">
                     <a class="nav-link" href="#border-flags">Флаги соседей</a>
                 </li>
@@ -182,20 +186,21 @@
 </div>
 
 {# Colors & design v3#}
-{% if colors or flag.design_description %}
+{% if colors.exists or flag.design_description %}
 <div class="bg-white" id="colors">
     {# H2 #}
-    {% include "partials/_h2.html" with h2="Цвета и дизайн государственного флага "|add:country.ru_name_rod %}
+    {% include "partials/_h2.html" with h2="Цвета и дизайн государственного флага "|add:flag.country.ru_name_rod %}
 
     <div class="py-3 pt-xl-4 pb-xl-5">
         <div class="container">
 
             <div class="row">
                 {# Colors tables #}
-                {% if colors %}
+                {% if colors.exists %}
                 <div class="py-3 col-12">
                     <div class="row">
                         {% for color in colors %}
+                            {% if color.is_main %}
                             <div class="col-12 col-xs-6 col-sm-6 {% if colors|length < 3 %}col-md-6 col-lg-4{% elif colors|length < 4 %}col-md-4 col-lg-4{%else%}col-md-4 col-lg-3{%endif%}">
                                 <table class="table table-hover table-sm table-bordered country_info"
                                     style="border: 2px solid #{%if color.hex|lower == 'ffffff'%}dee2e6{%else%}{{color.hex}}{%endif%} !important;">
@@ -284,9 +289,12 @@
                                     </tbody>
                                 </table>
                             </div>
+                            {% endif %}
                         {% endfor %}
                     </div>
                 </div>
+
+                {# Complementary colors v1 was here #}
 
                 {# Colors count info #}
                 <div class="py-3 col-12">
@@ -322,14 +330,14 @@
                     <figure class="figure">
                         <picture itemscope itemtype="http://schema.org/ImageObject">
                             <meta itemprop="name" content="{{flag.title}}">
-                            <meta itemprop="description" content="Схема флага {{country.ru_name_rod}}">
+                            <meta itemprop="description" content="Схема флага {{flag.country.ru_name_rod}}">
                             <meta itemprop="width" content="{{flag.construction_image.width}}px">
                             <meta itemprop="height" content="{{flag.construction_image.height}}px">
 
                             <source type="image/webp" srcset="{{flag.construction_webp_small.url}}, {{flag.construction_webp.url}} 2x">
                             <source type="{{flag.construction_source_type}}" srcset="{{lag.construction_image_small.url}}, {{flag.construction_image.url}} 2x">
 
-                            <img itemprop="contentUrl" src="{{flag.construction_image.url}}" alt="Схема флага {{country.ru_name_rod}}" title="Схема флага {{country.ru_name_rod}}" class="figure-img img-fluid" width="{{flag.construction_image.width}}" height="{{flag.construction_image.height}}">
+                            <img itemprop="contentUrl" src="{{flag.construction_image.url}}" alt="Схема флага {{flag.country.ru_name_rod}}" title="Схема флага {{flag.country.ru_name_rod}}" class="figure-img img-fluid" width="{{flag.construction_image.width}}" height="{{flag.construction_image.height}}">
                         </picture>
                         <figcaption class="figure-caption pt-2 text-center">{{flag.title}}: схема</figcaption>
                     </figure>
@@ -340,7 +348,7 @@
 
                 {# Colors meaning #}
                 {% if colors.0.meaning %}
-                <div class="col-12 {%if flag.elements.all%}col-md-7 col-lg-7{%endif%}">
+                <div class="col-12 {%if elements%}col-md-7 col-lg-7{%endif%}">
                     <h3>Наиболее популярные значения цветов</h3>
                     <ul class="list-unstyled">
                     {% for color in colors %}
@@ -350,14 +358,14 @@
                 </div>
                 {% endif %}
 
-                {% if flag.elements.all|length > 0 %}
+                {% if flag.elements.all %}
                 <div class="col-12 {%if colors.0.meaning%}col-md-5 col-lg-5{%endif%}">
                     <div class="card border-primary mb-3">
                         <div class="card-body text-primary">
                             <h3 class="text-dark text-center">Элементы флага</h3>
-                            {% for elem in flag.elements.all %}
-                            <a href="{% url 'flags:element-detail' elem.slug %}"
-                                class="btn btn-outline-primary mb-2">{{elem.name}}</a>
+                            {% for element in flag.elements.all %}
+                            <a href="{% url 'flags:element-detail' element.slug %}"
+                                class="btn btn-outline-primary mb-2">{{element.name}}</a>
                             {% endfor %}
                         </div>
                     </div>
@@ -379,11 +387,18 @@
 </div>
 {% endif %}
 
+{% if test.exists %}
+{% for elem in test %}
+<p>{{elem}}</p>
+{% endfor %}
+{% endif %}
+{{colors_adj}}
+
 {# Historical flags and history text v4#}
 {% if historical|length > 0 or flag.history_text %}
 <div class="bg-white" id="history">
     {# H2 #}
-    {% include "partials/_h2.html" with h2="Исторические флаги "|add:country.ru_name_rod|add:" по годам" %}
+    {% include "partials/_h2.html" with h2="Исторические флаги "|add:flag.country.ru_name_rod|add:" по годам" %}
     {# Content slider #}
     <div class="py-3 py-xl-5">
         <div class="container">
@@ -457,10 +472,10 @@
 {% endif %}
 
 {# Flag facts v2 #}
-{% if flag.facts.all|length > 0 %}
+{% if flag.facts.exists %}
 <div class="bg-light" id="facts">
     {# H2 #}
-    {% include "partials/_h2.html" with h2="Интересные факты о флаге "|add:country.ru_name_rod %}
+    {% include "partials/_h2.html" with h2="Интересные факты о флаге "|add:flag.country.ru_name_rod %}
     <div class="py-3 pt-xl-4 pb-xl-5">
         <div class="container">
             <div class="" itemscope itemtype="https://schema.org/FAQPage">
@@ -493,7 +508,7 @@
 {# Downloads v2 #}
 <div class="py-3 py-xl-5 bg-white" id="downloads">
     <div class="container">
-        <h2 class="py-3">Скачать флаг {{country.ru_name_rod}} в форматах png, jpg, webp, svg, eps, ai, pdf</h2>
+        <h2 class="py-3">Скачать флаг {{flag.country.ru_name_rod}} в форматах png, jpg, webp, svg, eps, ai, pdf</h2>
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-2 col-lg-4 d-none d-lg-block">
                 <p class="text-center"><span class="badge badge-info badge-100">Пример изображения</span></p>
@@ -502,16 +517,16 @@
                     <div class="card-body">
                         <picture>
                             <source type="image/webp" media="(min-width: 1281px)"
-                                srcset="{{country.iso_code_a2|get_img_path:'w640'}}.webp">
+                                srcset="{{flag.country.iso_code_a2|get_img_path:'w640'}}.webp">
                             <source type="image/png" media="(min-width: 1281px) and (max-width: 1920px)"
-                                srcset="{{country.iso_code_a2|get_img_path:'w640'}}.png">
+                                srcset="{{flag.country.iso_code_a2|get_img_path:'w640'}}.png">
 
                             <source type="image/webp" media="(max-width: 460px)"
-                                srcset="{{country.iso_code_a2|get_img_path:'w320'}}.webp">
+                                srcset="{{flag.country.iso_code_a2|get_img_path:'w320'}}.webp">
                             <source type="image/png" media="(max-width: 460px)"
-                                srcset="{{country.iso_code_a2|get_img_path:'w320'}}.png">
+                                srcset="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png">
 
-                            <img src="{{country.iso_code_a2|get_img_path:'w320'}}.png" alt="{{ flag.title }} скачать бесплатно"
+                            <img src="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png" alt="{{ flag.title }} скачать бесплатно"
                                 title="{{ flag.title }} скачать" class="img-fluid dl-example">
                         </picture>
                     </div>
@@ -541,15 +556,15 @@
                         {% for w, size in widths.items %}
                         <tr>
                             <td class="text-center">
-                                <img src="{{country.iso_code_a2|get_img_path:'w20'}}.png"
-                                    alt="Изображение флага {{ country.ru_name_rod }} {{size}}px.jpg"
-                                    title="Скачать изображение флага {{ country.ru_name_rod }} {{size}}px jpg">
+                                <img src="{{flag.country.iso_code_a2|get_img_path:'w20'}}.png"
+                                    alt="Изображение флага {{ flag.country.ru_name_rod }} {{size}}px.jpg"
+                                    title="Скачать изображение флага {{ flag.country.ru_name_rod }} {{size}}px jpg">
                             </td>
                             <td>
                                 <strong>{{size.width}}</strong>x{{size.height}}
                             </td>
                             <td class="text-center">
-                                <a href="{{country.iso_code_a2|get_img_path:w}}.jpg" target="_blank">
+                                <a href="{{flag.country.iso_code_a2|get_img_path:w}}.jpg" target="_blank">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                         class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
                                         <path
@@ -560,7 +575,7 @@
                                 </a>
                             </td>
                             <td class="text-center">
-                                <a href="{{country.iso_code_a2|get_img_path:w}}.png" target="_blank">
+                                <a href="{{flag.country.iso_code_a2|get_img_path:w}}.png" target="_blank">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                         class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
                                         <path
@@ -571,7 +586,7 @@
                                 </a>
                             </td>
                             <td class="text-center">
-                                <a href="{{country.iso_code_a2|get_img_path:w}}.webp" target="_blank">
+                                <a href="{{flag.country.iso_code_a2|get_img_path:w}}.webp" target="_blank">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                         class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
                                         <path
@@ -609,15 +624,15 @@
                         {% for h, size in heights.items %}
                         <tr>
                             <td class="text-center">
-                                <img src="{{country.iso_code_a2|get_img_path:'w20'}}.png"
-                                    alt="Изображение флага {{ country.ru_name_rod }} {{size}}px.jpg"
-                                    title="Скачать изображение флага {{ country.ru_name_rod }} {{size}}px jpg">
+                                <img src="{{flag.country.iso_code_a2|get_img_path:'w20'}}.png"
+                                    alt="Изображение флага {{ flag.country.ru_name_rod }} {{size}}px.jpg"
+                                    title="Скачать изображение флага {{ flag.country.ru_name_rod }} {{size}}px jpg">
                             </td>
                             <td>
                                 {{size.width}}x<strong>{{size.height}}</strong>
                             </td>
                             <td class="text-center">
-                                <a href="{{country.iso_code_a2|get_img_path:h}}.jpg" target="_blank">
+                                <a href="{{flag.country.iso_code_a2|get_img_path:h}}.jpg" target="_blank">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                         class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
                                         <path
@@ -628,7 +643,7 @@
                                 </a>
                             </td>
                             <td class="text-center">
-                                <a href="{{country.iso_code_a2|get_img_path:h}}.png" target="_blank">
+                                <a href="{{flag.country.iso_code_a2|get_img_path:h}}.png" target="_blank">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                         class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
                                         <path
@@ -639,7 +654,7 @@
                                 </a>
                             </td>
                             <td class="text-center">
-                                <a href="{{country.iso_code_a2|get_img_path:h}}.webp" target="_blank">
+                                <a href="{{flag.country.iso_code_a2|get_img_path:h}}.webp" target="_blank">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                         class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
                                         <path
@@ -677,12 +692,12 @@
                     <tbody>
                         <tr>
                             <td class="text-center">
-                                <img src="{{country.iso_code_a2|get_img_path:'w20'}}.png"
-                                    alt="Изображение флага {{ country.ru_name_rod }} {{size}}px.jpg"
-                                    title="Скачать изображение флага {{ country.ru_name_rod }} {{size}}px jpg">
+                                <img src="{{flag.country.iso_code_a2|get_img_path:'w20'}}.png"
+                                    alt="Изображение флага {{ flag.country.ru_name_rod }} {{size}}px.jpg"
+                                    title="Скачать изображение флага {{ flag.country.ru_name_rod }} {{size}}px jpg">
                             </td>
                             <td class="text-center">
-                                <a href="{{country.iso_code_a2|get_img_path}}.ai" target="_blank">
+                                <a href="{{flag.country.iso_code_a2|get_img_path}}.ai" target="_blank">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                         class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
                                         <path
@@ -693,7 +708,7 @@
                                 </a>
                             </td>
                             <td class="text-center">
-                                <a href="{{country.iso_code_a2|get_img_path}}.svg" target="_blank">
+                                <a href="{{flag.country.iso_code_a2|get_img_path}}.svg" target="_blank">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                         class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
                                         <path
@@ -704,7 +719,7 @@
                                 </a>
                             </td>
                             <td class="text-center">
-                                <a href="{{country.iso_code_a2|get_img_path}}.eps" target="_blank">
+                                <a href="{{flag.country.iso_code_a2|get_img_path}}.eps" target="_blank">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                         class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
                                         <path
@@ -715,7 +730,7 @@
                                 </a>
                             </td>
                             <td class="text-center">
-                                <a href="{{country.iso_code_a2|get_img_path}}.pdf" target="_blank">
+                                <a href="{{flag.country.iso_code_a2|get_img_path}}.pdf" target="_blank">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                         class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
                                         <path
@@ -730,7 +745,7 @@
                 </table>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4">
-                <a href="{{country.iso_code_a2|get_img_path}}-bitmap.zip" target="_blank"
+                <a href="{{flag.country.iso_code_a2|get_img_path}}-bitmap.zip" target="_blank"
                     class="btn btn-xs btn-outline-primary btn-block">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
@@ -739,9 +754,9 @@
                         <path
                             d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
                     </svg>
-                    Скачать все изображения <strong>флага {{country.ru_name_rod}}</strong> одним архивом
+                    Скачать все изображения <strong>флага {{flag.country.ru_name_rod}}</strong> одним архивом
                 </a>
-                <a href="{{country.iso_code_a2|get_img_path}}-bitmap.zip" target="_blank"
+                <a href="{{flag.country.iso_code_a2|get_img_path}}-bitmap.zip" target="_blank"
                     class="btn btn-xs btn-outline-success btn-block">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
@@ -758,31 +773,31 @@
 </div>
 
 {# About country v2 #}
-{% if country.is_published %}
+{% if flag.country.is_published %}
 <div class="py-3 py-xl-5 bg-light" id="country">
     <div class="container">
 
-        <h2 class="py-3">Краткая информация о {{country.ru_name_pre}}</h2>
+        <h2 class="py-3">Краткая информация о {{flag.country.ru_name_pre}}</h2>
         <div class="row">
             <div class="py-3 col-12 col-md-8">
                 <p>
-                    {{country.name}} занимает {{country.area_global_rank}} место в мире по размерам.
-                    Площадь территории страны {{country.area_total|intcomma}} км<sup>2</sup>,
-                    из которых {{country.area_land|intcomma}} км<sup>2</sup> - суша. Протяженность береговой линии
-                    {{country.coastline|intcomma}} км.
-                    По данным на {{country.population_date}} год численность населения {{country.ru_name_rod}}
-                    около {{country.population_total|intcomma}} человек - это {{country.population_global_rank}} место в
+                    {{flag.country.name}} занимает {{flag.country.area_global_rank}} место в мире по размерам.
+                    Площадь территории страны {{flag.country.area_total|intcomma}} км<sup>2</sup>,
+                    из которых {{flag.country.area_land|intcomma}} км<sup>2</sup> - суша. Протяженность береговой линии
+                    {{flag.country.coastline|intcomma}} км.
+                    По данным на {{flag.country.population_date}} год численность населения {{flag.country.ru_name_rod}}
+                    около {{flag.country.population_total|intcomma}} человек - это {{flag.country.population_global_rank}} место в
                     мире.
                 </p>
                 <p>
-                    Официальное название страны - {{country.conventional_long_name}}.
-                    Формой правления {{country.ru_name_rod}} является {{country.ru_government_type}}.
-                    Глава государства - {{country.ru_chief_of_state}}.
-                    Главой правительства назначен {{country.ru_head_of_government}}.
+                    Официальное название страны - {{flag.country.conventional_long_name}}.
+                    Формой правления {{flag.country.ru_name_rod}} является {{flag.country.ru_government_type}}.
+                    Глава государства - {{flag.country.ru_chief_of_state}}.
+                    Главой правительства назначен {{flag.country.ru_head_of_government}}.
                 </p>
                 <p>
-                    Официальный язык {{country.ru_name_rod}} - {{country.official_language}}.
-                    На местном языке страна называется {{country.local_long_name}}
+                    Официальный язык {{flag.country.ru_name_rod}} - {{flag.country.official_language}}.
+                    На местном языке страна называется {{flag.country.local_long_name}}
                 </p>
             </div>
             <div class="py-3 col-12 col-md-4">
@@ -793,11 +808,11 @@
                         </tr>
                         <tr>
                             <td>Регион</td>
-                            <td>{{country.region.parent}} - {{country.region.name}}</td>
+                            <td>{{flag.country.region.parent}} - {{flag.country.region.name}}</td>
                         </tr>
                         <tr>
                             <td>Столица</td>
-                            <td>{{country.ru_capital_name}}</td>
+                            <td>{{flag.country.ru_capital_name}}</td>
                         </tr>
                         <tr>
                             <td>Валюта</td>
@@ -809,15 +824,15 @@
                         </tr>
                         <tr>
                             <td>ISO 3166-1</td>
-                            <td>{{country.iso_code_a2}}, {{country.iso_code_a3}}, {{country.iso_code_num}}</td>
+                            <td>{{flag.country.iso_code_a2}}, {{flag.country.iso_code_a3}}, {{flag.country.iso_code_num}}</td>
                         </tr>
                         <tr>
                             <td>Интернет-домен</td>
-                            <td>{{country.internet_tld}}</td>
+                            <td>{{flag.country.internet_tld}}</td>
                         </tr>
                         <tr>
                             <td>Телефонный код</td>
-                            <td>+{{country.phone_code}}</td>
+                            <td>+{{flag.country.phone_code}}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -828,11 +843,11 @@
                         </tr>
                         <tr>
                             <td>ВВП (ППС) на душу</td>
-                            <td>{{country.gdp_value|intcomma}} $ ({{country.gdp_date}})</td>
+                            <td>{{flag.country.gdp_value|intcomma}} $ ({{flag.country.gdp_date}})</td>
                         </tr>
                         <tr>
                             <td>Внешний долг</td>
-                            <td>{{country.external_debt_value|intcomma}} $ ({{country.external_debt_date}})</td>
+                            <td>{{flag.country.external_debt_value|intcomma}} $ ({{flag.country.external_debt_date}})</td>
                         </tr>
                     </tbody>
                 </table>
@@ -872,10 +887,10 @@
 </div>
 
 {# Border countries flags v3 #}
-{% if border_flags|length > 0 %}
+{% if neighbours.exists %}
 <div class="bg-light" id="border-flags">
     {# H2 #}
-    {% include "partials/_h2.html" with h2=border_flags_h2 %}
+    {% include "partials/_h2.html" with h2="Флаги соседних с "|add:flag.country.ru_name_tvo|add:" стран" %}
     {# Flags list part #}
     {% include "partials/_flags-list.html" with flags=border_flags %}
 </div>
@@ -914,9 +929,9 @@
 
     {% block meta_description %}
         {% if flag.seo_description %}
-            {{flag.emoji.first.unicode}}{{flag.seo_description}}
+            {{emoji}}{{flag.seo_description}}
         {% else %}
-            {{colors_adj}}{{country.iso_code_a2|adjective:"i"}} флаг{{flag.emoji}}
+            {{colors_adj}}{{flag.country.iso_code_a2|adjective:"i"}} флаг{{emoji}}
         {% endif %}
         {% endblock meta_description %}
     {# {% block meta_keywords %}{{flag.seo_keywords}}{% endblock meta_keywords %} #}
