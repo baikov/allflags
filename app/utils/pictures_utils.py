@@ -2,15 +2,14 @@ import io
 import logging
 import os
 import re
-import urllib
 
 import cairosvg
 import urllib3
 from defusedxml.common import EntitiesForbidden
-from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.files.images import ImageFile
 from PIL import Image
 
-from app.utils.ru_slugify import custom_slugify
+# from app.utils.ru_slugify import custom_slugify
 
 logger = logging.getLogger(__name__)
 
@@ -29,19 +28,33 @@ def url_is_ok(url: str) -> bool:
     return r.status == 200
 
 
-def get_file_to_bytesio(url: str) -> io.BytesIO:
-    path, name, ext = split_url(url)
-    http = urllib3.PoolManager()
-    r = http.request("GET", url)
-    if r.status == 200:
-        file = io.BytesIO(r.content.read())
+def get_file_to_bytesio(url: str = None, local_file=None) -> io.BytesIO:
+    if url:
+        logger.info(url)
+        path, name, ext = split_url(url)
+        http = urllib3.PoolManager()
+        r = http.request("GET", url)
+        if r.status == 200:
+            file = io.BytesIO(r.data)
+            file.name = name
+            file.ext = ext
+        else:
+            return "not 200"
+
+    elif local_file:
+        path, name, ext = split_url(local_file.path)
+        file = io.BytesIO(local_file.read())
         file.name = name
         file.ext = ext
+    else:
+        file = None
+        file.error = "miss url or local file"
 
     return file
 
 
-def convert_and_compress_image(file, longest_side: int = 1200):
+def convert_and_compress_image(file, longest_side: int = 1200) -> ImageFile:
+    logger.warn(file)
     ext = file.ext
     name = file.name
 
@@ -71,42 +84,7 @@ def convert_and_compress_image(file, longest_side: int = 1200):
     img.save(file, format=format)
     file.seek(0)
 
-    return SimpleUploadedFile(f"{name}{ext}", file.read())
-
-
-def download_image(url: str) -> SimpleUploadedFile:
-    path, file_name = os.path.split(url)
-    name, ext = os.path.splitext(file_name)
-    ext = ext.lower()
-
-    file = io.BytesIO(urllib.request.urlopen(url).read())
-
-    if ext == ".svg":
-        new = io.BytesIO()
-        try:
-            cairosvg.svg2png(file_obj=file, output_width=800, write_to=new)
-        except EntitiesForbidden:
-            rgx_list = [r"<!ENTITY .*?>", r"xmlns=.*?;\"", r"xmlns:xlink=.*?;\""]
-            file.seek(0)
-            file_str = file.read().decode("UTF-8")
-            for rgx_match in rgx_list:
-                file_str = re.sub(rgx_match, "", file_str)
-            file = io.BytesIO(file_str.encode("UTF-8"))
-            cairosvg.svg2png(file_obj=file, output_width=800, write_to=new)
-        except Exception as e:
-            return e
-        new.seek(0)
-        file = new
-        ext = ".png"
-
-    img = Image.open(file)
-    format = img.format
-    width, height = img.size
-    width, height = scale_dimensions(width, height, longest_side=800)
-    img = img.resize((width, height), Image.ANTIALIAS)
-    img.save(file, format=format)
-    file.seek(0)
-    return SimpleUploadedFile(f"{name}{ext}", file.read())
+    return ImageFile(file=file, name=f"{name}{ext}")
 
 
 def scale_dimensions(width: int, height: int, longest_side: int) -> tuple:
@@ -142,3 +120,38 @@ def img_path_by_model(instance, filename) -> str:
     else:
         # return os.path.join(f"{custom_slugify(verbose_name)}/", filename)
         return filename
+
+
+# def download_image(url: str) -> SimpleUploadedFile:
+#     path, file_name = os.path.split(url)
+#     name, ext = os.path.splitext(file_name)
+#     ext = ext.lower()
+
+#     file = io.BytesIO(urllib.request.urlopen(url).read())
+
+#     if ext == ".svg":
+#         new = io.BytesIO()
+#         try:
+#             cairosvg.svg2png(file_obj=file, output_width=800, write_to=new)
+#         except EntitiesForbidden:
+#             rgx_list = [r"<!ENTITY .*?>", r"xmlns=.*?;\"", r"xmlns:xlink=.*?;\""]
+#             file.seek(0)
+#             file_str = file.read().decode("UTF-8")
+#             for rgx_match in rgx_list:
+#                 file_str = re.sub(rgx_match, "", file_str)
+#             file = io.BytesIO(file_str.encode("UTF-8"))
+#             cairosvg.svg2png(file_obj=file, output_width=800, write_to=new)
+#         except Exception as e:
+#             return e
+#         new.seek(0)
+#         file = new
+#         ext = ".png"
+
+#     img = Image.open(file)
+#     format = img.format
+#     width, height = img.size
+#     width, height = scale_dimensions(width, height, longest_side=800)
+#     img = img.resize((width, height), Image.ANTIALIAS)
+#     img.save(file, format=format)
+#     file.seek(0)
+#     return SimpleUploadedFile(f"{name}{ext}", file.read())
