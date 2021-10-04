@@ -30,6 +30,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='historicalflag',
             name='svg_file',
-            field=models.FileField(blank=True, upload_to=app.flags.services.historical_flag_img_file_path, verbose_name='SVG image'),
+            field=models.FileField(blank=True, upload_to="historical/", verbose_name='SVG image'),
         ),
     ]
