@@ -122,21 +122,23 @@ def img_path_by_model(instance, filename) -> str:
     """Determines the path depending on the calling model. Uses in property upload_to of FileField.
 
     Args:
-        instance (): instanse of callable model (MainFlag or HistoricalFlag)
+        instance (): instanse of callable model (MainFlagPicture or HistoricalFlagPicture)
         filename (str): name of the uploading file
 
     Returns:
         str: path for saving uploaded file
     """
 
-    logger.info(str(instance.content_type.model_class()._meta.verbose_name))
-    verbose_name = str(instance.content_type.model_class()._meta.verbose_name)
+    logger.info(str(instance._meta.verbose_name))
 
-    if verbose_name == "Country flag":
-        logger.info(f"Return path - flags, filename: {filename}")
-        return os.path.join("flags/", filename)
-    elif verbose_name == "Historical flag":
-        logger.info(f"Return path - pictures, filename: {filename}")
+    # verbose_name = str(instance.content_type.model_class()._meta.verbose_name)
+    verbose_name = str(instance._meta.verbose_name)
+
+    if verbose_name == "File":  # or verbose_name == "Файл"
+        path = f"files/{instance.flag.country.iso_code_a2}/"
+        return os.path.join(path, filename)
+    elif verbose_name == "Historical picture":
         return os.path.join("pictures/", filename)
     else:
-        return os.path.join(f"{custom_slugify(verbose_name)}/", filename)
+        # return os.path.join(f"{custom_slugify(verbose_name)}/", filename)
+        return filename

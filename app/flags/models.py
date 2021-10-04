@@ -15,8 +15,7 @@ from imagekit.models import ImageSpecField, ProcessedImageField
 from imagekit.processors import ResizeToFit
 
 from app.utils.color import Colorize
-# from slugify import slugify as ss
-# from django.utils.text import slugify
+from app.utils.pictures_utils import img_path_by_model
 from app.utils.ru_slugify import custom_slugify
 
 # from .services import img_path_by_flag_type  # historical_flag_img_file_path
@@ -54,7 +53,7 @@ class Picture(models.Model):
     ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
     url = models.URLField(verbose_name=_("Image URL"), max_length=500, blank=True)
     image = ProcessedImageField(
-        upload_to='pictures',
+        upload_to=img_path_by_model,
         processors=[ResizeToFit(1200)],
         options={'quality': 80, 'minimize_size': True, 'allow_mixed': True},
         blank=True
