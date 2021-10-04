@@ -248,7 +248,7 @@ def flag_detail(request, flag_slug):
     emoji = get_emoji(flag.country.iso_code_a2)
     age = get_flag_age(flag.adopted_date)
     # files = get_files(flag.id)
-    files = flag.downloads.filter(is_show_on_detail=True)
+    files = flag.downloads.prefetch_related("files").filter(is_show_on_detail=True)
     files_count = len(flag.downloads.all())
     main_picture = files.filter(is_main=True).first()
     # adj = ""
