@@ -1,7 +1,7 @@
 import tablib
-from django import forms
+# from django import forms
 from django.contrib import admin
-from django.contrib.contenttypes.admin import GenericTabularInline
+# from django.contrib.contenttypes.admin import GenericTabularInline
 from django.db import models
 from django.forms import TextInput
 from django.utils.html import format_html
@@ -19,11 +19,9 @@ from .models import (  # Region, Subregion,; HistoricalFlagImage,
     Country,
     Currency,
     FlagElement,
-    FlagEmoji,
     FlagFact,
     HistoricalFlag,
     MainFlag,
-    Picture,
     Region,
 )
 
@@ -437,34 +435,6 @@ class MainFlagAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.CharField: {"widget": TextInput(attrs={"size": "100"})},
     }
-
-
-class PictureAdmin(admin.ModelAdmin):
-    list_display = ("id", "thumbnail", "alt", "image", "ordering")
-    readonly_fields = ["webp", "image_md", "webp_md", "image_xs", "webp_xs", "thumb"]
-    search_fields = ["alt", "caption"]
-    list_filter = ["content_type"]
-    list_editable = ("ordering",)
-    thumbnail = AdminThumbnail(image_field='thumb')
-    fieldsets = [
-        (None, {"fields": [("content_type", "object_id"), "url", "image", "ordering", ("caption", "alt")]}),
-        (_("Readonly"), {
-            "classes": ("collapse", "wide", "extrapretty"),
-            "fields": ["webp", "image_md", "webp_md", "image_xs", "webp_xs", "thumb"]
-        }),
-    ]
-
-
-class PictureAdminInline(GenericTabularInline):
-    model = Picture
-    extra = 0
-    fields = ("ordering", "url", "image", ("caption", "alt"))
-
-
-class PictureAdminForm(forms.ModelForm):
-    class Meta:
-        model = Picture
-        fields = '__all__'  # Keep all fields
 
 
 class HistoricalFlagAdmin(admin.ModelAdmin):
