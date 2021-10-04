@@ -26,11 +26,11 @@ class Seo(models.Model):
     """Abstract class for SEO fields"""
 
     slug = models.SlugField(max_length=100, unique=True)
-    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
+    # ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500, db_index=True)
     seo_title = models.CharField(verbose_name=_("SEO Title"), max_length=250, blank=True)
     seo_description = models.TextField(max_length=400, verbose_name=_("SEO Description"), blank=True)
     seo_h1 = models.CharField(verbose_name=_("SEO H1"), max_length=250, blank=True)
-    is_published = models.BooleanField(verbose_name=_("Published"), default=False)
+    # is_published = models.BooleanField(verbose_name=_("Published"), default=False)
     is_index = models.BooleanField(verbose_name=_("index"), default=True)
     is_follow = models.BooleanField(verbose_name=_("follow"), default=True)
     created_date = models.DateField(auto_now_add=True)
@@ -162,12 +162,15 @@ class Region(Seo, models.Model):
     )
     name = models.CharField(verbose_name=_("Region name"), max_length=250)
     description = RichTextField(verbose_name=_("Region description"), blank=True)
+    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500, db_index=True)
+    is_published = models.BooleanField(verbose_name=_("Published"), default=False)
 
     objects = PublishedQuerySet.as_manager()
 
     class Meta:
         verbose_name = _("Region")
         verbose_name_plural = _("Regions")
+        ordering = ("ordering",)
 
     def __str__(self):
         return f"{self.name}"
@@ -188,6 +191,7 @@ class Region(Seo, models.Model):
 
 class Country(Seo, models.Model):
     name = models.CharField(verbose_name=_("Name"), max_length=250)
+    is_published = models.BooleanField(verbose_name=_("Published"), default=False)
     iso_code_a2 = models.CharField(verbose_name=_("ISO code (2alpha)"), max_length=2, unique=True)
     iso_code_a3 = models.CharField(verbose_name=_("ISO code (3alpha)"), max_length=3, blank=True)
     iso_code_num = models.CharField(verbose_name=_("ISO code (numeric)"), max_length=4, blank=True)
@@ -292,12 +296,15 @@ class ColorGroup(Seo, models.Model):
     short_name = models.CharField(verbose_name=_("Short name"), max_length=50)
     description = RichTextField(verbose_name=_("Color description"), blank=True)
     colorgroup_meanings = RichTextField(verbose_name=_("Colorgroup meanings"), blank=True)
+    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500, db_index=True)
+    is_published = models.BooleanField(verbose_name=_("Published"), default=False)
 
     objects = PublishedQuerySet.as_manager()
 
     class Meta:
         verbose_name = _("Color group")
         verbose_name_plural = _("Color groups")
+        ordering = ("ordering",)
 
     def __str__(self):
         return f"{self.name}"
@@ -312,7 +319,7 @@ class Color(models.Model):
         ColorGroup, verbose_name=_("Color group"), on_delete=models.PROTECT, related_name="colors"
     )
     flag = models.ForeignKey("MainFlag", verbose_name=_("Flag"), on_delete=models.CASCADE, related_name="colors_set")
-    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
+    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500, db_index=True)
     hex = models.CharField(verbose_name=_("HEX"), max_length=7, blank=True)
     rgb = ArrayField(models.SmallIntegerField(), blank=True, size=3, verbose_name=_("RGB"))
     cmyk = ArrayField(models.SmallIntegerField(), blank=True, size=4, verbose_name=_("CMYK"))
@@ -324,6 +331,7 @@ class Color(models.Model):
     class Meta:
         verbose_name = _("Color")
         verbose_name_plural = _("Flag colors")
+        ordering = ("ordering",)
 
     def save(self, *args, **kwargs):
 
@@ -366,10 +374,13 @@ class Color(models.Model):
 class FlagElement(Seo, models.Model):
     name = models.CharField(verbose_name=_("Name"), max_length=250)
     description = RichTextField(verbose_name=_("Description"), blank=True)
+    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500, db_index=True)
+    is_published = models.BooleanField(verbose_name=_("Published"), default=False)
 
     class Meta:
         verbose_name = _("Flag element")
         verbose_name_plural = _("Flags elements")
+        ordering = ("ordering",)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -393,8 +404,8 @@ class HistoricalFlag(models.Model):
     from_year = models.CharField(verbose_name=_("Adopted year"), max_length=50, blank=True)
     to_year = models.CharField(verbose_name=_("Ended year"), max_length=50, blank=True)
     description = RichTextField(verbose_name=_("Hstorical flag description"), blank=True)
-    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
-    pictures = fields.GenericRelation(Picture)
+    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500, db_index=True)
+    is_published = models.BooleanField(verbose_name=_("Published"), default=False)
 
     class Meta:
         verbose_name = _("Historical flag")
@@ -459,7 +470,7 @@ class MainFlag(Seo, models.Model):
 
     design_description = RichTextUploadingField(verbose_name=_("Design description"), blank=True)
     history_text = RichTextField(verbose_name=_("Flag history"), blank=True)
-    dl_imgs = models.BooleanField(verbose_name=_("Download flag images"), default=False)
+    is_published = models.BooleanField(verbose_name=_("Published"), default=False)
 
     objects = PublishedQuerySet.as_manager()
 
@@ -513,7 +524,8 @@ class FlagFact(models.Model):
     label = models.CharField(verbose_name=_("Fact label"), max_length=50, blank=True)
     text = RichTextUploadingField(verbose_name=_("Fact text"), blank=True)
     image = models.ImageField(verbose_name=_("Fact image"), blank=True)
-    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=10)
+    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=10, db_index=True)
+    is_published = models.BooleanField(verbose_name=_("Published"), default=False)
 
     class Meta:
         verbose_name = _("Flag's fact")
