@@ -12,15 +12,18 @@ from import_export import resources
 from import_export.admin import ImportExportMixin
 from import_export.formats import base_formats
 
-from .models import (  # Region, Subregion,; HistoricalFlagImage,
+from .models import (  # Region, Subregion,; HistoricalFlagImage,; FlagEmoji,; Picture,
     BorderCountry,
     Color,
     ColorGroup,
     Country,
     Currency,
+    DownloadablePictureFile,
+    DownloadablePictureFilePreview,
     FlagElement,
     FlagFact,
     HistoricalFlag,
+    HistoricalFlagPicture,
     MainFlag,
     Region,
 )
@@ -495,17 +498,6 @@ class RegionAdmin(admin.ModelAdmin):
     ]
 
 
-# class HistoricalFlagImageAdmin(admin.ModelAdmin):
-#     list_display = ("flag", "image", "ordering", "alt")
-#     search_fields = ["flag__country__name"]
-#     # list_filter = ["country__name"]
-#     readonly_fields = ['webp']
-#     raw_id_fields = ("flag",)
-#     fieldsets = [
-#         (None, {"fields": ["flag", "img_link", ("image", "webp"), "ordering", ("caption", "alt")]}),
-#     ]
-
-
 admin.site.register(Currency, CurrencyAdmin)
 admin.site.register(Region, RegionAdmin)
 admin.site.register(Country, CountryAdmin)
@@ -513,58 +505,39 @@ admin.site.register(ColorGroup, ColorGroupAdmin)
 admin.site.register(Color, ColorAdmin)
 admin.site.register(FlagElement, FlagElementAdmin)
 admin.site.register(MainFlag, MainFlagAdmin)
-admin.site.register(FlagEmoji, FlagEmojiAdmin)
 admin.site.register(HistoricalFlag, HistoricalFlagAdmin)
 admin.site.register(FlagFact, FlagFactAdmin)
 admin.site.register(BorderCountry, BorderCountryAdmin)
+
+'''
+class PictureAdmin(admin.ModelAdmin):
+    list_display = ("id", "thumbnail", "alt", "image", "ordering")
+    readonly_fields = ["webp", "image_md", "webp_md", "image_xs", "webp_xs", "thumb"]
+    search_fields = ["alt", "caption"]
+    list_filter = ["content_type"]
+    list_editable = ("ordering",)
+    thumbnail = AdminThumbnail(image_field='thumb')
+    fieldsets = [
+        (None, {"fields": [("content_type", "object_id"), "url", "svg", "image", "ordering", ("caption", "alt")]}),
+        # (None, {"fields": ["ordering", "url", "image", ("caption", "alt")]}),
+        (_("Readonly"), {
+            "classes": ("collapse", "wide", "extrapretty"),
+            "fields": ["webp", "image_md", "webp_md", "image_xs", "webp_xs", "thumb"]
+        }),
+    ]
+
+
+class PictureAdminInline(GenericTabularInline):
+    model = Picture
+    extra = 0
+    fields = ("ordering", "url", "svg", "image", ("caption", "alt"))
+
+
+class PictureAdminForm(forms.ModelForm):
+    class Meta:
+        model = Picture
+        fields = '__all__'  # Keep all fields
+
+
 admin.site.register(Picture, PictureAdmin)
-
-# admin.site.register(HistoricalFlagImage, HistoricalFlagImageAdmin)
-# admin.site.register(Region, RegionAdmin)
-# admin.site.register(Subregion, SubregionAdmin)
-
-
-# class RegionAdmin(admin.ModelAdmin):
-#     prepopulated_fields = {"slug": ("name",)}
-#     list_display = ("name", "slug")
-#     search_fields = ["name"]
-#     fieldsets = [
-#         (None, {"fields": ["name", "slug", "description"]}),
-#         (
-#             _("SEO"),
-#             {
-#                 "classes": ("collapse", "wide"),
-#                 "fields": [
-#                     "seo_title",
-#                     "seo_description",
-#                     "seo_h1",
-#                     "is_published",
-#                     "is_index",
-#                     "is_follow",
-#                 ],
-#             },
-#         ),
-#     ]
-
-
-# class SubregionAdmin(admin.ModelAdmin):
-#     prepopulated_fields = {"slug": ("name",)}
-#     list_display = ("name", "slug", "region")
-#     search_fields = ["name", "region"]
-#     fieldsets = [
-#         (None, {"fields": ["region", "name", "slug", "description"]}),
-#         (
-#             _("SEO"),
-#             {
-#                 "classes": ("collapse", "wide"),
-#                 "fields": [
-#                     "seo_title",
-#                     "seo_description",
-#                     "seo_h1",
-#                     "is_published",
-#                     "is_index",
-#                     "is_follow",
-#                 ],
-#             },
-#         ),
-#     ]
+'''
