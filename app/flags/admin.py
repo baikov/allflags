@@ -468,14 +468,12 @@ class RegionAdmin(admin.ModelAdmin):
         "is_published",
     )
     list_display = (
-        # "id",
         "name",
         "slug",
         "parent",
         "ordering",
         "is_published",
     )
-    # list_filter = ["parent"]
     list_filter = (ParentRegionListFilter,)
     search_fields = ["name", "parent__name"]
     fieldsets = [
