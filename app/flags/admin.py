@@ -363,16 +363,18 @@ class HistoricalFlagPictureAdminInline(admin.TabularInline):
 
 
 class MainFlagAdmin(admin.ModelAdmin):
+    # form = PictureAdminForm
     prepopulated_fields = {"slug": ("title",)}
     list_display = ("country", "title", "slug", "is_published")
     search_fields = ["title", "country__name"]
-    list_filter = ["colors__color_group"]
+    list_filter = ["colors_set__color_group"]
     raw_id_fields = ("country",)
     readonly_fields = [
         "updated_date", "created_date", "construction_webp", "construction_image_small", "construction_webp_small"
     ]
-    filter_horizontal = ("colors", "elements")
-    inlines = (ColorInline, FlagEmojiInline, FlagFactInline)
+    filter_horizontal = ("elements",)
+    inlines = (ColorInline, FlagFactInline, DownloadablePictureFilePreviewInline)
+    # inlines = (ColorInline, FlagEmojiInline, FlagFactInline)
     fieldsets = [
         (
             None,
