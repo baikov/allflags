@@ -438,16 +438,15 @@ class MainFlagAdmin(admin.ModelAdmin):
 
 
 class HistoricalFlagAdmin(admin.ModelAdmin):
-    form = PictureAdminForm
-    list_display = ("from_year", "to_year", "country", "title", "ordering")
+    # form = PictureAdminForm
+    list_display = ("from_year", "to_year", "country", "title", "ordering", "is_published")
     search_fields = ["title", "from_year", "country__name"]
     list_filter = ["country__name"]
     raw_id_fields = ("country",)
-    list_editable = ("ordering",)
-    # inlines = (PictureAdminInline, HistoricalFlagImageInline)
-    inlines = (PictureAdminInline,)
+    list_editable = ("ordering", "is_published")
+    inlines = (HistoricalFlagPictureAdminInline,)
     fieldsets = [
-        (None, {"fields": ["country", "title", ("from_year", "to_year"), "ordering", "description"]}),
+        (None, {"fields": ["country", "title", ("from_year", "to_year"), ("ordering", "is_published"), "description"]}),
     ]
 
 
