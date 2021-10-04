@@ -18,8 +18,6 @@ from app.utils.color import Colorize
 from app.utils.pictures_utils import img_path_by_model
 from app.utils.ru_slugify import custom_slugify
 
-# from .services import img_path_by_flag_type  # historical_flag_img_file_path
-
 
 class Seo(models.Model):
     """Abstract class for SEO fields"""
@@ -39,18 +37,9 @@ class Seo(models.Model):
         abstract = True
 
 
-CONTENT_TYPE_CHOICES = (
-    Q(app_label='flags', model='mainflag') | Q(app_label='flags', model='historicalflag')
-)
-
-
 class Picture(models.Model):
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, limit_choices_to=CONTENT_TYPE_CHOICES)
-    object_id = models.PositiveIntegerField()
-    content_object = fields.GenericForeignKey('content_type', 'object_id')
     caption = models.CharField(verbose_name=_("Caption/title"), max_length=300, blank=True)
     alt = models.CharField(verbose_name=_("Name/alt"), max_length=200, blank=True)
-    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
     url = models.URLField(verbose_name=_("Image URL"), max_length=500, blank=True)
     svg = models.FileField(verbose_name=_("SVG image"), upload_to=img_path_by_model, blank=True)
     image = ProcessedImageField(
@@ -424,15 +413,12 @@ class MainFlag(Seo, models.Model):
     title = models.CharField(verbose_name=_("Title"), max_length=250, blank=True)
     name = models.CharField(verbose_name=_("Flag name"), max_length=250, blank=True)
     adopted_date = models.DateField(verbose_name=_("Adopted date"), blank=True, null=True)
-    proportion = models.CharField(verbose_name="Пропорции", max_length=10, blank=True)
+    proportion = models.CharField(verbose_name=_("Proportions"), max_length=10, blank=True)
     short_description = models.TextField(verbose_name=_("Short description"), max_length=550, blank=True)
-    colors = models.ManyToManyField(Color, verbose_name=_("Colors"), related_name="flags", blank=True)
     elements = models.ManyToManyField(
         FlagElement, verbose_name=_("Flags elements"), related_name="flags_with_elem", blank=True
     )
-    # flag_day = models.DateField(verbose_name=_("Flag day"), blank=True, null=True)
-
-    construction_url = models.URLField(verbose_name=_("Image URL"), max_length=500, blank=True)
+    construction_url = models.URLField(verbose_name=_("Construction img URL"), max_length=500, blank=True)
     construction_image = ProcessedImageField(
         upload_to='construction',
         processors=[ResizeToFit(600)],
