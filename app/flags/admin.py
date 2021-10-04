@@ -356,6 +356,12 @@ class HistoricalFlagPictureAdmin(admin.ModelAdmin):
     ]
 
 
+class HistoricalFlagPictureAdminInline(admin.TabularInline):
+    model = HistoricalFlagPicture
+    extra = 1
+    fields = ("ordering", "url", "svg", "image", "alt", "caption")
+
+
 class MainFlagAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
     list_display = ("country", "title", "slug", "is_published")
