@@ -354,17 +354,17 @@ class Color(models.Model):
         if not self.rgb and not self.hex and not self.cmyk:
             raise ValidationError({"rgb": "Одно из полей должно быть заполнено"})
 
-    @property
-    def get_flags(self):
-        # return obj.flags.first()
-        flags = self.flags.all().values('title')
-        flags_list = []
-        for flag in flags:
-            flags_list.append(flag["title"])
-        return flags_list
+    # @property
+    # def get_flags(self):
+    #     # return obj.flags.first()
+    #     flags = self.flags.all().values('title')
+    #     flags_list = []
+    #     for flag in flags:
+    #         flags_list.append(flag["title"])
+    #     return flags_list
 
     def __str__(self):
-        return f"{self.color_group}: #{self.hex} {self.get_flags}"
+        return f"{self.color_group}: #{self.hex} {self.flag}"
 
     # def get_absolute_url(self):
     #     return reverse("countries:colors-group", kwargs={"color_group": self.color_group})
