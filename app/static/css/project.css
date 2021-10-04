@@ -8790,3 +8790,9 @@ img.dl-example {
   margin-left: .1rem;
   margin-right: 1.6px;
   margin-right: .1rem; }
+
+.dl-img {
+  padding: 10px; }
+
+.dl-img img {
+  border: 1px solid rgba(0, 0, 0, 0.125); }
