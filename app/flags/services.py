@@ -29,6 +29,16 @@ def get_flag_or_404(request, flag_slug: str) -> MainFlag:
     return flag
 
 
+def get_files(flag_id):
+    files = (
+        DownloadablePictureFilePreview.objects
+        .prefetch_related("files")
+        .filter(flag__id=flag_id)
+        .filter(is_show_on_detail=True)
+    )
+    return files
+
+
 def get_emoji(iso2: str) -> str:
     OFFSET = ord("🇦") - ord("A")
     return chr(ord(iso2[0]) + OFFSET) + chr(ord(iso2[1]) + OFFSET)
