@@ -52,6 +52,7 @@ class Picture(models.Model):
     alt = models.CharField(verbose_name=_("Name/alt"), max_length=200, blank=True)
     ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
     url = models.URLField(verbose_name=_("Image URL"), max_length=500, blank=True)
+    svg = models.FileField(verbose_name=_("SVG image"), upload_to=img_path_by_model, blank=True)
     image = ProcessedImageField(
         upload_to=img_path_by_model,
         processors=[ResizeToFit(1200)],
