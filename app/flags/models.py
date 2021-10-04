@@ -446,6 +446,11 @@ class MainFlag(Seo, models.Model):
 
     design_description = RichTextUploadingField(verbose_name=_("Design description"), blank=True)
     history_text = RichTextField(verbose_name=_("Flag history"), blank=True)
+    dl_imgs = models.BooleanField(
+        verbose_name=_("Download flag images"),
+        help_text=_("Downloading images from flagcdn.net"),
+        default=False
+    )
     is_published = models.BooleanField(verbose_name=_("Published"), default=False)
 
     objects = PublishedQuerySet.as_manager()
