@@ -451,13 +451,13 @@ class HistoricalFlagAdmin(admin.ModelAdmin):
 
 
 class FlagFactAdmin(admin.ModelAdmin):
-    list_display = ("flag", "caption", "label", "ordering")
+    list_display = ("flag", "caption", "label", "ordering", "is_published")
     search_fields = ["flag__country__name", "caption", "label"]
     # list_filter = ["flag__country__region", "flag__country"]
     raw_id_fields = ("flag",)
-    list_editable = ("ordering",)
+    list_editable = ("ordering", "is_published")
     fieldsets = [
-        (None, {"fields": ["flag", "caption", ("ordering", "label"), "text", "image"]}),
+        (None, {"fields": ["flag", "caption", ("ordering", "is_published", "label"), "text", "image"]}),
     ]
 
 
