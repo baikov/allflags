@@ -74,6 +74,7 @@ def get_neighbours(country_id: int) -> QuerySet:
 def get_neighbours_flags(neighbours_id: list[int]) -> QuerySet:
     return (
         MainFlag.objects.select_related("country")
+        .prefetch_related("downloads")
         .filter(country__id__in=neighbours_id)
     )
 
@@ -81,6 +82,7 @@ def get_neighbours_flags(neighbours_id: list[int]) -> QuerySet:
 def get_flags_with_same_colors(flag_id: int, same_color_groups: list) -> QuerySet:
     return (
         MainFlag.objects.select_related("country")
+        .prefetch_related("downloads")
         .filter(colors_set__color_group__slug__in=same_color_groups)
         .exclude(id=flag_id).distinct()
     )
