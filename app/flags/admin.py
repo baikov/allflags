@@ -325,7 +325,7 @@ class DownloadablePictureFileInline(admin.TabularInline):
 
 @admin.register(DownloadablePictureFilePreview)
 class DownloadablePictureFilePreviewAdmin(admin.ModelAdmin):
-    list_display = ("flag", "thumbnail")
+    list_display = ("flag", "thumbnail", "is_main", "is_show_on_detail", "is_published")
     readonly_fields = ['thumb']
     search_fields = ["flag"]
     # list_filter = ["content_type"]
