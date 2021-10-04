@@ -314,7 +314,7 @@ class ColorInline(admin.TabularInline):
 class FlagFactInline(admin.TabularInline):
     model = FlagFact
     extra = 1
-    fields = ("caption", "text")
+    fields = ("ordering", "caption", "text", "is_published")
 
 
 # class HistoricalFlagImageInline(admin.TabularInline):
