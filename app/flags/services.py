@@ -1,10 +1,13 @@
 from datetime import date, datetime
 
+from django.core.files import File
 from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404
 
-from .models import BorderCountry, HistoricalFlag, MainFlag
+from app.utils.pictures_utils import get_file_to_bytesio
 
+    DownloadablePictureFile,
+    DownloadablePictureFilePreview,
 # from config.settings.base import MEDIA_ROOT
 
 
@@ -65,3 +68,51 @@ def get_flag_age(adopted_date: date) -> int:
         return int(datetime.now().strftime("%Y")) - int(adopted_date.strftime("%Y"))
     else:
         return 0
+
+
+def get_img_from_cdn(flag_id, iso2):
+    bitmap = [".png", ".jpg", ".webp"]
+    vector = [".svg", ".ai", ".pdf", ".eps"]
+    cdn = "https://flagcdn.com"
+    # https://flagcdn.com/w640/ru.png
+    preview_url = f"{cdn}/w640/{iso2.lower()}.png"
+    # url = f"{cdn}/{size}/{iso2}.{format}"
+    preview_file = get_file_to_bytesio(url=preview_url)
+    flag = MainFlag.objects.get(id=flag_id)
+    try:
+        img = DownloadablePictureFilePreview.objects.get(
+            flag=flag,
+            is_main=True
+        )
+    except DownloadablePictureFilePreview.DoesNotExist:
+        img = DownloadablePictureFilePreview(
+            flag=flag,
+            image=File(preview_file, f"files/{iso2.lower()}/{preview_file.name}-preview{preview_file.ext}"),
+            is_published=True,
+            is_show_on_detail=True,
+            is_main=True
+        )
+        img.save()
+
+    files = DownloadablePictureFile.objects.filter(picture=img)
+    existing_file_types = []
+    for file in files:
+        existing_file_types.append(file.get_type)
+
+    for ext in set(bitmap)-set(existing_file_types):  # noqa E226
+        dl_file_url = f"{cdn}/w2560/{iso2.lower()}{ext}"
+        dl_file = get_file_to_bytesio(url=dl_file_url)
+        file = DownloadablePictureFile(
+            picture=img,
+            file=File(dl_file, f"{iso2.lower()}/{dl_file.name}{dl_file.ext}"),
+        )
+        file.save()
+
+    for ext in set(vector)-set(existing_file_types):  # noqa E226
+        dl_file_url = f"{cdn}/{iso2.lower()}{ext}"
+        dl_file = get_file_to_bytesio(url=dl_file_url)
+        file = DownloadablePictureFile(
+            picture=img,
+            file=File(dl_file, f"{iso2.lower()}/{dl_file.name}{dl_file.ext}"),
+        )
+        file.save()
