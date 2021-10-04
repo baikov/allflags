@@ -1,3 +1,270 @@
+{# Downloads v2 #}
+<div class="py-3 py-xl-5 bg-white" id="downloads">
+    <div class="container">
+        <h2 class="py-3">Скачать флаг {{flag.country.ru_name_rod}} в форматах png, jpg, webp, svg, eps, ai, pdf</h2>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-2 col-lg-4 d-none d-lg-block">
+                <p class="text-center"><span class="badge badge-info badge-100">Пример изображения</span></p>
+                <div class="card border-success my-3">
+                    <!--<div class="card-header">Пример скачиваемого изображения</div>-->
+                    <div class="card-body">
+                        <picture>
+                            <source type="image/webp" media="(min-width: 1281px)"
+                                srcset="{{flag.country.iso_code_a2|get_img_path:'w640'}}.webp">
+                            <source type="image/png" media="(min-width: 1281px) and (max-width: 1920px)"
+                                srcset="{{flag.country.iso_code_a2|get_img_path:'w640'}}.png">
+
+                            <source type="image/webp" media="(max-width: 460px)"
+                                srcset="{{flag.country.iso_code_a2|get_img_path:'w320'}}.webp">
+                            <source type="image/png" media="(max-width: 460px)"
+                                srcset="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png">
+
+                            <img src="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png" alt="{{ flag.title }} скачать бесплатно"
+                                title="{{ flag.title }} скачать" class="img-fluid dl-example">
+                        </picture>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
+                <p class="text-center"><span class="badge badge-primary badge-100">Фиксированная ширина</span></p>
+                <table class="table table-hover table-sm table-bordered">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="text-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-images" viewBox="0 0 16 16">
+                                    <path d="M4.502 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
+                                    <path
+                                        d="M14.002 13a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2V5A2 2 0 0 1 2 3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-1.998 2zM14 2H4a1 1 0 0 0-1 1h9.002a2 2 0 0 1 2 2v7A1 1 0 0 0 15 11V3a1 1 0 0 0-1-1zM2.002 4a1 1 0 0 0-1 1v8l2.646-2.354a.5.5 0 0 1 .63-.062l2.66 1.773 3.71-3.71a.5.5 0 0 1 .577-.094l1.777 1.947V5a1 1 0 0 0-1-1h-10z" />
+                                </svg>
+                            </th>
+                            <th>Размер (px)</th>
+                            <th class="text-center">JPG</th>
+                            <th class="text-center">PNG</th>
+                            <th class="text-center">WebP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for w, size in widths.items %}
+                        <tr>
+                            <td class="text-center">
+                                <img src="{{flag.country.iso_code_a2|get_img_path:'w20'}}.png"
+                                    alt="Изображение флага {{ flag.country.ru_name_rod }} {{size}}px.jpg"
+                                    title="Скачать изображение флага {{ flag.country.ru_name_rod }} {{size}}px jpg">
+                            </td>
+                            <td>
+                                <strong>{{size.width}}</strong>x{{size.height}}
+                            </td>
+                            <td class="text-center">
+                                <a href="{{flag.country.iso_code_a2|get_img_path:w}}.jpg" target="_blank">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                                        <path
+                                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                                    </svg>
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="{{flag.country.iso_code_a2|get_img_path:w}}.png" target="_blank">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                                        <path
+                                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                                    </svg>
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="{{flag.country.iso_code_a2|get_img_path:w}}.webp" target="_blank">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                                        <path
+                                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                                    </svg>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
+                <p class="text-center"><span class="badge badge-primary badge-100">Фиксированная высота</span></p>
+                <table class="table table-hover table-sm table-bordered">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="text-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-images" viewBox="0 0 16 16">
+                                    <path d="M4.502 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
+                                    <path
+                                        d="M14.002 13a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2V5A2 2 0 0 1 2 3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-1.998 2zM14 2H4a1 1 0 0 0-1 1h9.002a2 2 0 0 1 2 2v7A1 1 0 0 0 15 11V3a1 1 0 0 0-1-1zM2.002 4a1 1 0 0 0-1 1v8l2.646-2.354a.5.5 0 0 1 .63-.062l2.66 1.773 3.71-3.71a.5.5 0 0 1 .577-.094l1.777 1.947V5a1 1 0 0 0-1-1h-10z" />
+                                </svg>
+                            </th>
+                            <th>Размер (px)</th>
+                            <th class="text-center">JPG</th>
+                            <th class="text-center">PNG</th>
+                            <th class="text-center">WebP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for h, size in heights.items %}
+                        <tr>
+                            <td class="text-center">
+                                <img src="{{flag.country.iso_code_a2|get_img_path:'w20'}}.png"
+                                    alt="Изображение флага {{ flag.country.ru_name_rod }} {{size}}px.jpg"
+                                    title="Скачать изображение флага {{ flag.country.ru_name_rod }} {{size}}px jpg">
+                            </td>
+                            <td>
+                                {{size.width}}x<strong>{{size.height}}</strong>
+                            </td>
+                            <td class="text-center">
+                                <a href="{{flag.country.iso_code_a2|get_img_path:h}}.jpg" target="_blank">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                                        <path
+                                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                                    </svg>
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="{{flag.country.iso_code_a2|get_img_path:h}}.png" target="_blank">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                                        <path
+                                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                                    </svg>
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="{{flag.country.iso_code_a2|get_img_path:h}}.webp" target="_blank">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                                        <path
+                                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                                    </svg>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
+                <p class="text-center"><span class="badge badge-success badge-100">Векторный формат</span></p>
+                <table class="table table-hover table-sm table-bordered">
+                    <thead class="thead-light">
+                        <tr class="text-center">
+                            <th>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-images" viewBox="0 0 16 16">
+                                    <path d="M4.502 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
+                                    <path
+                                        d="M14.002 13a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2V5A2 2 0 0 1 2 3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-1.998 2zM14 2H4a1 1 0 0 0-1 1h9.002a2 2 0 0 1 2 2v7A1 1 0 0 0 15 11V3a1 1 0 0 0-1-1zM2.002 4a1 1 0 0 0-1 1v8l2.646-2.354a.5.5 0 0 1 .63-.062l2.66 1.773 3.71-3.71a.5.5 0 0 1 .577-.094l1.777 1.947V5a1 1 0 0 0-1-1h-10z" />
+                                </svg>
+                            </th>
+                            <th>AI</th>
+                            <th>SVG</th>
+                            <th>EPS</th>
+                            <th>PDF</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center">
+                                <img src="{{flag.country.iso_code_a2|get_img_path:'w20'}}.png"
+                                    alt="Изображение флага {{ flag.country.ru_name_rod }} {{size}}px.jpg"
+                                    title="Скачать изображение флага {{ flag.country.ru_name_rod }} {{size}}px jpg">
+                            </td>
+                            <td class="text-center">
+                                <a href="{{flag.country.iso_code_a2|get_img_path}}.ai" target="_blank">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                                        <path
+                                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                                    </svg>
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="{{flag.country.iso_code_a2|get_img_path}}.svg" target="_blank">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                                        <path
+                                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                                    </svg>
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="{{flag.country.iso_code_a2|get_img_path}}.eps" target="_blank">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                                        <path
+                                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                                    </svg>
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="{{flag.country.iso_code_a2|get_img_path}}.pdf" target="_blank">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                                        <path
+                                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                                    </svg>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4">
+                <a href="{{flag.country.iso_code_a2|get_img_path}}-bitmap.zip" target="_blank"
+                    class="btn btn-xs btn-outline-primary btn-block">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                        <path
+                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                        <path
+                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                    </svg>
+                    Скачать все изображения <strong>флага {{flag.country.ru_name_rod}}</strong> одним архивом
+                </a>
+                <a href="{{flag.country.iso_code_a2|get_img_path}}-bitmap.zip" target="_blank"
+                    class="btn btn-xs btn-outline-success btn-block">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                        <path
+                            d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                        <path
+                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                    </svg>
+                    Скачать флаги <strong>всех стран</strong> одним архивом
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
 {# Complementary colors v1 #}
 {% if complementary_colors.exists %}
 <div class="col-12">
