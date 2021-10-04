@@ -1,3 +1,4 @@
+'''
 import os
 from pathlib import Path
 from urllib.parse import unquote
@@ -8,6 +9,7 @@ from PIL import Image
 
 from app.utils.ru_slugify import custom_slugify
 from config.settings.base import MEDIA_ROOT
+
 
 
 def delete_img(file):
@@ -306,3 +308,7 @@ def remove_historical_flag_img(file_name: str) -> None:
         for fn in filenames:
             if fn == file:
                 os.remove(os.path.join(parent, fn))
+
+
+
+'''
