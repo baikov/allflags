@@ -323,10 +323,17 @@ class FlagFactInline(admin.TabularInline):
 #     fields = ("ordering", "img_link", "image", "caption", "alt")
 
 
-class FlagEmojiAdmin(admin.ModelAdmin):
-    # prepopulated_fields = {"slug": ("name",)}
-    list_display = ("unicode", "flag")
+@admin.register(DownloadablePictureFilePreview)
+class DownloadablePictureFilePreviewAdmin(admin.ModelAdmin):
+    list_display = ("flag", "thumbnail")
+    readonly_fields = ['thumb']
     search_fields = ["flag"]
+    # list_filter = ["content_type"]
+    thumbnail = AdminThumbnail(image_field='thumb')
+    inlines = (DownloadablePictureFileInline,)
+    raw_id_fields = ("flag",)
+
+
     fieldsets = [
         (
             None,
