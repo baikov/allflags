@@ -254,7 +254,8 @@ class ColorGroupAdmin(admin.ModelAdmin):
 
 class ColorAdmin(admin.ModelAdmin):
     # list_display = ('color_group', 'hex', 'rgb', 'cmyk', 'get_flags')
-    list_display = ("color_group", "flag", "color_html", "hex", "rgb", "cmyk")
+    list_display = ("color_group", "flag", "color_html", "hex", "rgb", "cmyk", "ordering")
+    list_editable = ("ordering",)
     search_fields = ["color_group__name", "hex", "rgb", "flag__country__name"]
     raw_id_fields = ("flag",)
     # list_filter = ['flag']
