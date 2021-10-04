@@ -120,12 +120,9 @@
                 <p>
                     Современный вариант национального флага {{flag.country.ru_name_rod}} был утвержден
                     {% language 'ru' %}{{flag.adopted_date|date:"j E Y"}}{% endlanguage %}.
-                    В {{ current_year }} году флагу исполняется {{age}} лет.
                 </p>
-                {% endif %}
-                {% if historical|length > 0 %}
                 <p>
-                    За всю историю существования страны флаг менялся около {{historical|length}} раз.
+                    В {{ current_year }} году флагу исполняется {{age}} лет.
                 </p>
                 {% endif %}
 
@@ -204,10 +201,11 @@
                     <a class="nav-link" href="#facts">Факты</a>
                 </li>
                 {% endif %}
-
+                {% if files %}
                 <li class="nav-item">
                     <a class="nav-link" href="#downloads">Скачать</a>
                 </li>
+                {% endif %}
 
                 {% if flag.country.is_published %}
                 <li class="nav-item">
@@ -549,43 +547,66 @@
 </div>
 {% endif %}
 
-{# Downloads v2 #}
-<div class="py-3 py-xl-5 bg-white" id="downloads">
-    <div class="container">
-        <h2 class="py-3">Скачать флаг {{flag.country.ru_name_rod}} в форматах png, jpg, webp, svg, eps, ai, pdf</h2>
-        <div class="row">
+{# Downloads v3 #}
+{% if files %}
+<div class="bg-white" id="downloads">
+    {# H2 #}
+    {% include "partials/_h2.html" with h2="Скачать флаг "|add:flag.country.ru_name_rod|add:" в растровых и векторных форматах" %}
+    {# Files #}
+    <div class="py-3 pt-xl-4 pb-xl-5">
+        <div class="container">
+            <div class="row">
+                {% for img in files %}
+                <div class="col-12 col-xs-12">
+                <div class="card mb-3">
+                    <div class="row">
+                        <div class="col-12 col-sm-4 col-md-2 d-flex justify-content-center align-items-center">
+                            <div class="dl-img">
+                                <picture itemscope itemtype="http://schema.org/ImageObject">
+                                    <meta itemprop="name" content="{{img.alt}}">
+                                    <meta itemprop="description" content="{{img.caption}}">
+                                    <meta itemprop="width" content="{{img.image.width}}px">
+                                    <meta itemprop="height" content="{{img.image.height}}px">
 
-            {% for item in files %}
-            {% if item.description %}
-            <p>{{item.description|safe}}</p>
-            {% endif %}
-            <div class="col-12">
-                <table class="table table-hover table-sm table-bordered">
-                    <tbody>
-                        <tr>
-                            <td class="text-center">
-                                <img src="{{item.thumb.url}}" width="30px">
-                            </td>
-                            {% for elem in item.files.all %}
-                            <td class="text-center">
-                                <a href="{{elem.file.url}}" target="_blank">
-                                    {{elem.get_type|lower}} ({{elem.file.size|filesizeformat}})
-                                </a>
-                            </td>
-                            {% endfor %}
-                        </tr>
-                    </tbody>
-                </table>
+                                    <source type="image/webp" srcset="{{img.webp_xs.url}}, {{img.webp_md.url}} 2x">
+                                    <source type="{{img.source_type}}" srcset="{{img.image_xs.url}}, {{img.image_md.url}} 2x">
+
+                                    <img itemprop="contentUrl" src="{{img.image.url}}" alt="{{img.alt}}" title="{{img.caption}}" class="image" width="{{img.image.width}}" height="{{img.image.height}}">
+
+                                </picture>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-sm-8 col-md-10 col">
+                            <div class="card-body">
+                                <div class="card-text">
+                                    {{img.description|safe}}
+                                </div>
+
+                                {% for elem in img.files.all %}
+                                    <a href="{{elem.file.url}}" target="_blank" download class="btn btn-outline-primary btn-sm mb-2">
+                                        {{elem.get_type|lower}} ({{elem.file.size|filesizeformat}})
+                                    </a>
+                                {% endfor %}
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                </div>
+                {% endfor %}
+
+                {% if files_count > 2 %}
+                <div class="col-12 d-flex justify-content-center">
+                    <a href="#" class="btn btn-outline-info btn-sm mx-2">Посмотреть все файлы ({{files_count}} шт.)</a>
+                </div>
+                {% endif %}
             </div>
-            {% endfor %}
-            {% if files_count > 2 %}
-             <div class="col-12 d-flex justify-content-center">
-                <a href="#" class="btn btn-outline-info btn-sm mx-2">Посмотреть все файлы ({{files_count}} шт.)</a>
-             </div>
-            {% endif %}
         </div>
     </div>
 </div>
+{% endif %}
 
 {# About country v2 #}
 {% if flag.country.is_published %}
@@ -632,7 +653,7 @@
                         <tr>
                             <td>Валюта</td>
                             <td>
-                                {% for cur in country.currencies.all %}
+                                {% for cur in flag.country.currencies.all %}
                                 {{cur.ru_name}} {{cur.symbol}} ({{cur.iso_code}}, {{cur.iso_num}})
                                 {% endfor %}
                             </td>
