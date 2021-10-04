@@ -285,7 +285,8 @@ class ColorAdmin(admin.ModelAdmin):
 
 class FlagElementAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
-    list_display = ("name", "slug")
+    list_display = ("name", "slug", "is_published")
+    list_editable = ("is_published",)
     search_fields = ["name"]
     fieldsets = [
         (
