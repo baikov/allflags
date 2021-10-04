@@ -9,13 +9,24 @@
           {% if flag.is_published or request.user.is_superuser %}
           <a href="{% url 'flags:flag-detail' flag.slug %}">
           {% endif %}
-            <picture>
-              <source type="image/webp" srcset="{{flag.country.iso_code_a2|get_img_path:'w320'}}.webp">
-              <source type="image/png" srcset="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png">
 
-              <img src="{{flag.country.iso_code_a2|get_img_path:'w320'}}.png" alt="{{ flag.title }}"
-                title="{{ flag.title }} {{flag.name}} - картинка" class="image">
-            </picture>
+            {% for img in flag.downloads.all %}
+              {% if img.is_main %}
+              <picture itemscope itemtype="http://schema.org/ImageObject">
+                <meta itemprop="name" content="{{img.alt}}">
+                <meta itemprop="description" content="{{img.caption}}">
+                <meta itemprop="width" content="{{img.image.width}}px">
+                <meta itemprop="height" content="{{img.image.height}}px">
+
+                <source type="image/webp" srcset="{{img.webp_xs.url}}, {{img.webp_md.url}} 2x">
+                <source type="{{img.source_type}}" srcset="{{img.image_xs.url}}, {{img.image_md.url}} 2x">
+
+                <img itemprop="contentUrl" src="{{img.image.url}}" alt="{{img.alt}}" title="{{img.caption}}" class="image" width="{{img.image.width}}" height="{{img.image.height}}">
+
+              </picture>
+              {% endif %}
+            {% endfor %}
+
           {% if flag.is_published or request.user.is_superuser %}
           </a>
           {% endif %}
