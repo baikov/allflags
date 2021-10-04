@@ -1,3 +1,44 @@
+{# Downloads v3 #}
+{% if files %}
+<div class="py-3 py-xl-5 bg-white" id="downloads">
+    <div class="container">
+        <h2 class="py-3">Скачать флаг {{flag.country.ru_name_rod}} в растровых и векторных форматах</h2>
+
+        <div class="row">
+
+            {% for item in files %}
+            {% if item.description %}
+            <p>{{item.description|safe}}</p>
+            {% endif %}
+            <div class="col-12">
+                <table class="table table-hover table-sm table-bordered">
+                    <tbody>
+                        <tr>
+                            <td class="text-center">
+                                <img src="{{item.thumb.url}}" width="30px">
+                            </td>
+                            {% for elem in item.files.all %}
+                            <td class="text-center">
+                                <a href="{{elem.file.url}}" target="_blank">
+                                    {{elem.get_type|lower}} ({{elem.file.size|filesizeformat}})
+                                </a>
+                            </td>
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            {% endfor %}
+            {% if files_count > 2 %}
+             <div class="col-12 d-flex justify-content-center">
+                <a href="#" class="btn btn-outline-info btn-sm mx-2">Посмотреть все файлы ({{files_count}} шт.)</a>
+             </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
 {# Downloads v2 #}
 <div class="py-3 py-xl-5 bg-white" id="downloads">
     <div class="container">
