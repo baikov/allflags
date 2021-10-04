@@ -544,28 +544,36 @@ class DownloadablePictureFilePreview(Picture):
         return f"Image {self.id} for {self.flag.title}"
 
 
+class DownloadablePictureFile(models.Model):
 
-#     class Meta:
-#         verbose_name = _("Historical flag image")
-#         verbose_name_plural = _("Historical flag images")
-#         ordering = ('ordering',)
+    picture = models.ForeignKey(
+        DownloadablePictureFilePreview, verbose_name="Picture", on_delete=models.CASCADE, related_name="files"
+    )
+    file = models.FileField(verbose_name=_("File"), upload_to="files/")
+    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
 
-#     def clean(self):
-#         if not self.img_link and not self.image:
-#             raise ValidationError({"Warn": "Одно из полей должно быть заполнено"})
+    class Meta:
+        verbose_name = _("Picture file")
+        verbose_name_plural = _("Picture files")
+        ordering = ("ordering",)
 
+    def __str__(self):
+        return f"File {self.id} for Image {self.picture.id}"
 
-# class Image(models.Model):
-#     img_dl_link = models.URLField(verbose_name=_("Image URL"), max_length=300, blank=True)
-#     image = models.FileField(
-#         verbose_name=_("Image"), upload_to=img_path_by_flag_type, help_text="png, jpg, svg"
-#     )
-#     webp = models.FileField(
-#         verbose_name=_("Image"), upload_to=img_path_by_flag_type, help_text="webp"
-#     )
-#     caption = models.CharField(verbose_name=_("Caption"), max_length=250, blank=True)
-#     alt = models.CharField(verbose_name=_("Alt text"), max_length=250, blank=True)
-#     ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
+    # def save(self, *args, **kwargs):
+    #     if self.file_type == "empty":
+    #         path, file_name = os.path.split(self.file.name)
+    #         name, ext = os.path.splitext(file_name)
+    #         ext = ext.lower()
+    #         self.file_type = ext
+    #     super(DownloadablePictureFile, self).save(*args, **kwargs)
+
+    @property
+    def get_type(self):
+        _, file_name = os.path.split(self.file.name)
+        _, ext = os.path.splitext(file_name)
+        return ext.lower()
+
 
 '''
 # Old version with Generic FK
