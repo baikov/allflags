@@ -36,7 +36,7 @@ def get_emoji(iso2: str) -> str:
 
 def get_historical_flags(iso2: str) -> QuerySet:
 
-    return HistoricalFlag.objects.prefetch_related("pictures").filter(country__iso_code_a2=iso2)
+    return HistoricalFlag.objects.prefetch_related("images").filter(country__iso_code_a2=iso2)
 
 
 def get_neighbours(country_id: int) -> QuerySet:
