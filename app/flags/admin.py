@@ -305,12 +305,6 @@ class FlagElementAdmin(admin.ModelAdmin):
     ]
 
 
-class FlagEmojiInline(admin.TabularInline):
-    model = FlagEmoji
-    extra = 1
-    fields = ("unicode", "slug")
-
-
 class ColorInline(admin.TabularInline):
     model = Color
     extra = 1
