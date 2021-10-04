@@ -1,3 +1,4 @@
+import logging
 from datetime import date, datetime
 
 from django.core.files import File
@@ -6,21 +7,33 @@ from django.shortcuts import get_object_or_404
 
 from app.utils.pictures_utils import get_file_to_bytesio
 
+from .models import (
+    BorderCountry,
     DownloadablePictureFile,
     DownloadablePictureFilePreview,
+    HistoricalFlag,
+    MainFlag,
+)
+
 # from config.settings.base import MEDIA_ROOT
+
+logger = logging.getLogger(__name__)
 
 
 # ORM queries for flag detail
 def get_flag_or_404(request, flag_slug: str) -> MainFlag:
     if request.user.is_superuser:
         flag = get_object_or_404(
-            MainFlag.objects.select_related("country", "country__region").prefetch_related("elements", "facts"),
+            MainFlag.objects
+            .select_related("country", "country__region")
+            .prefetch_related("elements", "facts"),
             slug=flag_slug,
         )
     else:
         flag = get_object_or_404(
-            MainFlag.objects.select_related("country", "country__region").prefetch_related("elements", "facts"),
+            MainFlag.objects
+            .select_related("country", "country__region")
+            .prefetch_related("elements", "facts"),
             slug=flag_slug,
             is_index=True,
             is_published=True,
