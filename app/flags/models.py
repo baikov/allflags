@@ -495,6 +495,10 @@ class MainFlag(Seo, models.Model):
         elif ext == ".png":
             return "image/png"
 
+    # @property
+    # def get_main_picture(self):
+    #     return self.downloads.filter(is_main=True).first()
+
     def get_absolute_url(self):
         return reverse("flags:flag-detail", kwargs={"slug": self.slug})
 
