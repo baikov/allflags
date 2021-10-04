@@ -338,20 +338,21 @@ class DownloadablePictureFilePreviewInline(admin.TabularInline):
     extra = 1
     fields = ("is_main", "is_show_on_detail", "ordering", "image", "is_published")
 
+
+@admin.register(HistoricalFlagPicture)
+class HistoricalFlagPictureAdmin(admin.ModelAdmin):
+    list_display = ("id", "thumbnail", "alt", "image", "ordering")
+    readonly_fields = ["webp", "image_md", "webp_md", "image_xs", "webp_xs", "thumb"]
+    search_fields = ["flag__title", "alt", "caption"]
+    # list_filter = ["content_type"]
+    thumbnail = AdminThumbnail(image_field='thumb')
+    raw_id_fields = ["flag"]
     fieldsets = [
-        (
-            None,
-            {
-                "fields": ["flag", "slug", "unicode", "description"],
-            },
-        ),
-        (
-            _("SEO"),
-            {
-                "classes": ("collapse", "wide"),
-                "fields": ["seo_title", "seo_description", "seo_h1", "is_published", "is_index", "is_follow"],
-            },
-        ),
+        (None, {"fields": ["flag", "ordering", "url", "svg", "image", ("caption", "alt")]}),
+        (_("Readonly"), {
+            "classes": ("collapse", "wide", "extrapretty"),
+            "fields": ["webp", "image_md", "webp_md", "image_xs", "webp_xs", "thumb"]
+        }),
     ]
 
 
