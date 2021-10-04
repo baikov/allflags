@@ -232,13 +232,14 @@ class CountryAdmin(admin.ModelAdmin):
 
 class ColorGroupAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
-    list_display = ("name", "slug")
+    list_display = ("name", "slug", "ordering", "is_published")
     search_fields = ["name"]
+    list_editable = ("ordering", "is_published",)
     fieldsets = [
         (
             None,
             {
-                "fields": ["name", "slug", "short_name", "description", "colorgroup_meanings"],
+                "fields": ["name", "slug", "ordering", "short_name", "description", "colorgroup_meanings"],
             },
         ),
         (
