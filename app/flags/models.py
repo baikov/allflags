@@ -3,12 +3,12 @@ import urllib
 
 from ckeditor.fields import RichTextField
 from ckeditor_uploader.fields import RichTextUploadingField
-from django.contrib.contenttypes import fields
-from django.contrib.contenttypes.models import ContentType
+# from django.contrib.contenttypes import fields
+# from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Q
+# from django.db.models import Q
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from imagekit.models import ImageSpecField, ProcessedImageField
@@ -97,21 +97,7 @@ class Picture(models.Model):
     )
 
     class Meta:
-        verbose_name = "Picture"
-        verbose_name_plural = "Pictures"
-        ordering = ('ordering',)
-
-    def save(self, *args, **kwargs):
-        if self.url:
-            self.full_clean()
-        super(Picture, self).save(*args, **kwargs)
-
-    def clean(self):
-        if self.url:
-            try:
-                urllib.request.urlopen(self.url)
-            except Exception as e:
-                raise ValidationError({'url': e})
+        abstract = True
 
     def source_type(self, *args, **kwargs):
         _, ext = os.path.splitext(self.image.name)
@@ -406,6 +392,8 @@ class HistoricalFlag(models.Model):
     description = RichTextField(verbose_name=_("Hstorical flag description"), blank=True)
     ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500, db_index=True)
     is_published = models.BooleanField(verbose_name=_("Published"), default=False)
+    # pictures = fields.GenericRelation(Picture)
+    # pictures = models.ManyToManyField(Picture, verbose_name=_("Pictures"), related_name="flags", blank=True)
 
     class Meta:
         verbose_name = _("Historical flag")
@@ -431,6 +419,7 @@ class FlagEmoji(Seo, models.Model):
 class MainFlag(Seo, models.Model):
 
     country = models.ForeignKey(Country, verbose_name=_("Country"), on_delete=models.CASCADE, related_name="flags")
+    # image = fields.GenericRelation(Picture)
     title = models.CharField(verbose_name=_("Title"), max_length=250, blank=True)
     name = models.CharField(verbose_name=_("Flag name"), max_length=250, blank=True)
     adopted_date = models.DateField(verbose_name=_("Adopted date"), blank=True, null=True)
@@ -591,26 +580,90 @@ class FlagFact(models.Model):
 #     alt = models.CharField(verbose_name=_("Alt text"), max_length=250, blank=True)
 #     ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
 
-#     class Meta:
-#         abstract = True
+'''
+# Old version with Generic FK
 
-# # Actualy, we can create one universal model for all Images with ContentType and multiple FK, but not now ))
-# # https://stackoverflow.com/questions/881792/how-to-use-dynamic-foreignkey-in-django
-
-
-# class MainFlagImage(Image):
-#     flag = models.ForeignKey("MainFlag", verbose_name=_("Flag"), on_delete=models.CASCADE, related_name="images")
-
-#     class Meta:
-#         verbose_name = _("Main flag image")
-#         verbose_name_plural = _("Main flag images")
+CONTENT_TYPE_CHOICES = (
+    Q(app_label='flags', model='mainflag') | Q(app_label='flags', model='historicalflag')
+)
 
 
-# class HistoricalFlagImage(Image):
-#     flag = models.ForeignKey(
-#         "HistoricalFlag", verbose_name=_("Historical flag"), on_delete=models.CASCADE, related_name="images"
-#     )
+class Picture(models.Model):
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE, limit_choices_to=CONTENT_TYPE_CHOICES, blank=True, null=True
+    )
+    object_id = models.PositiveIntegerField(blank=True, null=True)
+    content_object = fields.GenericForeignKey('content_type', 'object_id')
+    caption = models.CharField(verbose_name=_("Caption/title"), max_length=300, blank=True)
+    alt = models.CharField(verbose_name=_("Name/alt"), max_length=200, blank=True)
+    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
+    url = models.URLField(verbose_name=_("Image URL"), max_length=500, blank=True)
+    svg = models.FileField(verbose_name=_("SVG image"), upload_to=img_path_by_model, blank=True)
+    image = ProcessedImageField(
+        upload_to=img_path_by_model,
+        processors=[ResizeToFit(1200)],
+        options={'quality': 80, 'minimize_size': True, 'allow_mixed': True},
+        blank=True
+    )
+    webp = ImageSpecField(
+        source='image',
+        processors=[ResizeToFit(1200)],
+        format='webp',
+        options={'quality': 70, 'method': 6, 'minimize_size': True, 'allow_mixed': True},
+    )
+    image_md = ImageSpecField(
+        source='image',
+        processors=[ResizeToFit(600)],
+        format='jpeg',
+        options={'quality': 60, 'minimize_size': True, 'allow_mixed': True}
+    )
+    webp_md = ImageSpecField(
+        source='image',
+        processors=[ResizeToFit(600)],
+        format='webp',
+        options={'quality': 70, 'method': 6, 'minimize_size': True, 'allow_mixed': True},
+    )
+    image_xs = ImageSpecField(
+        source='image',
+        processors=[ResizeToFit(300)],
+        format='jpeg',
+        options={'quality': 60, 'minimize_size': True, 'allow_mixed': True}
+    )
+    webp_xs = ImageSpecField(
+        source='image',
+        processors=[ResizeToFit(300)],
+        format='webp',
+        options={'quality': 70, 'method': 6, 'minimize_size': True, 'allow_mixed': True},
+    )
+    thumb = ImageSpecField(
+        source='image',
+        processors=[ResizeToFit(100)],
+        format='jpeg',
+        options={'quality': 60, 'minimize_size': True, 'allow_mixed': True}
+    )
 
-#     class Meta:
-#         verbose_name = _("Historical flag image")
-#         verbose_name_plural = _("Historical flag images")
+    class Meta:
+        verbose_name = "Picture"
+        verbose_name_plural = "Pictures"
+        ordering = ('ordering',)
+
+    def save(self, *args, **kwargs):
+        if self.url:
+            self.full_clean()
+        super(Picture, self).save(*args, **kwargs)
+
+    def clean(self):
+        if self.url:
+            try:
+                urllib.request.urlopen(self.url)  # change to urllib3
+            except Exception as e:
+                raise ValidationError({'url': e})
+
+    def source_type(self, *args, **kwargs):
+        _, ext = os.path.splitext(self.image.name)
+        ext = ext.lower()
+        if ext == ".jpg" or ext == ".jpeg":
+            return "image/jpeg"
+        elif ext == ".png":
+            return "image/png"
+'''
