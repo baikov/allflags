@@ -317,10 +317,9 @@ class FlagFactInline(admin.TabularInline):
     fields = ("ordering", "caption", "text", "is_published")
 
 
-# class HistoricalFlagImageInline(admin.TabularInline):
-#     model = HistoricalFlagImage
-#     extra = 1
-#     fields = ("ordering", "img_link", "image", "caption", "alt")
+class DownloadablePictureFileInline(admin.TabularInline):
+    model = DownloadablePictureFile
+    extra = 1
 
 
 @admin.register(DownloadablePictureFilePreview)
