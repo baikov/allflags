@@ -108,6 +108,19 @@ class Picture(models.Model):
             return "image/png"
 
 
+class HistoricalFlagPicture(Picture):
+    flag = models.ForeignKey("HistoricalFlag", on_delete=models.CASCADE, related_name="images")
+    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
+
+    class Meta:
+        verbose_name = _("Historical picture")
+        verbose_name_plural = _("Historical pictures")
+        ordering = ("ordering",)
+
+    def __str__(self):
+        return f"Image {self.id} for {self.flag.title}"
+
+
 class PublishedQuerySet(models.QuerySet):
     """Return only published elements"""
 
