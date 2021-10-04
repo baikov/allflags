@@ -526,29 +526,24 @@ class FlagFact(models.Model):
         super(FlagFact, self).save(*args, **kwargs)
 
 
-# class HistoricalFlagImage(models.Model):
-#     """The set of images for historical flag.
-#     1) Download image from img_link url
-#     2) Convert to png/jpg
-#     3) Resize
-#     4) Save to media/historical-flag/{iso2}/
+class DownloadablePictureFilePreview(Picture):
+    flag = models.ForeignKey(MainFlag, verbose_name=_("Flag"), on_delete=models.CASCADE, related_name="downloads")
+    description = RichTextUploadingField(verbose_name=_("Description"), blank=True)
+    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
+    is_published = models.BooleanField(verbose_name=_("Published"), default=False)
+    is_show_on_detail = models.BooleanField(verbose_name=_("Show on detail page"), default=False)
+    # is_wikimedia = models.BooleanField(verbose_name=_("File from flagcdn"), default=False)
+    is_main = models.BooleanField(verbose_name=_("Main picture"), default=False)
 
-#     Signals:
-#         pre_save:
-#     """
-#     flag = models.ForeignKey(
-#         HistoricalFlag, verbose_name=_("Historical flag"), on_delete=models.CASCADE, related_name="images"
-#     )
-#     img_link = models.URLField(verbose_name=_("Image URL"), max_length=600, blank=True)
-#     image = models.FileField(
-#         verbose_name=_("Image"), upload_to=img_path_by_flag_type, help_text="png, jpg, svg", blank=True
-#     )
-#     webp = models.FileField(
-#         verbose_name=_("WebP"), upload_to=img_path_by_flag_type, help_text="webp", blank=True
-#     )
-#     caption = models.CharField(verbose_name=_("Caption"), max_length=250, blank=True)
-#     alt = models.CharField(verbose_name=_("Alt text"), max_length=250, blank=True)
-#     ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
+    class Meta:
+        verbose_name = _("File")
+        verbose_name_plural = _("Files")
+        ordering = ("ordering",)
+
+    def __str__(self):
+        return f"Image {self.id} for {self.flag.title}"
+
+
 
 #     class Meta:
 #         verbose_name = _("Historical flag image")
