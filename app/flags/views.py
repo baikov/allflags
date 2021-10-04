@@ -16,7 +16,7 @@ from .models import (  # Region,; Subregion,; Currency,
     MainFlag,
     Region,
 )
-from .services import (
+from .services import (  # get_files
     get_emoji,
     get_flag_age,
     get_flag_or_404,
@@ -247,7 +247,10 @@ def flag_detail(request, flag_slug):
     same_color_flags = get_flags_with_same_colors(flag.id, same_color_groups)
     emoji = get_emoji(flag.country.iso_code_a2)
     age = get_flag_age(flag.adopted_date)
-
+    # files = get_files(flag.id)
+    files = flag.downloads.filter(is_show_on_detail=True)
+    files_count = len(flag.downloads.all())
+    main_picture = files.filter(is_main=True).first()
     # adj = ""
     # if len(colors) > 1:
     #     for i in range(len(colors) - 1):
@@ -267,6 +270,9 @@ def flag_detail(request, flag_slug):
         # "widths": widths,
         # "heights": heights,
         "age": age,
+        "files": files,
+        "files_count": files_count,
+        "main_picture": main_picture,
         # "colors_adj": adj,
     }
 
