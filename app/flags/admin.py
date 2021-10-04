@@ -334,6 +334,11 @@ class DownloadablePictureFilePreviewAdmin(admin.ModelAdmin):
     raw_id_fields = ("flag",)
 
 
+class DownloadablePictureFilePreviewInline(admin.TabularInline):
+    model = DownloadablePictureFilePreview
+    extra = 1
+    fields = ("is_main", "is_show_on_detail", "ordering", "image", "is_published")
+
     fieldsets = [
         (
             None,
