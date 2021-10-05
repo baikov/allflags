@@ -86,6 +86,26 @@ def delete_file(sender, instance, **kwargs):
     instance.file.delete(False)
 
 
+@receiver(pre_save, sender=HistoricalFlagPicture)
+def download_and_save_historical_image(sender, instance, **kwargs):
+    if instance.url and not instance.image:
+        try:
+            file = get_file_to_bytesio(url=instance.url)
+            instance.image = convert_and_compress_image(file=file, longest_side=1200)
+            file.truncate()
+            file.seek(0)
+        except Exception as e:
+            raise ValidationError({"url": f"Some problem: {e}"})
+
+
+@receiver(post_save, sender=HistoricalFlagPicture)
+def convert_historical_svg(sender, instance, **kwargs):
+    if instance.svg and not instance.image:
+        file = convert_and_compress_image(get_file_to_bytesio(local_file=instance.svg))
+        instance.image = file
+        instance.save()
+
+
 @receiver(post_delete, sender=HistoricalFlagPicture)
 def delete_historical_image(sender, instance, **kwargs):
     if instance.image:
