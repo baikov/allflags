@@ -80,12 +80,17 @@ def get_neighbours_flags(neighbours_id: list[int]) -> QuerySet:
 
 
 def get_flags_with_same_colors(flag_id: int, same_color_groups: list) -> QuerySet:
-    return (
+    flags = (
         MainFlag.objects.select_related("country")
         .prefetch_related("downloads")
         .filter(colors_set__color_group__slug__in=same_color_groups)
         .exclude(id=flag_id).distinct()
     )
+    for color in same_color_groups:
+        # logger.info(color["color_group__slug"])
+        flags = flags.filter(colors_set__color_group__slug=color["color_group__slug"])
+        # logger.info(flags)
+    return flags
 
 
 def get_flag_age(adopted_date: date) -> int:

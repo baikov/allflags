@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 from django.db.models import Count
@@ -25,6 +26,8 @@ from .services import (  # get_files
     get_neighbours,
     get_neighbours_flags,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class FlagListView(ListView):
@@ -244,6 +247,7 @@ def flag_detail(request, flag_slug):
     # complementary_colors = flag.colors_set.select_related("color_group").filter(is_main=False)
     historical = get_historical_flags(flag.country.iso_code_a2)
     same_color_groups = flag.colors_set.values("color_group__slug")
+    # logger.info(same_color_groups)
     same_color_flags = get_flags_with_same_colors(flag.id, same_color_groups)
     emoji = get_emoji(flag.country.iso_code_a2)
     age = get_flag_age(flag.adopted_date)
