@@ -120,7 +120,8 @@ def get_img_from_cdn(flag_id, iso2):
             image=File(preview_file, f"files/{iso2.lower()}/{preview_file.name}-preview{preview_file.ext}"),
             is_published=True,
             is_show_on_detail=True,
-            is_main=True
+            is_main=True,
+            description="<p>Данное изображение флага было взято с википедии и сконвертировано в несколько форматов.</p>"
         )
         img.save()
 
