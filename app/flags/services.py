@@ -80,17 +80,38 @@ def get_neighbours_flags(neighbours_id: list[int]) -> QuerySet:
 
 
 def get_flags_with_same_colors(flag_id: int, same_color_groups: list) -> QuerySet:
+    # flags = (
+    #     MainFlag.objects.select_related("country")
+    #     .prefetch_related("downloads")
+    #     .filter(colors_set__color_group__slug__in=same_color_groups)
+    #     .exclude(id=flag_id).distinct()
+    # )
+    # for color in same_color_groups:
+    #     # logger.info(color["color_group__slug"])
+    #     flags = flags.filter(colors_set__color_group__slug=color["color_group__slug"])
+    #     # logger.info(flags)
+    result = []
+    colors = set([color["color_group__slug"] for color in same_color_groups])
     flags = (
-        MainFlag.objects.select_related("country")
-        .prefetch_related("downloads")
-        .filter(colors_set__color_group__slug__in=same_color_groups)
-        .exclude(id=flag_id).distinct()
+        MainFlag.objects
+        .select_related("country")
+        .prefetch_related("downloads", "colors_set", "colors_set__color_group")
+        .filter(colors_set__color_group__slug__in=colors)  # Why it works?!
+        .exclude(id=flag_id)
+        .distinct()
     )
-    for color in same_color_groups:
-        # logger.info(color["color_group__slug"])
-        flags = flags.filter(colors_set__color_group__slug=color["color_group__slug"])
-        # logger.info(flags)
-    return flags
+    for elem in flags.all():
+        col = set()
+        for color in elem.colors_set.all():
+            if color.is_main is True:
+                col.add(color.color_group.slug)
+        if col == colors:
+            result.append(elem)
+    # logger.info(flag)
+    # logger.info(colors)
+    # logger.info(flags)
+    # logger.info(result)
+    return result
 
 
 def get_flag_age(adopted_date: date) -> int:
