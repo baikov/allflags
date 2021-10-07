@@ -13,6 +13,9 @@ class MainFlagSitemap(Sitemap):
     def lastmod(self, obj):
         return obj.updated_date
 
+    def location(self, obj) -> str:
+        return reverse('flags:flag-detail', args=[obj.slug])
+
 
 class RegionSitemap(Sitemap):
     protocol = 'https'
