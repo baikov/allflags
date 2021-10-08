@@ -30,8 +30,10 @@ class Seo(models.Model):
     # is_published = models.BooleanField(verbose_name=_("Published"), default=False)
     is_index = models.BooleanField(verbose_name=_("index"), default=True)
     is_follow = models.BooleanField(verbose_name=_("follow"), default=True)
-    created_date = models.DateField(auto_now_add=True)
-    updated_date = models.DateField(auto_now=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    # created_date = models.DateField(auto_now_add=True)
+    # updated_date = models.DateField(auto_now=True)
+    updated_date = models.DateTimeField(auto_now=True)  # default=datetime.datetime.now,
 
     class Meta:
         abstract = True
