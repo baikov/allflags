@@ -179,6 +179,17 @@ class ColorDetailView(DetailView):
         context["colors"] = colors
         return context
 
+    def dispatch(self, request, *args, **kwargs):
+        response = super().dispatch(request, *args, **kwargs)
+        response["Last-Modified"] = self.object.updated_date.strftime('%a, %d %b %Y %H:%M:%S GMT')
+        return response
+
+    # def head(self, *args, **kwargs):
+    #     response = HttpResponse(
+    #         headers={'Last-Modified': self.updated_date},  # .strftime('%a, %d %b %Y %H:%M:%S GMT')
+    #     )
+    #     return response
+
 
 class RegionListView(ListView):
     model = Region
