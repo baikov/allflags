@@ -497,6 +497,12 @@ class MainFlag(Seo, models.Model):
         elif ext == ".png":
             return "image/png"
 
+    @property
+    def emoji(self):
+        OFFSET = ord("🇦") - ord("A")
+        iso2 = self.country.iso_code_a2.upper()
+        return chr(ord(iso2[0]) + OFFSET) + chr(ord(iso2[1]) + OFFSET)
+
     # @property
     # def get_main_picture(self):
     #     return self.downloads.filter(is_main=True).first()
