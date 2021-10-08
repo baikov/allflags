@@ -1,5 +1,7 @@
 import logging
 from datetime import datetime
+from django.views.decorators.http import last_modified  # condition
+# from django.http import HttpResponse
 
 from django.db.models import Count
 from django.http import Http404
@@ -251,6 +253,14 @@ def flags_with_element(request, slug):
         raise Http404
 
 
+def flag_last_modified(reqest, flag_slug):
+    last_mod = MainFlag.objects.get(slug=flag_slug).updated_date
+    # last_mod = datetime.combine(flag.updated_date, datetime.min.time())
+    return last_mod
+
+
+# @condition(last_modified_func=flag_last_modified)
+@last_modified(flag_last_modified)
 def flag_detail(request, flag_slug):
     template_name = "flags/flag-detail.html"
 
