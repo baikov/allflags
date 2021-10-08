@@ -52,11 +52,6 @@ def get_files(flag_id):
     return files
 
 
-def get_emoji(iso2: str) -> str:
-    OFFSET = ord("🇦") - ord("A")
-    return chr(ord(iso2[0]) + OFFSET) + chr(ord(iso2[1]) + OFFSET)
-
-
 def get_historical_flags(iso2: str) -> QuerySet:
 
     return HistoricalFlag.objects.prefetch_related("images").filter(country__iso_code_a2=iso2)
@@ -121,6 +116,19 @@ def get_flag_age(adopted_date: date) -> int:
         return 0
 
 
+def get_color_adjectives(main_colors) -> str:
+    # colors = ColorGroup.objects.filter(slug__in=same_color_groups)
+    adj = ""
+    if len(main_colors) > 1:
+        for i in range(len(main_colors) - 1):
+            adj += str(main_colors[i].color_group.short_name).lower()
+            adj += "-"
+        adj += str(main_colors[len(main_colors) - 1].color_group.name).lower()
+    else:
+        adj = main_colors[0].color_group.name
+    return adj
+
+
 def get_img_from_cdn(flag_id, iso2):
     bitmap = [".png", ".jpg", ".webp"]
     vector = [".svg", ".ai", ".pdf", ".eps"]
@@ -168,3 +176,11 @@ def get_img_from_cdn(flag_id, iso2):
             file=File(dl_file, f"{iso2.lower()}/{dl_file.name}{dl_file.ext}"),
         )
         file.save()
+
+
+'''
+# Moved to model as method
+def get_emoji(iso2: str) -> str:
+    OFFSET = ord("🇦") - ord("A")
+    return chr(ord(iso2[0]) + OFFSET) + chr(ord(iso2[1]) + OFFSET)
+'''
