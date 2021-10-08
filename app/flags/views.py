@@ -20,7 +20,7 @@ from .models import (  # Region,; Subregion,; Currency,
     Region,
 )
 from .services import (  # get_files
-    get_emoji,
+    get_color_adjectives,
     get_flag_age,
     get_flag_or_404,
     get_flags_with_same_colors,
@@ -284,18 +284,12 @@ def flag_detail(request, flag_slug):
     same_color_groups = flag.colors_set.filter(is_main=True).values("color_group__slug")
     # logger.info(same_color_groups)
     same_color_flags = get_flags_with_same_colors(flag.id, same_color_groups)
-    emoji = get_emoji(flag.country.iso_code_a2)
     age = get_flag_age(flag.adopted_date)
     # files = get_files(flag.id)
     files = flag.downloads.filter(is_show_on_detail=True)
     files_count = len(flag.downloads.all())
     main_picture = files.filter(is_main=True).first()
-    # adj = ""
-    # if len(colors) > 1:
-    #     for i in range(len(colors) - 1):
-    #         adj += str(colors[i].color_group.short_name).lower()
-    #         adj += "-"
-    #     adj += str(colors[len(colors) - 1].color_group.name).lower()
+    adj = get_color_adjectives(main_colors)
 
     context = {
         "flag": flag,
@@ -305,14 +299,14 @@ def flag_detail(request, flag_slug):
         # "complementary_colors": complementary_colors,
         "same_flags": same_color_flags,
         "border_flags": border_flags,
-        "emoji": emoji,
+        "emoji": flag.emoji,
         # "widths": widths,
         # "heights": heights,
         "age": age,
         "files": files,
         "files_count": files_count,
         "main_picture": main_picture,
-        # "colors_adj": adj,
+        "colors_adj": adj,
     }
 
     return render(request, template_name, context)
