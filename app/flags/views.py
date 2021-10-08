@@ -148,6 +148,20 @@ class ColorListView(ListView):
         # validate ordering here
         return ordering
 
+    def dispatch(self, request, *args, **kwargs):
+        response = super().dispatch(request, *args, **kwargs)
+        last_group = self.get_queryset().latest("updated_date")
+        response["Last-Modified"] = last_group.updated_date.strftime('%a, %d %b %Y %H:%M:%S GMT')
+        return response
+
+    # def head(self, *args, **kwargs):
+    #     last_group = self.get_queryset().latest("updated_date")
+    #     response = HttpResponse(
+    #         # RFC 1123 date format.
+    #         headers={'Last-Modified': last_group.updated_date},  # .strftime('%a, %d %b %Y %H:%M:%S GMT')
+    #     )
+    #     return response
+
 
 class ColorDetailView(DetailView):
     model = ColorGroup
