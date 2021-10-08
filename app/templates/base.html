@@ -1,6 +1,6 @@
 {% load static i18n compress%}
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" prefix="og: http://ogp.me/ns#">
 
 <head>
   <meta charset="utf-8">
@@ -17,7 +17,7 @@
   <!--[if lt IE 9]>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <![endif]-->
-
+  {% block opengraph%}{% endblock opengraph%}
   <link rel="icon" href="{% static 'images/favicons/favicon.png' %}" type="image/png">
 
   {% block css %}

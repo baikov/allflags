@@ -43,39 +43,34 @@
         <div class="row d-flex align-items-center">
 
             {% if main_picture %}
-            {% with img=main_picture %}
-
             <div class="py-3 col-12 col-lg-5 d-flex justify-content-center">
+                <div class="row">
+                    <div class="py-3 col-12 d-flex justify-content-center">
+                        <picture itemscope itemtype="http://schema.org/ImageObject">
+                            <meta itemprop="name" content="{{main_picture.alt}}">
+                            <meta itemprop="description" content="{{main_picture.caption}}">
+                            <meta itemprop="width" content="{{main_picture.image.width}}px">
+                            <meta itemprop="height" content="{{main_picture.image.height}}px">
 
-            <div class="row">
-                <div class="py-3 col-12 d-flex justify-content-center">
-                    <picture itemscope itemtype="http://schema.org/ImageObject">
-                        <meta itemprop="name" content="{{img.alt}}">
-                        <meta itemprop="description" content="{{img.caption}}">
-                        <meta itemprop="width" content="{{img.image.width}}px">
-                        <meta itemprop="height" content="{{img.image.height}}px">
+                            <source type="image/webp" srcset="{{main_picture.webp_md.url}}, {{main_picture.webp.url}} 2x" media="(min-width: 601px)">
+                            <source type="{{main_picture.source_type}}" srcset="{{main_picture.image_md.url}}, {{main_picture.image.url}} 2x" media="(min-width: 601px)">
 
-                        <source type="image/webp" srcset="{{img.webp_md.url}}, {{img.webp.url}} 2x" media="(min-width: 601px)">
-                        <source type="{{img.source_type}}" srcset="{{img.image_md.url}}, {{img.image.url}} 2x" media="(min-width: 601px)">
+                            <source type="image/webp" srcset="{{main_picture.webp_xs.url}}, {{main_picture.webp_md.url}} 2x" media="(max-width: 601px)">
+                            <source type="{{main_picture.source_type}}" srcset="{{main_picture.image_xs.url}}, {{main_picture.image_md.url}} 2x" media="(max-width: 601px)">
 
-                        <source type="image/webp" srcset="{{img.webp_xs.url}}, {{img.webp_md.url}} 2x" media="(max-width: 601px)">
-                        <source type="{{img.source_type}}" srcset="{{img.image_xs.url}}, {{img.image_md.url}} 2x" media="(max-width: 601px)">
+                            <img itemprop="contentUrl" src="{{main_picture.image.url}}" alt="{{main_picture.alt}}" title="{{main_picture.caption}}" class="main-flag" width="{{main_picture.image.width}}" height="{{main_picture.image.height}}">
 
-                        <img itemprop="contentUrl" src="{{img.image.url}}" alt="{{img.alt}}" title="{{img.caption}}" class="main-flag" width="{{img.image.width}}" height="{{img.image.height}}">
-
-                    </picture>
+                        </picture>
+                    </div>
+                    <!--
+                    <div class="py-3 col-12 d-flex justify-content-center">
+                        <a href="{{img.image.url}}" class="btn btn-outline-info btn-sm mx-2">
+                            Скопировать код для вставки
+                        </a>
+                    </div>
+                    -->
                 </div>
-                <!--
-                <div class="py-3 col-12 d-flex justify-content-center">
-                    <a href="{{img.image.url}}" class="btn btn-outline-info btn-sm mx-2">
-                        Скопировать код для вставки
-                    </a>
-                </div>
-                -->
             </div>
-
-            </div>
-            {% endwith %}
             {% endif %}
 
             <div class="py-3 col-12 col-lg-7">
@@ -727,11 +722,8 @@
         fill: #28a745;
     }
 </style>
-
 {% endblock content %}
-{% block inline_javascript %}
-
-{% endblock inline_javascript %}
+{% block inline_javascript %}{% endblock inline_javascript %}
 {# Begin SEO block #}
     {% block canonical %}{% url 'flags:flag-detail' flag.slug %}{% endblock canonical %}
     {% block meta_title %}{% if flag.seo_title %}{{flag.seo_title}}{% else %}Флаг {{flag.country.ru_name_rod}} {{emoji}} ({{colors_adj}} {% if flag.name %}{{flag.name}}{% else %}флаг{% endif %}) - история, цвета, описание{% endif %}{% endblock meta_title %}
@@ -739,4 +731,14 @@
     {# {% block meta_keywords %}{{flag.seo_keywords}}{% endblock meta_keywords %} #}
 
     {% block meta_robots %}{% if flag.is_index %}index,{% else %}noindex,{% endif %}{% if flag.is_follow %}follow{% else %}nofollow{% endif %}{% endblock meta_robots %}
+    {% block opengraph %}
+    <meta property="og:title" content="{% if flag.seo_title %}{{flag.seo_title}}{% else %}Флаг {{flag.country.ru_name_rod}} {{emoji}} ({{colors_adj}} {% if flag.name %}{{flag.name}}{% else %}флаг{% endif %}) - история, цвета, описание{% endif %}"/>
+    <meta property="og:description" content='{% if flag.seo_description %}{{emoji}}{{flag.seo_description}}{% else %}Государственный флаг {{flag.country.ru_name_rod}} {{emoji}} - это прямоугольное полотнище с пропорциями сторон {{flag.proportion}}.{% if colors|length == 1 %} Единственный цвет флага: {{colors.0.color_group|lower}}.{% else %} {{colors|length|ru_count|capfirst}} основных {% if color_count > 4 %}цветов{% else %}цвета{% endif %} флага: {% for color in colors %}{% if not forloop.first %}, {% endif %}{{color.color_group|lower}}{% endfor %}.{% endif %}{% if flag.elements.exists %} Элементы флага: {% for element in flag.elements.all %}{% if not forloop.first %}, {% endif %}{{element.name|lower}}{% endfor %}.{% endif %}{% if flag.adopted_date %} Флаг страны {{flag.country.name}} был утвержден {% language "ru" %}{{flag.adopted_date|date:"j E Y"}}{% endlanguage %}.{% endif %}{% endif %}'/>
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{{main_picture.image.url}}"/>
+    <meta property="og:image:width" content="{{main_picture.image.width}}" />
+    <meta property="og:image:height" content="{{main_picture.image.height}}" />
+    <meta property="og:type" content="article"/>
+    <meta property="og:url" content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{% url 'flags:flag-detail' flag.slug %}" />
+    <meta property="og:site_name" content="AllFlags.ru" />
+    {% endblock opengraph %}
 {# End SEO block #}
