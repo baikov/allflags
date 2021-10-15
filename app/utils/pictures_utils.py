@@ -107,7 +107,7 @@ def img_path_by_model(instance, filename) -> str:
         str: path for saving uploaded file
     """
 
-    logger.info(str(instance._meta.verbose_name))
+    logger.info(str(instance._meta.verbose_name))  # instance.__class__ or instance.__name__
 
     # verbose_name = str(instance.content_type.model_class()._meta.verbose_name)
     verbose_name = str(instance._meta.verbose_name)

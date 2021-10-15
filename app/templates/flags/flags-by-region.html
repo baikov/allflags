@@ -89,13 +89,7 @@
 
 {# Begin SEO block #}
   {# Canonical #}
-  {% block canonical %}
-    {% if region.parent %}
-      {% url 'flags:subregion-flags' region.parent.slug region.slug %}
-    {% else %}
-      {% url 'flags:region-flags' region.slug %}
-    {% endif %}
-  {% endblock canonical %}
+  {% block canonical %}{% if region.parent %}{% url 'flags:subregion-flags' region.parent.slug region.slug %}{% else %}{% url 'flags:region-flags' region.slug %}{% endif %}{% endblock canonical %}
 
   {# Meta title #}
   {% block meta_title %}

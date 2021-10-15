@@ -76,21 +76,9 @@
 
 {# Begin SEO block #}
 
-  {% block canonical %}
-    {% if flags %}
-      {% url 'flags:element-detail' element.slug %}
-    {% else %}
-      {% url 'flags:elements-list' %}
-    {% endif %}
-  {% endblock canonical %}
+  {% block canonical %}{% if flags %}{% url 'flags:element-detail' element.slug %}{% else %}{% url 'flags:elements-list' %}{% endif %}{% endblock canonical %}
 
-  {% block meta_title %}
-    {% if flags %}
-      {{element.seo_title}}
-    {% else %}
-      Список всех элементов и объектов на флагах стран мира
-    {% endif %}
-  {% endblock meta_title %}
+  {% block meta_title %}{% if flags %}{{element.seo_title}}{% else %}Список всех элементов и объектов на флагах стран мира{% endif %}{% endblock meta_title %}
 
   {% block meta_description %}
     {% if flags %}
