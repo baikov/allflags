@@ -341,6 +341,27 @@ def get_all_elements(request) -> QuerySet:
     return elements
 
 
+def make_element_meta(meta_data: dict) -> tuple:
+    element = meta_data["element"]
+    flags_count = meta_data["flags_count"]
+
+    if not element.seo_title:
+
+        title = f"""
+            {element.name} на флагах стран мира - значение, описание | AllFlags.ru
+        """
+    else:
+        title = element.seo_title
+
+    if not element.seo_description:
+        descr = f"""{element.name} на флагах стран мира. Мы собрали полный список
+        из {flags_count} национальных флагов с подробным описанием."""
+    else:
+        descr = element.seo_description
+
+    return title, descr
+
+
 def parse_meta(obj, meta_data: dict = None) -> tuple:
     # title_tpl_obj = MetaTemplate.objects.filter(model=obj._meta.model.__name__, tag='title').first()
     # descr_tpl_obj = MetaTemplate.objects.filter(model=obj._meta.model.__name__, tag='descr').first()
