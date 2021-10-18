@@ -225,6 +225,7 @@ def make_mainflag_meta(meta_data: dict) -> tuple:
     return title, descr
 
 
+# ORM for colors
 def color_last_modified(reqest, slug):
     group = ColorGroup.objects.get(slug=slug)
     # colors_updated_date = group.colors.all().aggregate(Max("updated_date"))
@@ -235,6 +236,23 @@ def color_last_modified(reqest, slug):
     # .strftime('%a, %d %b %Y %H:%M:%S GMT')
     last_mod = group.updated_date
     return last_mod
+
+
+def get_colorgroup_or_404(request, slug: str) -> ColorGroup:
+    if request.user.is_superuser:
+        group = get_object_or_404(
+            ColorGroup.objects.prefetch_related("colors", "colors__flag"),
+            slug=slug,
+        )
+    else:
+        group = get_object_or_404(
+            ColorGroup.objects.prefetch_related("colors", "colors__flag"),
+            slug=slug,
+            is_index=True,
+            is_published=True,
+        )
+
+    return group
 
 
 def make_colorgroup_meta(meta_data: dict) -> tuple:
