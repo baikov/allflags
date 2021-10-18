@@ -184,6 +184,47 @@ def get_img_from_cdn(flag_id, iso2):
         file.save()
 
 
+def make_mainflag_meta(meta_data: dict) -> tuple:
+    flag = meta_data["flag"]
+    colors_adj = meta_data["colors_adj"]
+    main_colors = meta_data["main_colors"]
+    colors_count = len(main_colors)
+
+    # Generate descr
+    if not flag.seo_description:
+        if colors_count == 1:
+            colors_txt = f"Единственный цвет флага: {main_colors[0].color_group.lower()}."
+        else:
+            cols = ", ".join(color.color_group.name.lower() for color in main_colors)
+            if colors_count > 4:
+                rod = "цветов"
+            else:
+                rod = "цвета"
+            count_text = ("Нет", "Один", "Два", "Три", "Четыре", "Пять", "Шесть", "Семь", "Восемь")
+            colors_txt = f"{count_text[colors_count]} основных {rod} флага: {cols}."
+
+        if flag.elements:
+            el_name = ", ".join(elem.name.lower() for elem in flag.elements.all())
+            elem = f"Элементы флага: {el_name}."
+
+        if flag.adopted_date:
+            date = f"Флаг страны {flag.country.name} был утвержден {flag.adopted_date.strftime('%d.%m.%Y')}."
+        descr = f"Государственный флаг {flag.country.ru_name_rod} {flag.emoji} - это \
+            прямоугольное полотнище с пропорциями сторон {flag.proportion}. \
+            {colors_txt} {elem} {date}"
+    else:
+        descr = flag.seo_description
+    # End descr
+
+    if not flag.seo_title:
+        flag_name = flag.name if flag.name else "флаг"
+        title = f"Флаг {flag.country.ru_name_rod} {flag.emoji} ({colors_adj} {flag_name}) - история, цвета, описание"
+    else:
+        title = flag.seo_title
+
+    return title, descr
+
+
 '''
 # Moved to model as method
 def get_emoji(iso2: str) -> str:
