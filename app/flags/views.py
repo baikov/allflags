@@ -19,7 +19,7 @@ from .models import (  # Region,; Subregion,; Currency,
     MainFlag,
     Region,
 )
-from .services import (  # get_files
+    flag_last_modified,
     get_color_adjectives,
     get_flag_age,
     get_flag_or_404,

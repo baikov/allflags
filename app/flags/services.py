@@ -21,6 +21,12 @@ logger = logging.getLogger(__name__)
 
 
 # ORM queries for flag detail
+def flag_last_modified(reqest, flag_slug):
+    last_mod = MainFlag.objects.get(slug=flag_slug).updated_date
+    # last_mod = datetime.combine(flag.updated_date, datetime.min.time())
+    return last_mod
+
+
 def get_flag_or_404(request, flag_slug: str) -> MainFlag:
     if request.user.is_superuser:
         flag = get_object_or_404(
