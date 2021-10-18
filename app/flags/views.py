@@ -1,37 +1,159 @@
 import logging
-from datetime import datetime
-from django.views.decorators.http import last_modified  # condition
-# from django.http import HttpResponse
 
 from django.db.models import Count
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render
+from django.views.decorators.http import last_modified  # condition
 # from django.shortcuts import render
-from django.views.generic import DetailView, ListView
+from django.views.generic import ListView  # DetailView,
 
-from .models import (  # Region,; Subregion,; Currency,
-    BorderCountry,
+from .models import (  # Region, Subregion, Currency, HistoricalFlag, BorderCountry,
     Color,
     ColorGroup,
     Country,
     FlagElement,
-    HistoricalFlag,
     MainFlag,
     Region,
 )
+from .services import (  # get_files, parse_meta,
+    color_last_modified,
     flag_last_modified,
     get_color_adjectives,
+    get_colorgroup_or_404,
     get_flag_age,
     get_flag_or_404,
     get_flags_with_same_colors,
     get_historical_flags,
     get_neighbours,
     get_neighbours_flags,
+    make_colorgroup_meta,
+    make_mainflag_meta,
+    get_element_or_404,
+    make_element_meta,
+    get_all_elements,
+    element_last_modified,
 )
+
+# from datetime import datetime
+# from django.http import HttpResponse
 
 logger = logging.getLogger(__name__)
 
 
+# @condition(last_modified_func=flag_last_modified)
+@last_modified(flag_last_modified)
+def flag_detail(request, flag_slug):
+    template_name = "flags/flag-detail.html"
+
+    flag = get_flag_or_404(request, flag_slug)
+    neighbours = get_neighbours(flag.country.id)
+    border_flags = get_neighbours_flags(neighbours.values("border_country__id"))
+    main_colors = flag.colors_set.select_related("color_group").filter(is_main=True)
+    # complementary_colors = flag.colors_set.select_related("color_group").filter(is_main=False)
+    historical = get_historical_flags(flag.country.iso_code_a2)
+    same_color_groups = flag.colors_set.filter(is_main=True).values("color_group__slug")
+    # logger.info(same_color_groups)
+    same_color_flags = get_flags_with_same_colors(flag.id, same_color_groups)
+    age = get_flag_age(flag.adopted_date)
+    # files = get_files(flag.id)
+    files = flag.downloads.filter(is_show_on_detail=True)
+    files_count = len(flag.downloads.all())
+    main_picture = files.filter(is_main=True).first()
+    adj = get_color_adjectives(main_colors)
+
+    meta_data = {
+        "flag": flag,
+        "colors_adj": adj,
+        "age": age,
+        "files_count": files_count,
+        "main_colors": main_colors,
+    }
+
+    seo_title, seo_description = make_mainflag_meta(meta_data)
+
+    # seo_title, seo_description = parse_meta(flag, meta_data)
+
+    context = {
+        "flag": flag,
+        "historical": historical,
+        "neighbours": neighbours,
+        "colors": main_colors,
+        # "complementary_colors": complementary_colors,
+        "same_flags": same_color_flags,
+        "border_flags": border_flags,
+        "emoji": flag.emoji,
+        # "widths": widths,
+        # "heights": heights,
+        "age": age,
+        "files": files,
+        "files_count": files_count,
+        "main_picture": main_picture,
+        "colors_adj": adj,
+        "seo_title": seo_title,
+        "seo_description": seo_description,
+    }
+
+    return render(request, template_name, context)
+
+
+@last_modified(color_last_modified)
+def color_detail(request, slug):
+    template_name = "flags/color-detail.html"
+    group = get_colorgroup_or_404(request, slug)
+    flags = (
+        MainFlag.objects
+        .select_related("country")
+        .prefetch_related("downloads")
+        # .annotate(count=Count("colors"))
+        .filter(colors_set__in=group.colors.all())
+    )
+
+    meta_data = {
+        "group": group,
+        "flags_count": len(flags),
+    }
+
+    seo_title, seo_description = make_colorgroup_meta(meta_data)
+
+    context = {
+        "group": group,
+        "flags": flags,
+        "seo_description": seo_description,
+        "seo_title": seo_title,
+    }
+
+    return render(request, template_name, context)
+
+
+@last_modified(element_last_modified)
+def flags_with_element(request, slug):
+    template_name = "flags/element-detail.html"
+
+    element = get_element_or_404(request, slug)
+    flags = element.flags_with_elem.all()
+    elements = get_all_elements(request)
+
+    meta_data = {
+        "element": element,
+        "flags_count": len(flags),
+    }
+
+    seo_title, seo_description = make_element_meta(meta_data)
+
+    context = {
+        "flags": flags,
+        "element": element,
+        "elements": elements,
+        "seo_title": seo_title,
+        "seo_description": seo_description,
+    }
+    if flags:
+        return render(request, template_name, context)
+    else:
+        raise Http404
+
+
+# Code review and refactoring needed
 class FlagListView(ListView):
     model = MainFlag
     template_name = "flags/flags-list.html"
@@ -43,6 +165,141 @@ class FlagListView(ListView):
         if not self.request.user.is_superuser:
             flags = flags.published()
         return flags.order_by("country__name")
+
+
+class ColorListView(ListView):
+    model = ColorGroup
+    template_name = "flags/colors-list.html"
+    context_object_name = "colors"
+    # ordering = ['colors']
+
+    def get_queryset(self):
+        qs = (
+            ColorGroup.objects.published()
+            .prefetch_related("colors", "colors__flag", "colors__flag__country")
+            .annotate(num_colors=Count("colors"))
+            .order_by("-num_colors")
+        )
+        return qs
+
+    def get_ordering(self):
+        ordering = self.request.GET.get("ordering", "-date_created")
+        # validate ordering here
+        return ordering
+
+    def dispatch(self, request, *args, **kwargs):
+        response = super().dispatch(request, *args, **kwargs)
+        last_group = self.get_queryset().latest("updated_date")
+        response["Last-Modified"] = last_group.updated_date.strftime('%a, %d %b %Y %H:%M:%S GMT')
+        return response
+
+
+class RegionListView(ListView):
+    model = Region
+    template_name = "flags/region-list.html"
+    context_object_name = "regions"
+
+    def get_queryset(self):
+        regions = Region.objects.filter(parent=None)
+        if not self.request.user.is_superuser:
+            regions = regions.published()
+        return regions.order_by("ordering")
+
+
+def flags_by_region(request, region_slug, subregion_slug=None):
+    template_name = "flags/flags-by-region.html"
+
+    if subregion_slug:
+        region = get_object_or_404(Region, slug=subregion_slug)
+        if not region.is_published and not request.user.is_superuser:
+            raise Http404
+        else:
+            countries = region.countries.all()
+    else:
+        region = get_object_or_404(Region, slug=region_slug, parent=None)
+        if not region.is_published and not request.user.is_superuser:
+            raise Http404
+        else:
+            subregions = region.subregions.filter(is_published=True)
+            countries = Country.objects.filter(region__in=subregions)
+
+    flags = (
+        MainFlag.objects
+        .select_related("country")
+        .prefetch_related("downloads", "colors_set", "colors_set__color_group")
+        .filter(country__in=countries)
+        .order_by("country__name")
+    )
+
+    context = {"region": region, "flags": flags}
+
+    return render(request, template_name, context)
+
+
+def colors_count(request, color_count):
+    template_name = "flags/colors-count.html"
+    # flags = MainFlag.objects.annotate(num_colors=Count("colors_set")).filter(num_colors=color_count)
+    main_colors = Color.objects.filter(is_main=True)
+    flags = MainFlag.objects.filter(colors_set__in=main_colors)
+    flags = flags.annotate(num_colors=Count("colors_set")).filter(num_colors=color_count)
+    context = {"flags": flags, "color_count": color_count}
+    if flags:
+        return render(request, template_name, context)
+    else:
+        raise Http404
+
+
+class FlagElementListView(ListView):
+    model = FlagElement
+    template_name = "flags/elements-list.html"
+    context_object_name = "elements"
+
+    def get_queryset(self):
+        elements = get_all_elements(self.request)
+
+        return elements
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["seo_title"] = "Список всех элементов и объектов на флагах стран мира"
+        context["seo_description"] = """Что изображено на флагах разных стран мира?
+                                        Какой элемент встречается наиболее часто?
+                                        Полный список элементов флагов на AllFlags.ru"""
+
+        return context
+
+
+"""
+# Old version
+class ColorDetailView(DetailView):
+    model = ColorGroup
+    template_name = "flags/color-detail.html"
+    context_object_name = "group"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        colors = Color.objects.filter(color_group=self.object.id)
+        flags = MainFlag.objects.filter(colors_set__in=colors)
+
+        context["flags"] = flags
+        context["colors"] = colors
+        return context
+
+    def dispatch(self, request, *args, **kwargs):
+        response = super().dispatch(request, *args, **kwargs)
+        response["Last-Modified"] = self.object.updated_date.strftime('%a, %d %b %Y %H:%M:%S GMT')
+        return response
+
+
+def region_list(request):
+    template_name = "flags/region-list.html"
+    regions = get_object_or_404(Subregion, slug=slug)
+    countries = region.countries.all()
+    flags = MainFlag.objects.filter(country__in=countries)
+
+    context = {"region": region, "flags": flags}
+
+    return render(request, template_name, context)
 
 
 class FlagDetailView(DetailView):
@@ -133,191 +390,4 @@ class FlagDetailView(DetailView):
             context["age"] = int(datetime.now().strftime("%Y")) - int(flag.adopted_date.strftime("%Y"))
 
         return context
-
-
-class ColorListView(ListView):
-    model = ColorGroup
-    template_name = "flags/colors-list.html"
-    context_object_name = "colors"
-    # ordering = ['colors']
-
-    def get_queryset(self):
-        qs = ColorGroup.objects.published().annotate(num_colors=Count("colors")).order_by("-num_colors")
-        return qs
-
-    def get_ordering(self):
-        ordering = self.request.GET.get("ordering", "-date_created")
-        # validate ordering here
-        return ordering
-
-    def dispatch(self, request, *args, **kwargs):
-        response = super().dispatch(request, *args, **kwargs)
-        last_group = self.get_queryset().latest("updated_date")
-        response["Last-Modified"] = last_group.updated_date.strftime('%a, %d %b %Y %H:%M:%S GMT')
-        return response
-
-    # def head(self, *args, **kwargs):
-    #     last_group = self.get_queryset().latest("updated_date")
-    #     response = HttpResponse(
-    #         # RFC 1123 date format.
-    #         headers={'Last-Modified': last_group.updated_date},  # .strftime('%a, %d %b %Y %H:%M:%S GMT')
-    #     )
-    #     return response
-
-
-class ColorDetailView(DetailView):
-    model = ColorGroup
-    template_name = "flags/color-detail.html"
-    context_object_name = "group"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        colors = Color.objects.filter(color_group=self.object.id)
-        flags = MainFlag.objects.filter(colors_set__in=colors)
-
-        context["flags"] = flags
-        context["colors"] = colors
-        return context
-
-    def dispatch(self, request, *args, **kwargs):
-        response = super().dispatch(request, *args, **kwargs)
-        response["Last-Modified"] = self.object.updated_date.strftime('%a, %d %b %Y %H:%M:%S GMT')
-        return response
-
-    # def head(self, *args, **kwargs):
-    #     response = HttpResponse(
-    #         headers={'Last-Modified': self.updated_date},  # .strftime('%a, %d %b %Y %H:%M:%S GMT')
-    #     )
-    #     return response
-
-
-class RegionListView(ListView):
-    model = Region
-    template_name = "flags/region-list.html"
-    context_object_name = "regions"
-
-    def get_queryset(self):
-        regions = Region.objects.filter(parent=None)
-        if not self.request.user.is_superuser:
-            regions = regions.published()
-        return regions.order_by("ordering")
-
-
-def flags_by_region(request, region_slug, subregion_slug=None):
-    template_name = "flags/flags-by-region.html"
-    if subregion_slug:
-        region = get_object_or_404(Region, slug=subregion_slug)
-        if not region.is_published and not request.user.is_superuser:
-            raise Http404
-        else:
-            countries = region.countries.all()
-    else:
-        region = get_object_or_404(Region, slug=region_slug, parent=None)
-        if not region.is_published and not request.user.is_superuser:
-            raise Http404
-        else:
-            subregions = region.subregions.filter(is_published=True)
-            countries = Country.objects.filter(region__in=subregions).order_by("ordering")
-
-    flags = MainFlag.objects.filter(country__in=countries)
-
-    context = {"region": region, "flags": flags}
-
-    return render(request, template_name, context)
-
-
-def colors_count(request, color_count):
-    template_name = "flags/colors-count.html"
-    # flags = MainFlag.objects.annotate(num_colors=Count("colors_set")).filter(num_colors=color_count)
-    main_colors = Color.objects.filter(is_main=True)
-    flags = MainFlag.objects.filter(colors_set__in=main_colors)
-    flags = flags.annotate(num_colors=Count("colors_set")).filter(num_colors=color_count)
-    context = {"flags": flags, "color_count": color_count}
-    if flags:
-        return render(request, template_name, context)
-    else:
-        raise Http404
-
-
-class FlagElementListView(ListView):
-    model = FlagElement
-    template_name = "flags/elements-list.html"
-    context_object_name = "elements"
-
-    def get_queryset(self):
-        elements = FlagElement.objects.annotate(flags_count=Count("flags_with_elem")).filter(flags_count__gt=0)
-        return elements
-
-
-def flags_with_element(request, slug):
-    template_name = "flags/elements-list.html"
-    flags = MainFlag.objects.filter(elements__slug=slug)
-    element = FlagElement.objects.get(slug=slug)
-    # We can take all elements or...
-    # elements = FlagElement.objects.all()
-    # we can take only not empty elements
-    elements = FlagElement.objects.annotate(flags_count=Count("flags_with_elem")).filter(flags_count__gt=0)
-    context = {"flags": flags, "element": element, "elements": elements}
-    if flags:
-        return render(request, template_name, context)
-    else:
-        raise Http404
-
-
-def flag_last_modified(reqest, flag_slug):
-    last_mod = MainFlag.objects.get(slug=flag_slug).updated_date
-    # last_mod = datetime.combine(flag.updated_date, datetime.min.time())
-    return last_mod
-
-
-# @condition(last_modified_func=flag_last_modified)
-@last_modified(flag_last_modified)
-def flag_detail(request, flag_slug):
-    template_name = "flags/flag-detail.html"
-
-    flag = get_flag_or_404(request, flag_slug)
-    neighbours = get_neighbours(flag.country.id)
-    border_flags = get_neighbours_flags(neighbours.values("border_country__id"))
-    main_colors = flag.colors_set.select_related("color_group").filter(is_main=True)
-    # complementary_colors = flag.colors_set.select_related("color_group").filter(is_main=False)
-    historical = get_historical_flags(flag.country.iso_code_a2)
-    same_color_groups = flag.colors_set.filter(is_main=True).values("color_group__slug")
-    # logger.info(same_color_groups)
-    same_color_flags = get_flags_with_same_colors(flag.id, same_color_groups)
-    age = get_flag_age(flag.adopted_date)
-    # files = get_files(flag.id)
-    files = flag.downloads.filter(is_show_on_detail=True)
-    files_count = len(flag.downloads.all())
-    main_picture = files.filter(is_main=True).first()
-    adj = get_color_adjectives(main_colors)
-
-    context = {
-        "flag": flag,
-        "historical": historical,
-        "neighbours": neighbours,
-        "colors": main_colors,
-        # "complementary_colors": complementary_colors,
-        "same_flags": same_color_flags,
-        "border_flags": border_flags,
-        "emoji": flag.emoji,
-        # "widths": widths,
-        # "heights": heights,
-        "age": age,
-        "files": files,
-        "files_count": files_count,
-        "main_picture": main_picture,
-        "colors_adj": adj,
-    }
-
-    return render(request, template_name, context)
-
-
-# def region_list(request):
-#     template_name = "flags/region-list.html"
-#     regions = get_object_or_404(Subregion, slug=slug)
-#     countries = region.countries.all()
-#     flags = MainFlag.objects.filter(country__in=countries)
-
-#     context = {"region": region, "flags": flags}
-
-#     return render(request, template_name, context)
+"""
