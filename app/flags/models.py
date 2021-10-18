@@ -19,6 +19,28 @@ from app.utils.pictures_utils import img_path_by_model
 from app.utils.ru_slugify import custom_slugify
 
 
+class MetaTemplate(models.Model):
+
+    class Tags(models.TextChoices):
+        TITLE = 'title', 'Title'
+        DESCR = 'descr', 'Description'
+
+    class Models(models.TextChoices):
+        MAINFLAG = 'MainFlag', 'MainFlag'
+        REGION = 'Region', 'Region'
+        COUNTRY = 'Country', 'Country'
+        COLORGROUP = 'ColorGroup', 'ColorGroup'
+        FLAGELEMENT = 'FlagElement', 'FlagElement'
+
+    model = models.CharField(verbose_name='Model', choices=Models.choices, default=Models.MAINFLAG, max_length=50)
+    tag = models.CharField(verbose_name='Meta-tag', choices=Tags.choices, default=Tags.TITLE, max_length=50)
+    template = models.TextField(max_length=400, verbose_name="Template", blank=True)
+
+    class Meta:
+        verbose_name = _("Meta template")
+        verbose_name_plural = _("Meta templates")
+
+
 class Seo(models.Model):
     """Abstract class for SEO fields"""
 
