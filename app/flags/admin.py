@@ -12,7 +12,7 @@ from import_export import resources
 from import_export.admin import ImportExportMixin
 from import_export.formats import base_formats
 
-from .models import (  # Region, Subregion,; HistoricalFlagImage,; FlagEmoji,; Picture,
+from .models import (  # Region, Subregion, HistoricalFlagImage, FlagEmoji, Picture, MetaTemplate,
     BorderCountry,
     Color,
     ColorGroup,
@@ -510,6 +510,12 @@ admin.site.register(FlagFact, FlagFactAdmin)
 admin.site.register(BorderCountry, BorderCountryAdmin)
 
 '''
+# Not using yet
+@admin.register(MetaTemplate)
+class MetaTemplateAdmin(admin.ModelAdmin):
+    list_display = ("model", "tag", "template")
+
+
 class PictureAdmin(admin.ModelAdmin):
     list_display = ("id", "thumbnail", "alt", "image", "ordering")
     readonly_fields = ["webp", "image_md", "webp_md", "image_xs", "webp_xs", "thumb"]
