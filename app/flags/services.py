@@ -237,6 +237,40 @@ def color_last_modified(reqest, slug):
     return last_mod
 
 
+def make_colorgroup_meta(meta_data: dict) -> tuple:
+    group = meta_data["group"]
+    flags_count = meta_data["flags_count"]
+    group_names = {
+        "Красный": "красным",
+        "Белый": "белым",
+        "Синий": "синим",
+        "Зеленый": "зеленым",
+        "Голубой": "голубым",
+        "Розовый": "розовым",
+        "Бордовый": "бордовым",
+        "Коричневый": "коричневым",
+        "Черный": "черным",
+        "Фиолетовый": "фиолетовым",
+        "Желтый": "желтым",
+        "Оранжевый": "оранжевым",
+    }
+
+    if not group.seo_description:
+        descr = f"""{group.name} цвет встречается на флагах {flags_count} стран мира и
+        имеет различные значения и символизм.
+        Мы собрали полный список флагов с {group_names[group.name]} цветом, а так же точные значения цветов
+        в форматах hex, rgb, hls, cmyk."""
+    else:
+        descr = group.seo_description
+
+    if not group.seo_title:
+        title = f"""{group.name} цвет на флагах стран и его значение -
+        список флагов с {group_names[group.name]} цветом | AllFlags.ru"""
+    else:
+        title = group.seo_title
+
+    return title, descr
+
 '''
 # Moved to model as method
 def get_emoji(iso2: str) -> str:
