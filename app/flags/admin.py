@@ -343,7 +343,8 @@ class DownloadablePictureFilePreviewInline(admin.TabularInline):
 @admin.register(HistoricalFlagPicture)
 class HistoricalFlagPictureAdmin(admin.ModelAdmin):
     list_display = ("id", "thumbnail", "alt", "image", "ordering")
-    readonly_fields = ["webp", "image_md", "webp_md", "image_xs", "webp_xs", "thumb"]
+    list_display_links = ("id", "alt",)
+    readonly_fields = ["updated_date", "created_date", "webp", "image_md", "webp_md", "image_xs", "webp_xs", "thumb"]
     search_fields = ["flag__title", "alt", "caption"]
     # list_filter = ["content_type"]
     thumbnail = AdminThumbnail(image_field='thumb')
@@ -352,7 +353,7 @@ class HistoricalFlagPictureAdmin(admin.ModelAdmin):
         (None, {"fields": ["flag", "ordering", "url", "svg", "image", ("caption", "alt")]}),
         (_("Readonly"), {
             "classes": ("collapse", "wide", "extrapretty"),
-            "fields": ["webp", "image_md", "webp_md", "image_xs", "webp_xs", "thumb"]
+            "fields": ["updated_date", "created_date", "webp", "image_md", "webp_md", "image_xs", "webp_xs", "thumb"]
         }),
     ]
 
@@ -387,7 +388,7 @@ class MainFlagAdmin(admin.ModelAdmin):
                     "name",
                     "adopted_date",
                     "proportion",
-                    "short_description",
+                    # "short_description",
                     ("construction_url", "construction_image"),
                     "design_description",
                     "history_text",

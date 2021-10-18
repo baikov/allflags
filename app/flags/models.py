@@ -8,6 +8,7 @@ from ckeditor_uploader.fields import RichTextUploadingField
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.db import models
+# import datetime
 # from django.db.models import Q
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -41,6 +42,17 @@ class MetaTemplate(models.Model):
         verbose_name_plural = _("Meta templates")
 
 
+class Base(models.Model):
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+    is_published = models.BooleanField(verbose_name=_("Published"), default=False)
+    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
+
+    class Meta:
+        abstract = True
+        ordering = ("ordering",)
+
+
 class Seo(models.Model):
     """Abstract class for SEO fields"""
 
@@ -52,10 +64,8 @@ class Seo(models.Model):
     # is_published = models.BooleanField(verbose_name=_("Published"), default=False)
     is_index = models.BooleanField(verbose_name=_("index"), default=True)
     is_follow = models.BooleanField(verbose_name=_("follow"), default=True)
-    created_date = models.DateTimeField(auto_now_add=True)
-    # created_date = models.DateField(auto_now_add=True)
-    # updated_date = models.DateField(auto_now=True)
-    updated_date = models.DateTimeField(auto_now=True)  # default=datetime.datetime.now,
+    # created_date = models.DateTimeField(auto_now_add=True)
+    # updated_date = models.DateTimeField(auto_now=True)  # default=datetime.datetime.now,
 
     class Meta:
         abstract = True
@@ -121,9 +131,9 @@ class Picture(models.Model):
             return "image/png"
 
 
-class HistoricalFlagPicture(Picture):
+class HistoricalFlagPicture(Base, Picture):
     flag = models.ForeignKey("HistoricalFlag", on_delete=models.CASCADE, related_name="images")
-    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
+    # ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
 
     class Meta:
         verbose_name = _("Historical picture")
@@ -141,7 +151,7 @@ class PublishedQuerySet(models.QuerySet):
         return self.filter(is_published=True)
 
 
-class Currency(models.Model):
+class Currency(Base, models.Model):
     """Model for countries currency with m2m rel"""
 
     ru_name = models.CharField(verbose_name=_("Currency name (ru)"), max_length=100, blank=True)
@@ -163,7 +173,7 @@ class Currency(models.Model):
         super(Currency, self).save(*args, **kwargs)
 
 
-class Region(Seo, models.Model):
+class Region(Base, Seo, models.Model):
     parent = models.ForeignKey(
         "self",
         verbose_name=_("Parent name"),
@@ -174,8 +184,8 @@ class Region(Seo, models.Model):
     )
     name = models.CharField(verbose_name=_("Region name"), max_length=250)
     description = RichTextField(verbose_name=_("Region description"), blank=True)
-    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500, db_index=True)
-    is_published = models.BooleanField(verbose_name=_("Published"), default=False)
+    # ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500, db_index=True)
+    # is_published = models.BooleanField(verbose_name=_("Published"), default=False)
 
     objects = PublishedQuerySet.as_manager()
 
@@ -201,9 +211,9 @@ class Region(Seo, models.Model):
             return reverse("flags:region-flags", args=[self.slug])
 
 
-class Country(Seo, models.Model):
+class Country(Base, Seo, models.Model):
     name = models.CharField(verbose_name=_("Name"), max_length=250)
-    is_published = models.BooleanField(verbose_name=_("Published"), default=False)
+    # is_published = models.BooleanField(verbose_name=_("Published"), default=False)
     iso_code_a2 = models.CharField(verbose_name=_("ISO code (2alpha)"), max_length=2, unique=True)
     iso_code_a3 = models.CharField(verbose_name=_("ISO code (3alpha)"), max_length=3, blank=True)
     iso_code_num = models.CharField(verbose_name=_("ISO code (numeric)"), max_length=4, blank=True)
@@ -298,7 +308,7 @@ class BorderCountry(models.Model):
         verbose_name_plural = _("Neighbours")
 
 
-class ColorGroup(Seo, models.Model):
+class ColorGroup(Base, Seo, models.Model):
     name = models.CharField(verbose_name=_("Name (ru)"), max_length=50)
     en_name = models.CharField(verbose_name=_("Name (en)"), max_length=100, blank=True)
     # ru_name_rod = models.CharField(verbose_name=_("Name (rod)"), max_length=50, blank=True)
@@ -308,8 +318,8 @@ class ColorGroup(Seo, models.Model):
     short_name = models.CharField(verbose_name=_("Short name"), max_length=50)
     description = RichTextField(verbose_name=_("Color description"), blank=True)
     colorgroup_meanings = RichTextField(verbose_name=_("Colorgroup meanings"), blank=True)
-    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500, db_index=True)
-    is_published = models.BooleanField(verbose_name=_("Published"), default=False)
+    # ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500, db_index=True)
+    # is_published = models.BooleanField(verbose_name=_("Published"), default=False)
 
     objects = PublishedQuerySet.as_manager()
 
@@ -325,13 +335,13 @@ class ColorGroup(Seo, models.Model):
         return reverse("flags:colors", kwargs={"slug": self.slug})
 
 
-class Color(models.Model):
+class Color(Base, models.Model):
 
     color_group = models.ForeignKey(
         ColorGroup, verbose_name=_("Color group"), on_delete=models.PROTECT, related_name="colors"
     )
     flag = models.ForeignKey("MainFlag", verbose_name=_("Flag"), on_delete=models.CASCADE, related_name="colors_set")
-    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500, db_index=True)
+    # ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500, db_index=True)
     hex = models.CharField(verbose_name=_("HEX"), max_length=7, blank=True)
     rgb = ArrayField(models.SmallIntegerField(), blank=True, size=3, verbose_name=_("RGB"))
     cmyk = ArrayField(models.SmallIntegerField(), blank=True, size=4, verbose_name=_("CMYK"))
@@ -383,11 +393,11 @@ class Color(models.Model):
     #     return reverse("countries:colors-group", kwargs={"color_group": self.color_group})
 
 
-class FlagElement(Seo, models.Model):
+class FlagElement(Base, Seo, models.Model):
     name = models.CharField(verbose_name=_("Name"), max_length=250)
     description = RichTextField(verbose_name=_("Description"), blank=True)
-    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500, db_index=True)
-    is_published = models.BooleanField(verbose_name=_("Published"), default=False)
+    # ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500, db_index=True)
+    # is_published = models.BooleanField(verbose_name=_("Published"), default=False)
 
     class Meta:
         verbose_name = _("Flag element")
@@ -403,7 +413,7 @@ class FlagElement(Seo, models.Model):
         return self.name
 
 
-class HistoricalFlag(models.Model):
+class HistoricalFlag(Base, models.Model):
     """Historical flags model
     Signals:
         pre_save: Download svg image from link in image_url field and save file in svg_file field
@@ -416,8 +426,8 @@ class HistoricalFlag(models.Model):
     from_year = models.CharField(verbose_name=_("Adopted year"), max_length=50, blank=True)
     to_year = models.CharField(verbose_name=_("Ended year"), max_length=50, blank=True)
     description = RichTextField(verbose_name=_("Hstorical flag description"), blank=True)
-    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500, db_index=True)
-    is_published = models.BooleanField(verbose_name=_("Published"), default=False)
+    # ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500, db_index=True)
+    # is_published = models.BooleanField(verbose_name=_("Published"), default=False)
     # pictures = fields.GenericRelation(Picture)
     # pictures = models.ManyToManyField(Picture, verbose_name=_("Pictures"), related_name="flags", blank=True)
 
@@ -430,7 +440,7 @@ class HistoricalFlag(models.Model):
         return f"{self.from_year}-{self.to_year} {self.title}"
 
 
-class MainFlag(Seo, models.Model):
+class MainFlag(Base, Seo, models.Model):
 
     country = models.ForeignKey(Country, verbose_name=_("Country"), on_delete=models.CASCADE, related_name="flags")
     # image = fields.GenericRelation(Picture)
@@ -475,7 +485,7 @@ class MainFlag(Seo, models.Model):
         help_text=_("Downloading images from flagcdn.net"),
         default=False
     )
-    is_published = models.BooleanField(verbose_name=_("Published"), default=False)
+    # is_published = models.BooleanField(verbose_name=_("Published"), default=False)
 
     objects = PublishedQuerySet.as_manager()
 
@@ -529,14 +539,14 @@ class MainFlag(Seo, models.Model):
         return reverse("flags:flag-detail", kwargs={"slug": self.slug})
 
 
-class FlagFact(models.Model):
+class FlagFact(Base, models.Model):
     flag = models.ForeignKey(MainFlag, verbose_name=_("Flag"), on_delete=models.CASCADE, related_name="facts")
     caption = models.CharField(verbose_name=_("Fact caption"), max_length=250, blank=True)
     label = models.CharField(verbose_name=_("Fact label"), max_length=50, blank=True)
     text = RichTextUploadingField(verbose_name=_("Fact text"), blank=True)
     image = models.ImageField(verbose_name=_("Fact image"), blank=True)
-    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=10, db_index=True)
-    is_published = models.BooleanField(verbose_name=_("Published"), default=False)
+    # ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=10, db_index=True)
+    # is_published = models.BooleanField(verbose_name=_("Published"), default=False)
 
     class Meta:
         verbose_name = _("Flag's fact")
@@ -556,11 +566,11 @@ class FlagFact(models.Model):
         super(FlagFact, self).save(*args, **kwargs)
 
 
-class DownloadablePictureFilePreview(Picture):
+class DownloadablePictureFilePreview(Base, Picture):
     flag = models.ForeignKey(MainFlag, verbose_name=_("Flag"), on_delete=models.CASCADE, related_name="downloads")
     description = RichTextUploadingField(verbose_name=_("Description"), blank=True)
-    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
-    is_published = models.BooleanField(verbose_name=_("Published"), default=False)
+    # ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
+    # is_published = models.BooleanField(verbose_name=_("Published"), default=False)
     is_show_on_detail = models.BooleanField(verbose_name=_("Show on detail page"), default=False)
     # is_wikimedia = models.BooleanField(verbose_name=_("File from flagcdn"), default=False)
     is_main = models.BooleanField(verbose_name=_("Main picture"), default=False)
@@ -574,13 +584,13 @@ class DownloadablePictureFilePreview(Picture):
         return f"Image {self.id} for {self.flag.title}"
 
 
-class DownloadablePictureFile(models.Model):
+class DownloadablePictureFile(Base, models.Model):
 
     picture = models.ForeignKey(
         DownloadablePictureFilePreview, verbose_name="Picture", on_delete=models.CASCADE, related_name="files"
     )
     file = models.FileField(verbose_name=_("File"), upload_to="files/")
-    ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
+    # ordering = models.PositiveSmallIntegerField(verbose_name=_("Ordering"), default=500)
 
     class Meta:
         verbose_name = _("Picture file")
