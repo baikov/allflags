@@ -346,7 +346,6 @@ def make_element_meta(meta_data: dict) -> tuple:
     flags_count = meta_data["flags_count"]
 
     if not element.seo_title:
-
         title = f"""
             {element.name} на флагах стран мира - значение, описание | AllFlags.ru
         """
@@ -421,6 +420,27 @@ def parse_meta(obj, meta_data: dict = None) -> tuple:
     # logger.info(seo_title)
     # logger.info(seo_descr)
     return seo_title, seo_descr
+
+
+# ORM for regions
+def make_region_meta(meta_data: dict) -> tuple:
+    region = meta_data["region"]
+    flags_count = meta_data["flags_count"]
+
+    if not region.seo_title:
+        title = f"""
+            Все флаги стран региона {region.name} с описанием и историей | AllFlags.ru
+        """
+    else:
+        title = region.seo_title
+
+    if not region.seo_description:
+        descr = f"""Государственные флаги стран региона {region.name} (по классификации ООН). Мы собрали полный список
+        из {flags_count} национальных флагов с подробным описанием."""
+    else:
+        descr = region.seo_description
+
+    return title, descr
 
 
 '''
