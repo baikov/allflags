@@ -438,7 +438,7 @@ class MainFlag(Seo, models.Model):
     name = models.CharField(verbose_name=_("Flag name"), max_length=250, blank=True)
     adopted_date = models.DateField(verbose_name=_("Adopted date"), blank=True, null=True)
     proportion = models.CharField(verbose_name=_("Proportions"), max_length=10, blank=True)
-    short_description = models.TextField(verbose_name=_("Short description"), max_length=550, blank=True)
+    # short_description = models.TextField(verbose_name=_("Short description"), max_length=550, blank=True)
     elements = models.ManyToManyField(
         FlagElement, verbose_name=_("Flags elements"), related_name="flags_with_elem", blank=True
     )
@@ -488,12 +488,8 @@ class MainFlag(Seo, models.Model):
 
         if self.title == "" and self.country.ru_name_rod:
             self.title = f"Флаг {self.country.ru_name_rod}"
-        # if not self.seo_title:
-        #     self.seo_title = f"{self.title} {self.emoji} - цвета, история, описание"
-            # self.seo_title = f"{self.title} цвета, история, скачать"
+
         if not self.slug:
-            # if country.en_short_form:
-            #     self.slug = slugify(f'flag of {country.en_short_form}', allow_unicode=True)
             if self.country.ru_name_rod:
                 self.slug = custom_slugify(f"Флаг {self.country.ru_name_rod}")
             else:
