@@ -90,16 +90,10 @@
 {# Begin SEO block #}
   {# Canonical #}
   {% block canonical %}{% if region.parent %}{% url 'flags:subregion-flags' region.parent.slug region.slug %}{% else %}{% url 'flags:region-flags' region.slug %}{% endif %}{% endblock canonical %}
-
   {# Meta title #}
-  {% block meta_title %}
-  {{region.seo_title}}
-  {% endblock meta_title %}
-
+  {% block meta_title %}{{ seo_title }}{% endblock meta_title %}
   {# Meta description #}
-  {% block meta_description %}
-  {{region.seo_description}}
-  {% endblock meta_description %}
+  {% block meta_description %}{{ seo_description }}{% endblock meta_description %}
 
   {% block meta_robots %}
     {% if region.is_index %}index,{% else %}noindex,{% endif %}
