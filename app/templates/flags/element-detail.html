@@ -7,19 +7,20 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb" vocab="https://schema.org/" typeof="BreadcrumbList">
                 <li class="breadcrumb-item" property="itemListElement" typeof="ListItem">
-                    <a property="item" typeof="WebPage" href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}">
+                    <a property="item" typeof="WebPage" href="{% url 'flags:flags-list' %}">
+                    {# <a property="item" typeof="WebPage" href="{{ request.scheme }}://{{ request.META.HTTP_HOST }}"> #}
                         <span property="name">Главная</span>
                     </a>
                     <meta property="position" content="1">
                 </li>
                 <li class="breadcrumb-item" property="itemListElement" typeof="ListItem">
-                  <a property="item" typeof="WebPage"  href="{% url 'flags:colors-list' %}">
-                    <span property="name">Цвета флагов мира</span>
+                  <a property="item" typeof="WebPage"  href="{% url 'flags:elements-list' %}">
+                    <span property="name">Элементы флагов</span>
                   </a>
                   <meta property="position" content="2">
                 </li>
                 <li class="breadcrumb-item active" aria-current="page" property="itemListElement" typeof="ListItem">
-                    <span property="name">{{group.name}}</span>
+                    <span property="name">{{element.name}}</span>
                     <meta property="position" content="3">
                 </li>
             </ol>
@@ -29,17 +30,16 @@
 {% endblock breadcrumb %}
 
 {% block content %}
-
 {# H1 #}
 <div class="pt-5 pb-3">
   <div class="container">
     <div class="row">
       <div class="col-12 d-flex justify-content-center">
-      {% if group.seo_h1 %}
-      <h1>{{ group.seo_h1}}</h1>
-      {% else %}
-        <h1>Флаги стран содержащие {{group.name}} цвет</h1>
-      {% endif %}
+        {% if element.seo_h1 %}
+          <h1>{{element.seo_h1}}</h1>
+        {% else %}
+          <h1>{{element.name}} на флагах стран</h1>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -48,41 +48,37 @@
 {# Flags list #}
 {% include "partials/_flags-list.html" with flags=flags %}
 
-{# Color group colorgroup_meanings #}
-{% if group.description %}
-<div class="py-3 py-xl-5 bg-light">
+{# Flag element description #}
+{% if element.description %}
+<div class="py-3">
   <div class="container">
     <div class="row">
-      <div class="col-12">
-        {{ group.description|safe }}
-      </div>
-
-      <div class="py-3 col-12">
-      <h2 class="py-3">{{group.name}} цвет и его значения на флагах стран</h2>
-        <ul>
-        {% for color in group.colors.all %}
-          <li><strong>{{color.flag.title}}:</strong> {{color.meaning}}</li>
-        {% endfor %}
-        </ul>
-      </div>
+      {{element.description|safe}}
     </div>
   </div>
 </div>
 {% endif %}
 
+{# Flag's elements #}
+<div class="py-5 bg-light">
+  <div class="container">
+    <h2 class="py-3">Полный список элементов флагов</h2>
+    {% for elem in elements %}
+    <a href="{% url 'flags:element-detail' elem.slug %}" class="btn btn-outline-primary mb-2">
+      {{elem.name}} <span class="badge badge-secondary">{{elem.flags_count}}</span>
+    </a>
+    {% endfor %}
+  </div>
+</div>
 {% endblock content %}
 
 {# Begin SEO block #}
-  {# Canonical #}
-  {% block canonical %}{% url 'flags:color-detail' group.slug %}{% endblock canonical %}
-
-  {# Meta title #}
+  {% block canonical %}{% url 'flags:element-detail' element.slug %}{% endblock canonical %}
   {% block meta_title %}{{ seo_title }}{% endblock meta_title %}
-
-  {# Meta description #}
-  {% block meta_description %}{{ seo_description}}{% endblock meta_description %}
-
+  {% block meta_description %}{{ seo_description }}{% endblock meta_description %}
+  {# {% block meta_keywords %}{% endblock meta_keywords %} #}
   {% block meta_robots %}
-  index,follow
+    {% if element.is_index %}index,{% else %}noindex,{% endif %}
+    {% if element.is_follow %}follow{% else %}nofollow{% endif %}
   {% endblock meta_robots %}
 {# End SEO block #}
