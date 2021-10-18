@@ -734,8 +734,8 @@
 
     {% block meta_robots %}{% if flag.is_index %}index,{% else %}noindex,{% endif %}{% if flag.is_follow %}follow{% else %}nofollow{% endif %}{% endblock meta_robots %}
     {% block opengraph %}
-    <meta property="og:title" content="{% if flag.seo_title %}{{flag.seo_title}}{% else %}Флаг {{flag.country.ru_name_rod}} {{emoji}} ({{colors_adj}} {% if flag.name %}{{flag.name}}{% else %}флаг{% endif %}) - история, цвета, описание{% endif %}"/>
-    <meta property="og:description" content='{% if flag.seo_description %}{{emoji}}{{flag.seo_description}}{% else %}Государственный флаг {{flag.country.ru_name_rod}} {{emoji}} - это прямоугольное полотнище с пропорциями сторон {{flag.proportion}}.{% if colors|length == 1 %} Единственный цвет флага: {{colors.0.color_group|lower}}.{% else %} {{colors|length|ru_count|capfirst}} основных {% if color_count > 4 %}цветов{% else %}цвета{% endif %} флага: {% for color in colors %}{% if not forloop.first %}, {% endif %}{{color.color_group|lower}}{% endfor %}.{% endif %}{% if flag.elements.exists %} Элементы флага: {% for element in flag.elements.all %}{% if not forloop.first %}, {% endif %}{{element.name|lower}}{% endfor %}.{% endif %}{% if flag.adopted_date %} Флаг страны {{flag.country.name}} был утвержден {% language "ru" %}{{flag.adopted_date|date:"j E Y"}}{% endlanguage %}.{% endif %}{% endif %}'/>
+    <meta property="og:title" content="{{seo_title}}"/>
+    <meta property="og:description" content="{{seo_description}}"/>
     <meta property="og:image" content="{{ request.scheme }}://{{ request.META.HTTP_HOST }}{{main_picture.image.url}}"/>
     <meta property="og:image:width" content="{{main_picture.image.width}}" />
     <meta property="og:image:height" content="{{main_picture.image.height}}" />
