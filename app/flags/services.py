@@ -2,6 +2,7 @@ import logging
 from datetime import date, datetime
 
 from django.core.files import File
+from django.db.models import Count, Max
 from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404
 
@@ -9,8 +10,10 @@ from app.utils.pictures_utils import get_file_to_bytesio
 
 from .models import (
     BorderCountry,
+    ColorGroup,
     DownloadablePictureFile,
     DownloadablePictureFilePreview,
+    FlagElement,
     HistoricalFlag,
     MainFlag,
 )
@@ -291,6 +294,15 @@ def make_colorgroup_meta(meta_data: dict) -> tuple:
 
 
 # ORM for elements
+def element_last_modified(reqest, slug):
+    element = FlagElement.objects.prefetch_related("flags_with_elem").get(slug=slug)
+    flags_updated_date = element.flags_with_elem.all().aggregate(Max("updated_date"))
+    last_mod = max(element.updated_date, flags_updated_date["updated_date__max"])
+    # .strftime('%a, %d %b %Y %H:%M:%S GMT')
+
+    return last_mod
+
+
 def get_element_or_404(request, slug) -> FlagElement:
     if request.user.is_superuser:
         element = get_object_or_404(
