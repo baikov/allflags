@@ -210,13 +210,18 @@ def make_mainflag_meta(meta_data: dict) -> tuple:
 
         if flag.elements:
             el_name = ", ".join(elem.name.lower() for elem in flag.elements.all())
-            elem = f"Элементы флага: {el_name}."
+            elem = f" Элементы флага: {el_name}."
+        else:
+            elem = ""
 
         if flag.adopted_date:
-            date = f"Флаг страны {flag.country.name} был утвержден {flag.adopted_date.strftime('%d.%m.%Y')}."
-        descr = f"Государственный флаг {flag.country.ru_name_rod} {flag.emoji} - это \
-            прямоугольное полотнище с пропорциями сторон {flag.proportion}. \
-            {colors_txt} {elem} {date}"
+            date = f" Флаг страны {flag.country.name} был утвержден {flag.adopted_date.strftime('%d.%m.%Y')}."
+        else:
+            date = ""
+
+        descr = f"""Государственный флаг {flag.country.ru_name_rod} {flag.emoji} - это
+            прямоугольное полотнище с пропорциями сторон {flag.proportion}.
+            {colors_txt}{elem}{date}"""
     else:
         descr = flag.seo_description
     # End descr
