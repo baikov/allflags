@@ -32,6 +32,7 @@ from .services import (  # get_files, parse_meta,
     make_element_meta,
     get_all_elements,
     element_last_modified,
+    make_region_meta,
 )
 
 # from datetime import datetime
@@ -161,7 +162,12 @@ class FlagListView(ListView):
     # paginate_by = 20
 
     def get_queryset(self):
-        flags = MainFlag.objects.all()
+        flags = (
+            MainFlag.objects
+            # .select_related("country", "country__region")
+            .prefetch_related("downloads")
+            .all()
+        )
         if not self.request.user.is_superuser:
             flags = flags.published()
         return flags.order_by("country__name")
@@ -231,7 +237,19 @@ def flags_by_region(request, region_slug, subregion_slug=None):
         .order_by("country__name")
     )
 
-    context = {"region": region, "flags": flags}
+    meta_data = {
+        "region": region,
+        "flags_count": len(flags),
+    }
+
+    seo_title, seo_description = make_region_meta(meta_data)
+
+    context = {
+        "region": region,
+        "flags": flags,
+        "seo_title": seo_title,
+        "seo_description": seo_description,
+    }
 
     return render(request, template_name, context)
 
