@@ -136,7 +136,9 @@ def get_color_adjectives(main_colors) -> str:
             adj += "-"
         adj += str(main_colors[len(main_colors) - 1].color_group.name).lower()
     else:
-        adj = main_colors[0].color_group.name
+        if main_colors:
+            adj = main_colors[0].color_group.name
+
     return adj
 
 
