@@ -1,4 +1,5 @@
 import logging
+import re
 from datetime import date, datetime
 
 from django.core.files import File
@@ -16,6 +17,7 @@ from .models import (
     FlagElement,
     HistoricalFlag,
     MainFlag,
+    MetaTemplate,
 )
 
 # from config.settings.base import MEDIA_ROOT
@@ -337,6 +339,67 @@ def get_all_elements(request) -> QuerySet:
         )
 
     return elements
+
+
+def parse_meta(obj, meta_data: dict = None) -> tuple:
+    # title_tpl_obj = MetaTemplate.objects.filter(model=obj._meta.model.__name__, tag='title').first()
+    # descr_tpl_obj = MetaTemplate.objects.filter(model=obj._meta.model.__name__, tag='descr').first()
+    # title_tpl_obj = meta_template.filter(tag='title').first()
+    # descr_tpl_obj = meta_template.filter(tag='descr').first()
+    # title_template = title_tpl_obj.template if title_tpl_obj else ""
+    # descr_template = descr_tpl_obj.template if descr_tpl_obj else ""
+    meta_template = MetaTemplate.objects.filter(model=obj._meta.model.__name__)
+    title_template = ""
+    descr_template = ""
+    for item in meta_template.all():
+        if item.tag == "title":
+            title_template = item.template
+        elif item.tag == "descr":
+            descr_template = item.template
+
+    seo_title = obj.seo_title if obj.seo_title else title_template
+    seo_descr = obj.seo_description if obj.seo_description else descr_template
+
+    # logger.info(title_tpl.template)
+    # logger.info(descr_tpl.template)
+
+    reg_list = set(re.findall(r'#.*?#', seo_title + seo_descr))
+
+    # logger.info(reg_list)
+
+    reg_dict = {}
+    for item in reg_list:
+        item = item.replace("#", "")
+        if "|" in item:
+            var, default = item.split("|")
+            try:
+                atribute_value = eval(f'obj.{var}')
+            except AttributeError:
+                try:
+                    # atribute_value = kwargs[var]
+                    atribute_value = meta_data[var]
+                except KeyError:
+                    atribute_value = ""
+            reg_dict[f"#{item}#"] = atribute_value if atribute_value else default
+        else:
+            try:
+                atribute_value = eval(f'obj.{item}')
+            except AttributeError:
+                try:
+                    # atribute_value = kwargs[item]
+                    atribute_value = meta_data[item]
+                except KeyError:
+                    atribute_value = ""
+            reg_dict[f"#{item}#"] = atribute_value if atribute_value else ""
+    # logger.info(reg_dict)
+
+    for k, v in reg_dict.items():
+        seo_title = re.sub(r'{}'.format(k.replace("|", "\|")), v, seo_title)  # noqa I003
+        seo_descr = re.sub(r'{}'.format(k.replace("|", "\|")), v, seo_descr)  # noqa I003
+
+    # logger.info(seo_title)
+    # logger.info(seo_descr)
+    return seo_title, seo_descr
 
 
 '''
