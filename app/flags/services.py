@@ -225,6 +225,18 @@ def make_mainflag_meta(meta_data: dict) -> tuple:
     return title, descr
 
 
+def color_last_modified(reqest, slug):
+    group = ColorGroup.objects.get(slug=slug)
+    # colors_updated_date = group.colors.all().aggregate(Max("updated_date"))
+    # last_mod = max(group.updated_date, colors_updated_date["updated_date__max"])
+    # logger.info(f"Group: {group.updated_date}")
+    # logger.info(f"Colors: {colors_updated_date['updated_date__max']}")
+    # logger.info(last_mod)
+    # .strftime('%a, %d %b %Y %H:%M:%S GMT')
+    last_mod = group.updated_date
+    return last_mod
+
+
 '''
 # Moved to model as method
 def get_emoji(iso2: str) -> str:
