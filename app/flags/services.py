@@ -289,6 +289,44 @@ def make_colorgroup_meta(meta_data: dict) -> tuple:
 
     return title, descr
 
+
+# ORM for elements
+def get_element_or_404(request, slug) -> FlagElement:
+    if request.user.is_superuser:
+        element = get_object_or_404(
+            FlagElement.objects.prefetch_related("flags_with_elem", "flags_with_elem__downloads"),
+            slug=slug,
+        )
+    else:
+        element = get_object_or_404(
+            FlagElement.objects.prefetch_related("flags_with_elem", "flags_with_elem__downloads"),
+            slug=slug,
+            is_index=True,
+            is_published=True,
+        )
+
+    return element
+
+
+def get_all_elements(request) -> QuerySet:
+    if request.user.is_superuser:
+        elements = (
+            FlagElement.objects
+            .annotate(flags_count=Count("flags_with_elem"))
+            .all()
+            .order_by("-flags_count")
+        )
+    else:
+        elements = (
+            FlagElement.objects
+            .annotate(flags_count=Count("flags_with_elem"))
+            .filter(flags_count__gt=0, is_index=True, is_published=True)
+            .order_by("-flags_count")
+        )
+
+    return elements
+
+
 '''
 # Moved to model as method
 def get_emoji(iso2: str) -> str:
